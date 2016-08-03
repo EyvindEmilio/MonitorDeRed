@@ -28,4 +28,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(user_type_model::class, 'id', 'user_type');
     }
+
+    public function getRelationatedFields()
+    {
+        return ['user_type'];
+    }
+
+    public function docente()
+    {
+        return $this->hasOne('App\user_type_model', 'id', 'user_type');
+    }
 }

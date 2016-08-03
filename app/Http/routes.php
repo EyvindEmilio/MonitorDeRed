@@ -11,13 +11,25 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', ['middleware' => 'auth', 'uses' => function () {
     return view('welcome');
-});
+}]);
 
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
 
-Route::resource('/users','UsersController');
-Route::resource('/users_types','UsersTypesController');
+Route::resource('/users', 'UsersController');
+Route::resource('/users_types', 'UsersTypesController');
+
+/*
+ *
+ * Api RestFull Services
+ *
+ * */
+
+Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], function () {
+    /** @noinspection PhpUndefinedClassInspection */
+    Route::resource('/usersTypes', 'UsersTypesController');
+    Route::resource('/users', 'UsersController');
+});

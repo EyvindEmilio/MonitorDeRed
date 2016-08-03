@@ -1,6 +1,7 @@
 @extends('layouts.base')
 
 @section('body-content')
+
     <section id="container">
         <!--header start-->
         <header class="header fixed-top clearfix">
@@ -198,20 +199,20 @@
             <div class="top-nav clearfix">
                 <!--search & user info start-->
                 <ul class="nav pull-right top-menu">
-                    <li>
+                    {{--<li>
                         <input type="text" class="form-control search" placeholder=" Search">
-                    </li>
+                    </li>--}}
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <img alt="" src="images/avatar1_small.jpg">
-                            <span class="username">John Doe</span>
+                            <span class="username">{{ Auth::user()->first_name }}</span>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu extended logout">
-                            <li><a href="#"><i class=" fa fa-suitcase"></i>Profile</a></li>
-                            <li><a href="#"><i class="fa fa-cog"></i> Settings</a></li>
-                            <li><a href="login.html"><i class="fa fa-key"></i> Log Out</a></li>
+                            <li><a href=""><i class=" fa fa-suitcase"></i>Perfil de usuario</a></li>
+                            <li><a href=""><i class="fa fa-cog"></i> Configuracion</a></li>
+                            <li><a href="/logout"><i class="fa fa-key"></i> Salir</a></li>
                         </ul>
                     </li>
                     <!-- user login dropdown end -->
@@ -233,14 +234,18 @@
                             </a>
                         </li>
                         <li class="sub-menu">
-                            <a href="javascript:;" class="{{ (Request::is('users')||Request::is('users/create')||Request::is('users_types'))?'active':'' }}">
+                            <a href="javascript:;"
+                               class="{{ (Request::is('users')||Request::is('users/create')||Request::is('users_types'))?'active':'' }}">
                                 <i class="fa fa-laptop"></i>
                                 <span>Usuarios</span>
                             </a>
-                            <ul class="sub" >
-                                <li class="{{ (Request::is('users'))?'active':'' }}"><a href="{{ url('/users') }}">Usuarios registrados</a></li>
-                                <li class="{{ (Request::is('users/create'))?'active':'' }}"><a href="{{ url('/users/create') }}">Registrar usuario</a></li>
-                                <li class="{{ (Request::is('users_types'))?'active':'' }}"><a href="{{ url('/users_types') }}">Tipos de usuarios</a></li>
+                            <ul class="sub">
+                                <li class="{{ (Request::is('users'))?'active':'' }}"><a href="{{ url('/users') }}">Usuarios
+                                        registrados</a></li>
+                                <li class="{{ (Request::is('users/create'))?'active':'' }}"><a
+                                            href="{{ url('/users/create') }}">Registrar usuario</a></li>
+                                <li class="{{ (Request::is('users_types'))?'active':'' }}"><a
+                                            href="{{ url('/users_types') }}">Tipos de usuarios</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -257,9 +262,21 @@
                         {{ Session::get('flash_message') }}
                     </div>
                 @endif
+
                 @yield('main-content')
             </section>
         </section>
         <!--main content end-->
     </section>
+@endsection
+
+@section('angular-scripts')
+    <script type="text/javascript">
+        angular.module('Monitor').run(function ($rootScope, ModelService) {
+
+            $rootScope.user =  {{ 2+2 }} ;
+
+            $rootScope.contracts_model = new ModelService.UsersTypes();
+        });
+    </script>
 @endsection

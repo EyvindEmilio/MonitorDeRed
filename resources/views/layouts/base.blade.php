@@ -27,9 +27,29 @@
     <script src="{{ asset('respond.min.js') }}"></script>
     <![endif]-->
 </head>
-<body>
+<!--suppress HtmlUnknownAttribute -->
+<body ng-app="Monitor">
 
 @yield('body-content')
+
+<!-- Angular dependences -->
+<script src="app/js/moment.min.js"></script>
+<script src="app/js/angular.min.js"></script>
+<script src="app/js/angular-moment.min.js"></script>
+<script src="app/js/angular-resource.min.js"></script>
+<script src="app/js/ui-bootstrap-tpls-2.0.1.min.js"></script>
+<script src="app/js/app.js"></script>
+
+<!-- services -->
+<script src="app/js/services/InterceptorService.js"></script>
+<script src="app/js/services/ModelService.js"></script>
+<script src="app/js/services/ApiService.js"></script>
+<!-- directives -->
+<script src="app/js/directives/CrudGenerator.js"></script>
+<script src="app/js/filters/CrudFilter.js"></script>
+
+<!-- Angular Scripts -->
+@yield('angular-scripts')
 
 <script src="{{ asset('js/jquery.js') }}"></script>
 <script src="{{ asset('js/jquery-ui/jquery-ui-1.10.1.custom.min.js') }}"></script>
@@ -41,27 +61,7 @@
 <!--[if lte IE 8]>
 <script language="javascript" type="text/javascript" src="{{ asset('js/flot-chart/excanvas.min.js') }}"></script>
 <![endif]-->
-<script src="{{ asset('js/skycons/skycons.js') }}"></script>
-<script src="{{ asset('js/jquery.scrollTo/jquery.scrollTo.js') }}"></script>
-<script src="{{ asset('js/jquery.easing.min.js') }}"></script>
-<script src="{{ asset('js/calendar/clndr.js') }}"></script>
-<script src="{{ asset('js/underscore-min.js') }}"></script>
-<script src="{{ asset('js/calendar/moment-2.2.1.js') }}"></script>
-<script src="{{ asset('js/evnt.calendar.init.js') }}"></script>
-<script src="{{ asset('js/jvector-map/jquery-jvectormap-1.2.2.min.js') }}"></script>
-<script src="{{ asset('js/jvector-map/jquery-jvectormap-us-lcc-en.js') }}"></script>
-<script src="{{ asset('js/gauge/gauge.js') }}"></script>
-<!--clock init-->
-<script src="{{ asset('js/css3clock/js/css3clock.js') }}"></script>
-<!--Easy Pie Chart-->
-<script src="{{ asset('js/easypiechart/jquery.easypiechart.js') }}"></script>
-<!--Sparkline Chart-->
-<script src="{{ asset('js/sparkline/jquery.sparkline.js') }}"></script>
-<!--Morris Chart-->
-<script src="{{ asset('js/morris-chart/morris.js') }}"></script>
-<script src="{{ asset('js/morris-chart/raphael-min.js') }}"></script>
-<!--jQuery Flot Chart-->
-<script src="{{ asset('js/jquery.customSelect.min.js') }}"></script>
+
 <!--common script init for all pages-->
 <script src="{{ asset('js/scripts.js') }}"></script>
 <!--script for this page-->

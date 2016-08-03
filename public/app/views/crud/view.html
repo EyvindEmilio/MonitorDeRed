@@ -1,0 +1,144 @@
+<div class="panel panel-info  small">
+
+    <div class="panel-heading center">
+        <label class="panel-title text-uppercase">{{ Model.config.title }}</label>
+        <div class="pull-right">
+            <button class="btn btn-sm btn-info pull-right" title="Actualizar lista" type="button"
+                    ng-click="refresh_list()">
+                <i class="glyphicon glyphicon-refresh"></i>
+            </button>
+            <button data-ng-if="Model.add_new"
+                    ng-click="openModalCreate(Model)" class="btn btn-success btn-sm pull-right"
+                    title="Nuevo: {{Model.config.title}}">
+                <span class="glyphicon glyphicon-plus"></span>
+                Agregar nuevo
+            </button>
+        </div>
+
+        <span class="clearfix"></span>
+    </div>
+
+    <div class="panel-body" ng-show="Model.searchEnabled">
+        <div class="col-xs-12 col-sm-5">
+            <form style="max-width:300px" data-ng-submit="loadData()">
+                <div class="input-group">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default btn-sm" type="button"><span
+                            class="glyphicon glyphicon-search"></span>
+                        </button>
+                      </span>
+                    <input type="text" class="form-control input-sm" placeholder="Buscar"
+                           ng-model="paginationParams.search">
+                </div>
+            </form>
+        </div>
+        <div class="col-xs-12 col-sm-7" ng-show="Model.filterFields.length > 0">
+            <a href="" ng-click="Model['collapseFilterSearch'] = !Model['collapseFilterSearch']">
+                <span class="glyphicon"
+                      ng-class="Model['collapseFilterSearch']?'glyphicon-minus':'glyphicon-plus'"></span>
+                {{Model['collapseFilterSearch'] ? 'Menos opciones de busqueda':'Mas opciones de busqueda'}}</a>
+        </div>
+    </div>
+    <div class="clearfix" ng-show="Model.filterFields.length > 0" uib-collapse="!Model['collapseFilterSearch']">
+        <hr>
+        <div class="col-xs-12 col-sm-8">
+            <form ng-submit="loadFilterFields()">
+                <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" ng-repeat="filterField in Model.filterFields">
+                    <div class="form-group small">
+                        <label ng-bind="(Model.fields | filter:{name:filterField})[0].label"></label>
+                        <input class="form-control input-sm"
+                               placeholder="{{(Model.fields | filter:{name:filterField})[0].label}}"
+                               data-ng-model="paginationParams[filterField]"
+                               item-filter-field="(Model.fields | filter:{name:filterField})[0]"
+                               item-crud-model="Model"
+                               list="{{'filter_' + filterField}}"
+                               type="text"
+                               autocomplete="on">
+                        <datalist id="{{'filter_' + filterField}}">
+                            <option
+                                ng-repeat="result in (((Model.fields | filter:{name:filterField})[0]).dataFilter.data)"
+                                ng-value="result[filterField]">
+                            </option>
+                        </datalist>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group small">
+                        <label style="opacity: 0">.</label><br>
+                        <button class="btn btn-default btn-sm" type="submit"><span
+                            class="glyphicon glyphicon-search"></span>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix">
+        <hr class="mV10">
+        <div class="col-xs-12">
+            <div class="alert-info p20 text-center" ng-show="!Model.dataResponse.data.length">
+                <i> - No se encontraron coincidencias - </i>
+            </div>
+            <table class="table table-bordered table-striped" ng-show="Model.dataResponse.data.length > 0">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th ng-repeat="param in Model.showFields"
+                        ng-bind="(Model.fields | filter:{name:param})[0].label"></th>
+                    <th ng-repeat="param in Model.extra_fields" ng-bind="param.label"></th>
+                    <th ng-show="Model.editable || Model.delete">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="rowItem in Model.dataResponse.data" ng-click="Model.onClickRow(rowItem)">
+                    <td ng-bind="$index + 1"></td>
+                    <td ng-repeat="param in Model.showFields"
+                        item-crud="(Model.fields | filter:{name:param})[0]"
+                        item-crud-model="rowItem"></td>
+                    <!--<td ng-repeat="param in Model.extra_fields" ng-bind="rowItem[param.name] | CrudFilter:'date'"></td>-->
+                    <td ng-repeat="param in Model.extra_fields" ng-bind="rowItem[param.name] | amTimeAgo"></td>
+                    <td data-ng-show="Model.editable || Model.delete">
+                        <!--<button class="btn btn-primary btn-xs" title="Detalles" ng-click="openModalDetail(rowItem)"><i
+                            class="glyphicon glyphicon-list"></i>
+                        </button>-->
+                        <button class="btn btn-success btn-xs" title="Editar"
+                                ng-click="openModalEdit(rowItem, Model)"
+                                ng-show="Model.editable">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-xs" title="Eliminar"
+                                ng-click="openModalDelete(rowItem, Model)"
+                                ng-show="Model.delete">
+                            <i class="glyphicon glyphicon-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-center">
+                <uib-pagination total-items="Model.dataResponse.total" items-per-page="paginationParams.page_size"
+                                ng-model="currentPage" class="pagination-sm" previous-text="Anterior"
+                                ng-change="changePage()"
+                                next-text="Siguiente"></uib-pagination>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<script type="text/ng-template" id="crudModalDelete.html">
+    <div class="modal-header">
+        <h3 class="modal-title" ng-bind="Model.config.title"></h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <p>Seguro que desea eliminar registro?</p>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-warning btn-sm" ng-click="delete()">Eliminar</button>
+            <button type="button" class="btn btn-info btn-sm" ng-click="cancel()">Cancelar</button>
+        </div>
+    </div>
+</script>
+
