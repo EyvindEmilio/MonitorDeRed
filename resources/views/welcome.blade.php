@@ -1,5 +1,8 @@
 @extends('layouts.appMonitor')
 
-@section('content')
+@section('main-content')
+    <pre>
+        {{ $data }}
+    </pre>
 
 @endsection

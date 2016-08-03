@@ -12,7 +12,28 @@
 */
 
 Route::get('/', ['middleware' => 'auth', 'uses' => function () {
-    return view('welcome');
+    $list = shell_exec('nmap -sP 192.168.1.*');
+    //echo '<pre>';
+    //print_r($list);
+    // echo '</pre>';
+
+    $list = explode(PHP_EOL, $list);
+    //echo sizeof($list);
+
+    $pc = array();
+    for ($index = 2; $index < sizeof($list) - 3; $index += 3) {
+        $mac_list = explode(' ', $list[$index + 2]);
+
+        $mac_list = $mac_list[2];
+
+        $ip_list = explode(' ', $list[$index]);
+        $ip_list = $ip_list[4];
+
+        array_push($pc, ['mac' => $mac_list, 'ip' => $ip_list]);
+    }
+
+
+    return view('welcome', ['data' => json_encode($pc)]);
 }]);
 
 Route::auth();
