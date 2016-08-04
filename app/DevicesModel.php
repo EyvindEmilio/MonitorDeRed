@@ -8,7 +8,7 @@ class DevicesModel extends ApiBaseModel
     public $timestamps = true;
 
     protected $fillable = [
-        'name', 'status', 'description', 'area', 'device_type', 'notes'
+        'name', 'ip', 'status', 'description', 'area', 'device_type', 'notes'
     ];
 
     public function getSearchFields()

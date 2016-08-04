@@ -11,25 +11,6 @@
 |
 */
 
-Route::get('/', ['middleware' => 'auth', 'uses' => function () {
-    $list = shell_exec('nmap -sP 192.168.1.*');
-    $list = explode(PHP_EOL, $list);
-
-    $pc = array();
-    for ($index = 2; $index < sizeof($list) - 4; $index += 3) {
-        $first_line = explode(' ', $list[$index + 2], 4);
-        $mac = $first_line[2];
-        $manufacturer = $first_line[3];
-
-        $second_line = explode(' ', $list[$index]);
-        $ip = $second_line[4];
-
-        array_push($pc, ['mac' => $mac, 'ip' => $ip, 'manufacturer' => $manufacturer]);
-    }
-
-
-    return view('welcome', ['data' => json_encode($pc)]);
-}]);
 
 Route::auth();
 
@@ -39,6 +20,11 @@ Route::resource('/users', 'UsersController');
 Route::resource('/users_types', 'UsersTypesController');
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::get('/', function () {
+        $settings = \App\SettingsModel::find(1)->toArray();
+        return view('dashboard', ['settings' => $settings]);
+    });
+
     Route::get('/devices', function () {
         return view('devices_and_areas.devices');
     });
@@ -50,7 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::get('/settings', function () {
         $settings = \App\SettingsModel::find(1);
-        return view('settings',['settings'=>$settings]);
+        return view('settings', ['settings' => $settings]);
     });
     Route::get('/standard', function () {
         return view('standard');
@@ -70,4 +56,6 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/device_types', 'DeviceTypesController');
     Route::resource('/devices', 'DevicesController');
     Route::resource('/settings', 'SettingsController');
+
+    Route::get('/monitor/list_status', "MonitoringController@list_status");
 });

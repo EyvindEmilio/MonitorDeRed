@@ -26,8 +26,9 @@
                         <div class="form-group">
                             <label class="col-md-2">Mascara (/X)</label>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" min="0" max="32" placeholder="24" required
-                                       ng-model="settings.mask">
+                                <select class="form-control" ng-model="settings.mask"
+                                        ng-options="mask.id as mask.name for mask in [{id:8,name:'8'},{id:16,name:'16'},{id:24,name:'24'},{id:32,name:'32'}]"
+                                        required></select>
                             </div>
                         </div>
 
@@ -68,7 +69,6 @@
                                         window.location.reload();
                                     })
                         };
-
                     });
                 </script>
             @endsection

@@ -15,6 +15,7 @@ class DevicesTable extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('ip');
             $table->char('status',1)->default('Y');
             $table->string('description');
             $table->integer('area')->unsigned()->index();
