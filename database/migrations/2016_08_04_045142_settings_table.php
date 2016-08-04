@@ -18,7 +18,7 @@ class SettingsTable extends Migration
             $table->string('gateway');
             $table->integer('mask');
             $table->integer('time_check_network');
-            $table->boolean('active_system')->default(false);
+            $table->char('active_system', 1)->default('N');
         });
     }
 

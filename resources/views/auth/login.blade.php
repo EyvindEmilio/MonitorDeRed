@@ -31,8 +31,8 @@
                     <label class="checkbox">
                         <input type="checkbox" name="remember"> Recordarme
                         <span class="pull-right">
-                    <a data-toggle="modal" href="#myModal"> Olvidaste tu contrasena?</a>
-
+                    {{--<a data-toggle="modal" href="#myModal"> Olvidaste tu contrasena?</a>
+--}}
                 </span>
                     </label>
                     <button class="btn btn-lg btn-login btn-block" type="submit">Ingresar</button>

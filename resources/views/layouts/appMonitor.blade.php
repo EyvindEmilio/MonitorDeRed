@@ -205,7 +205,7 @@
                 <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <img alt="" src="images/avatar1_small.jpg">
+                            <img alt="" src="images/icon_default_user.png" width="33">
                             <span class="username">{{ Auth::user()->first_name }}</span>
                             <b class="caret"></b>
                         </a>
@@ -233,6 +233,15 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
+
+                        <li>
+                            <a class="{{ (Request::is('standard'))?'active':'' }}" href="{{ url('/standard') }}">
+                                <i class="fa fa-legal"></i>
+                                <span>Base Normativa</span>
+                            </a>
+                        </li>
+
+
                         <li class="sub-menu">
                             <a href="javascript:;"
                                class="{{ (Request::is('users')||Request::is('users_types'))?'active':'' }}">

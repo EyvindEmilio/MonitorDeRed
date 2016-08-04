@@ -49,7 +49,11 @@ Route::group(['middleware' => 'auth'], function () {
         return view('devices_and_areas.areas');
     });
     Route::get('/settings', function () {
-        return view('settings');
+        $settings = \App\SettingsModel::find(1);
+        return view('settings',['settings'=>$settings]);
+    });
+    Route::get('/standard', function () {
+        return view('standard');
     });
 });
 /*
@@ -65,4 +69,5 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/areas', 'AreasController');
     Route::resource('/device_types', 'DeviceTypesController');
     Route::resource('/devices', 'DevicesController');
+    Route::resource('/settings', 'SettingsController');
 });
