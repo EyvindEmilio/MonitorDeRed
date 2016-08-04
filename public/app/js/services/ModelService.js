@@ -130,6 +130,7 @@ angular.module('Monitor')
                     context.resource = $API.Devices;
                     context.fields = [
                         {label: 'Nombre', name: 'name', type: 'string', required: true},
+                        {label: 'Ip', name: 'ip', type: 'string', required: true},
                         {label: 'Descripcion', name: 'description', type: 'string', required: true},
                         {
                             label: 'Estado',
@@ -163,7 +164,7 @@ angular.module('Monitor')
                         label: 'Ultima modificacion',
                         name: 'updated_at'
                     }];
-                    context.showFields = ['name', 'description', 'status', 'area', 'device_type', 'notes'];
+                    context.showFields = ['name', 'description', 'ip', 'status', 'area', 'device_type', 'notes'];
                     context.nameView = 'name';
                     context.config = {title: 'Dispositivos registrados'};
                     context.add_new = true;

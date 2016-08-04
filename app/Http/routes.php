@@ -58,4 +58,5 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/settings', 'SettingsController');
 
     Route::get('/monitor/list_status', "MonitoringController@list_status");
+    Route::get('/monitor/scan_ports', "MonitoringController@scan_ports");
 });

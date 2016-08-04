@@ -36,12 +36,14 @@
 <!-- Angular dependences -->
 <script src="app/js/moment.min.js"></script>
 <script src="app/js/complemenrts/locale-es.js"></script>
+<script src="app/js/highcharts.src.js"></script>
 <script src="app/js/angular.min.js"></script>
 <script src="app/js/angular-moment.min.js"></script>
 <script src="app/js/angular-animate.min.js"></script>
 <script src="app/js/angular-sanitize.min.js"></script>
 <script src="app/js/angular-toastr.tpls.js"></script>
 <script src="app/js/angular-resource.min.js"></script>
+<script src="app/js/highcharts-ng.min.js"></script>
 <script src="app/js/ui-bootstrap-tpls-2.0.1.min.js"></script>
 <script src="app/js/app.js"></script>
 
