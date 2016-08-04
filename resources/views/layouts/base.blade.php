@@ -35,8 +35,11 @@
 
 <!-- Angular dependences -->
 <script src="app/js/moment.min.js"></script>
+<script src="app/js/complemenrts/locale-es.js"></script>
 <script src="app/js/angular.min.js"></script>
 <script src="app/js/angular-moment.min.js"></script>
+<script src="app/js/angular-animate.min.js"></script>
+<script src="app/js/angular-sanitize.min.js"></script>
 <script src="app/js/angular-toastr.tpls.js"></script>
 <script src="app/js/angular-resource.min.js"></script>
 <script src="app/js/ui-bootstrap-tpls-2.0.1.min.js"></script>
@@ -48,7 +51,9 @@
 <script src="app/js/services/ApiService.js"></script>
 <!-- directives -->
 <script src="app/js/directives/CrudGenerator.js"></script>
+<!-- filtes -->
 <script src="app/js/filters/CrudFilter.js"></script>
+<script src="app/js/filters/momentdate.js"></script>
 
 <!-- Angular Scripts -->
 @yield('angular-scripts')

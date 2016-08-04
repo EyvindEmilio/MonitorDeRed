@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc filter
- * @name planillasEmiApp.filter:momentDate
+ * @name Monitor.filter:momentDate
  * @function
  * @description
  * # momentDate
- * Filter in the planillasEmiApp.
+ * Filter in the Monitor.
  */
-angular.module('planillasApp')
+angular.module('Monitor')
     .filter('ingenieria', function () {
         return function (mom) {
             return mom.replace('Ingenieria', 'ING.');

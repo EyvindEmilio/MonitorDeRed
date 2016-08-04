@@ -246,51 +246,6 @@ angular.module('Monitor')
                     var bindText = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
                     compile_text(bindText);
                 }
-
-                //if (scope.itemCrud && scope.itemCrud.model) {
-                //    if ((scope.itemCrud.type === 'select' && scope.itemCrud.multiple) || scope.itemCrud['custom']) {
-                //        /*if (angular.isFunction(scope.itemCrud.model_label)) {
-                //         scope.itemCrud.model_label(scope.itemCrudModel[scope.itemCrud.name]).then(function (_text) {
-                //         text = _text;
-                //         compile_text(element, text, scope.itemCrudModel);
-                //         }, function () {
-                //         text = "--";
-                //         compile_text(element, text, scope.itemCrudModel);
-                //         });
-                //         }*/
-                //    } else {
-                //        var bindText = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
-                //        compile_text(bindText);
-                //        /*
-                //         (new scope.itemCrud.model.resource()).$get(
-                //         {id: scope.itemCrudModel[scope.itemCrud.name]}
-                //         ).then(function (data) {
-                //         scope.itemCrud.model.dataResponse = data;
-                //         text = scope.itemCrud.model.dataResponse[scope.itemCrud.model.nameView];
-                //         compile_text(element, text, scope.itemCrudModel);
-                //         });
-                //         */
-                //    }
-                //} else {
-                //    if (scope.itemCrud && scope.itemCrud.choices) {
-                //        var textChoice = "";
-                //        for (var i = 0; i < scope.itemCrud.choices.length && !textChoice; i++) {
-                //            if (scope.itemCrud.choices[i].value === scope.itemCrudModel[scope.itemCrud.name]) {
-                //                textChoice = scope.itemCrud.choices[i].label;
-                //            }
-                //        }
-                //        compile_text(textChoice);
-                //    } else {
-                //        if (scope.itemCrud.name === 'image' && scope.itemCrudModel[scope.itemCrud.name]) {
-                //            var imgSrc = scope.itemCrudModel[scope.itemCrud.name] || 'images/no-img-available.png';
-                //            var imageTemplate = '<img src="' + imgSrc + '" width="' + (scope.itemCrud.width || 80) + '" height="' + (scope.itemCrud.height || 80) + '">';
-                //            compile_text(imageTemplate);
-                //        } else {
-                //            var bindText = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
-                //            compile_text(bindText);
-                //        }
-                //    }
-                //}
             }
         };
     })

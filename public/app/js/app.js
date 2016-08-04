@@ -11,8 +11,11 @@
 angular
     .module('Monitor', [
         'ngResource',
+        'ngAnimate',
+        'ngSanitize',
         'ui.bootstrap',
-        'angularMoment'
+        'angularMoment',
+        'toastr'
     ])
     .config(function ($httpProvider) {
 

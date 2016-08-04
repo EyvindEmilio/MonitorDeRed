@@ -2,9 +2,9 @@
 
 namespace App;
 
-class user_type_model extends ApiBaseModel
+class AreasModel extends ApiBaseModel
 {
-    protected $table = 'users_types';
+    protected $table = 'areas';
     public $timestamps = false;
 
     protected $fillable = [

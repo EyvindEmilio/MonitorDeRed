@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc filter
- * @name planillasEmiApp.filter:mountCurrency
+ * @name Monitor.filter:mountCurrency
  * @function
  * @description
  * # mountCurrency
- * Filter in the planillasEmiApp.
+ * Filter in the Monitor.
  */
-angular.module('planillasApp')
+angular.module('Monitor')
     .filter('mountC', function () {
         return function (mount) {
             if (mount) {

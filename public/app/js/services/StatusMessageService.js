@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc service
- * @name planillasApp.StatusMessage
+ * @name Monitor.StatusMessage
  * @description
  * # StatusMessage
  * Service in the planillasApp.
  */
-angular.module('planillasApp')
+angular.module('Monitor')
     .service('StatusMessageService', function () {
 
         function showResolve() {

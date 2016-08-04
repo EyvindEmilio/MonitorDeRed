@@ -59,9 +59,9 @@ angular.module('Monitor')
                 angular.forEach(config, function (value, key) {
                     context[key] = value;
                 });
-                context.extra_query_params = config.query_params || {};
-                context.default_fields = config.default_fields || {};
-                context.disabled_fields = config.disabled_fields || {};
+                context.extra_query_params = config.query_params || [];
+                context.default_fields = config.default_fields || [];
+                context.disabled_fields = config.disabled_fields || [];
             }
         };
 
@@ -80,6 +80,95 @@ angular.module('Monitor')
                     context.add_new = false;
                     context.delete = false;
                     context.editable = false;
+                    context.searchEnabled = true;
+                }, config
+            );
+        };
+
+        var Areas = function (config) {
+            return new BaseModel(function (context) {
+                    context.id_name = 'id';
+                    context.resource = $API.Areas;
+                    context.fields = [
+                        {label: 'Nombre', name: 'name', type: 'string', required: true},
+                        {label: 'Descripcion', name: 'description', type: 'string', required: true}
+                    ];
+                    context.showFields = ['name', 'description'];
+                    context.nameView = 'name';
+                    context.config = {title: 'Areas de trabajo'};
+                    context.add_new = true;
+                    context.delete = true;
+                    context.editable = true;
+                    context.searchEnabled = true;
+                }, config
+            );
+        };
+
+        var DeviceTypes = function (config) {
+            return new BaseModel(function (context) {
+                    context.id_name = 'id';
+                    context.resource = $API.DeviceTypes;
+                    context.fields = [
+                        {label: 'Nombre', name: 'name', type: 'string', required: true},
+                        {label: 'Descripcion', name: 'description', type: 'string', required: true},
+                        {label: 'Fabricante', name: 'manufacturer', type: 'string', required: true}
+                    ];
+                    context.showFields = ['name', 'description', 'manufacturer'];
+                    context.nameView = 'name';
+                    context.config = {title: 'Tipos de dispositivos'};
+                    context.add_new = true;
+                    context.delete = true;
+                    context.editable = true;
+                    context.searchEnabled = true;
+                }, config
+            );
+        };
+
+        var Devices = function (config) {
+            return new BaseModel(function (context) {
+                    context.id_name = 'id';
+                    context.resource = $API.Devices;
+                    context.fields = [
+                        {label: 'Nombre', name: 'name', type: 'string', required: true},
+                        {label: 'Descripcion', name: 'description', type: 'string', required: true},
+                        {
+                            label: 'Estado',
+                            name: 'status',
+                            type: 'selecto',
+                            choices: [{value: 'Y', label: 'Activo'}, {value: 'N', label: 'Inactivo'}],
+                            required: true
+                        },
+                        {
+                            label: 'Area',
+                            name: 'area',
+                            type: 'select',
+                            model: new Areas(),
+                            required: true,
+                            custom: function (data) {
+                                return data.name
+                            }
+                        },
+                        {
+                            label: 'Tipo de dispositivo',
+                            name: 'device_type',
+                            type: 'select',
+                            model: new DeviceTypes(),
+                            required: true, custom: function (data) {
+                            return data.name;
+                        }
+                        },
+                        {label: 'Notas', name: 'notes', type: 'string', required: false}
+                    ];
+                    context.extra_fields = [{label: 'Fecha de registro', name: 'created_at'}, {
+                        label: 'Ultima modificacion',
+                        name: 'updated_at'
+                    }];
+                    context.showFields = ['name', 'description', 'status', 'area', 'device_type', 'notes'];
+                    context.nameView = 'name';
+                    context.config = {title: 'Dispositivos registrados'};
+                    context.add_new = true;
+                    context.delete = true;
+                    context.editable = true;
                     context.searchEnabled = true;
                 }, config
             );
@@ -130,6 +219,9 @@ angular.module('Monitor')
 
         return {
             UsersTypes: UsersTypes,
+            Areas: Areas,
+            DeviceTypes: DeviceTypes,
+            Devices: Devices,
             Users: Users
         };
     });

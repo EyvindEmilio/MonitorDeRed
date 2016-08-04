@@ -13,23 +13,18 @@
 
 Route::get('/', ['middleware' => 'auth', 'uses' => function () {
     $list = shell_exec('nmap -sP 192.168.1.*');
-    //echo '<pre>';
-    //print_r($list);
-    // echo '</pre>';
-
     $list = explode(PHP_EOL, $list);
-    //echo sizeof($list);
 
     $pc = array();
-    for ($index = 2; $index < sizeof($list) - 3; $index += 3) {
-        $mac_list = explode(' ', $list[$index + 2]);
+    for ($index = 2; $index < sizeof($list) - 4; $index += 3) {
+        $first_line = explode(' ', $list[$index + 2], 4);
+        $mac = $first_line[2];
+        $manufacturer = $first_line[3];
 
-        $mac_list = $mac_list[2];
+        $second_line = explode(' ', $list[$index]);
+        $ip = $second_line[4];
 
-        $ip_list = explode(' ', $list[$index]);
-        $ip_list = $ip_list[4];
-
-        array_push($pc, ['mac' => $mac_list, 'ip' => $ip_list]);
+        array_push($pc, ['mac' => $mac, 'ip' => $ip, 'manufacturer' => $manufacturer]);
     }
 
 
@@ -43,6 +38,20 @@ Route::get('/home', 'HomeController@index');
 Route::resource('/users', 'UsersController');
 Route::resource('/users_types', 'UsersTypesController');
 
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/devices', function () {
+        return view('devices_and_areas.devices');
+    });
+    Route::get('/device_types', function () {
+        return view('devices_and_areas.device_types');
+    });
+    Route::get('/areas', function () {
+        return view('devices_and_areas.areas');
+    });
+    Route::get('/settings', function () {
+        return view('settings');
+    });
+});
 /*
  *
  * Api RestFull Services
@@ -53,4 +62,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     /** @noinspection PhpUndefinedClassInspection */
     Route::resource('/usersTypes', 'UsersTypesController');
     Route::resource('/users', 'UsersController');
+    Route::resource('/areas', 'AreasController');
+    Route::resource('/device_types', 'DeviceTypesController');
+    Route::resource('/devices', 'DevicesController');
 });

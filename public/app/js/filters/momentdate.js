@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc filter
- * @name planillasEmiApp.filter:momentDate
+ * @name Monitor.filter:momentDate
  * @function
  * @description
  * # momentDate
- * Filter in the planillasEmiApp.
+ * Filter in the Monitor.
  */
-angular.module('planillasApp')
+angular.module('Monitor')
     .filter('momentDate', function () {
         return function (mom, opt1) {
             var m = moment(mom);

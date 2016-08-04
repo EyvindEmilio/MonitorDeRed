@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $this->call(users_types_seed::class);
         $this->call(users_seed::class);
+        $this->call(areas::class);
+        $this->call(device_types::class);
+        $this->call(devices::class);
+        $this->call(settings::class);
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

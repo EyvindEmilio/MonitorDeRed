@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc filter
- * @name Monitopr.filter:CrudFilter
+ * @name Monitor.filter:CrudFilter
  * @function
  * @description
  * # CrudFilter

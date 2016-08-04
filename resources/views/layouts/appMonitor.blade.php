@@ -199,10 +199,10 @@
             <div class="top-nav clearfix">
                 <!--search & user info start-->
                 <ul class="nav pull-right top-menu">
-                    {{--<li>
-                        <input type="text" class="form-control search" placeholder=" Search">
-                    </li>--}}
-                    <!-- user login dropdown start-->
+                {{--<li>
+                    <input type="text" class="form-control search" placeholder=" Search">
+                </li>--}}
+                <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <img alt="" src="images/avatar1_small.jpg">
@@ -211,7 +211,7 @@
                         </a>
                         <ul class="dropdown-menu extended logout">
                             <li><a href=""><i class=" fa fa-suitcase"></i>Perfil de usuario</a></li>
-                            <li><a href=""><i class="fa fa-cog"></i> Configuracion</a></li>
+                            <li><a href="{{ url('/settings') }}"><i class="fa fa-cog"></i> Configuracion</a></li>
                             <li><a href="/logout"><i class="fa fa-key"></i> Salir</a></li>
                         </ul>
                     </li>
@@ -235,19 +235,48 @@
                         </li>
                         <li class="sub-menu">
                             <a href="javascript:;"
-                               class="{{ (Request::is('users')||Request::is('users/create')||Request::is('users_types'))?'active':'' }}">
-                                <i class="fa fa-laptop"></i>
+                               class="{{ (Request::is('users')||Request::is('users_types'))?'active':'' }}">
+                                <i class="fa fa-users"></i>
                                 <span>Usuarios</span>
                             </a>
                             <ul class="sub">
-                                <li class="{{ (Request::is('users'))?'active':'' }}"><a href="{{ url('/users') }}">Usuarios
-                                        registrados</a></li>
-                                <li class="{{ (Request::is('users/create'))?'active':'' }}"><a
-                                            href="{{ url('/users/create') }}">Registrar usuario</a></li>
-                                <li class="{{ (Request::is('users_types'))?'active':'' }}"><a
-                                            href="{{ url('/users_types') }}">Tipos de usuarios</a></li>
+                                <li class="{{ (Request::is('users'))?'active':'' }}">
+                                    <a href="{{ url('/users') }}">Usuarios registrados</a>
+                                </li>
+                                <li class="{{ (Request::is('users_types'))?'active':'' }}">
+                                    <a href="{{ url('/users_types') }}">Tipos de usuarios</a>
+                                </li>
                             </ul>
                         </li>
+
+                        <li class="sub-menu">
+                            <a href="javascript:;"
+                               class="{{ (Request::is('devices')||Request::is('device_types')||Request::is('areas'))?'active':'' }}">
+                                <i class="fa fa-laptop"></i>
+                                <span>Dispositivos y Areas</span>
+                            </a>
+                            <ul class="sub">
+                                <li class="{{ (Request::is('devices'))?'active':'' }}">
+                                    <a href="{{ url('/devices') }}">Dispositivos</a>
+                                </li>
+
+                                <li class="{{ (Request::is('device_types'))?'active':'' }}">
+                                    <a href="{{ url('/device_types') }}">Tipos de dispositivos</a>
+                                </li>
+
+                                <li class="{{ (Request::is('areas'))?'active':'' }}">
+                                    <a href="{{ url('/areas') }}">Areas</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a class="{{ (Request::is('/settings'))?'active':'' }}" href="{{ url('/settings') }}">
+                                <i class="fa fa-shield"></i>
+                                <span>Configuracion</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
                 <!-- sidebar menu end-->
