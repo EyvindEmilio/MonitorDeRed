@@ -15,6 +15,7 @@
     <link href="{{ asset('js/jvector-map/jquery-jvectormap-1.2.2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/clndr.css') }}" rel="stylesheet">
     <link href="{{ asset('js/css3clock/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('app/styles/angular-toastr.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('js/morris-chart/morris.css') }}">
 
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -36,6 +37,7 @@
 <script src="app/js/moment.min.js"></script>
 <script src="app/js/angular.min.js"></script>
 <script src="app/js/angular-moment.min.js"></script>
+<script src="app/js/angular-toastr.tpls.js"></script>
 <script src="app/js/angular-resource.min.js"></script>
 <script src="app/js/ui-bootstrap-tpls-2.0.1.min.js"></script>
 <script src="app/js/app.js"></script>
