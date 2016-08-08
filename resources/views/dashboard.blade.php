@@ -1,7 +1,7 @@
 @extends('layouts.appMonitor')
 
 @section('main-content')
-    <div class="col-md-6">
+    <div class="col-md-12">
         <section class="panel">
             <div class="panel-heading"> Uso de la red</div>
             <div class="panel-body">
@@ -11,13 +11,13 @@
             </div>
         </section>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-7">
         <section class="panel">
             <div class="panel-heading"> Dispositivos
                 <img src="images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_list_status">
             </div>
             <div class="panel-body">
-                <table class="table table-bordered table-striped table-condensed table-hover cf">
+                <table class="table table-bordered table-striped table-condensed table-hover cf small">
                     <thead class="cf">
                     <tr>
                         <th>#</th>
@@ -49,14 +49,14 @@
             </div>
         </section>
     </div>
-    <span class="clearfix"></span>
-    <div class="col-md-4">
+
+    <div class="col-md-5">
         <section class="panel">
             <div class="panel-heading"> Escaneo de dispositvo @{{pc_scanned.name}}
                 <img src="images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_scan_device">
             </div>
             <div class="panel-body">
-                <table class="table table-bordered table-striped table-condensed cf">
+                <table class="table table-bordered table-striped table-condensed cf small">
                     <thead class="cf">
                     <tr>
                         <th>#</th>

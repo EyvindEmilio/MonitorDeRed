@@ -35,7 +35,7 @@
                         <div class="form-group">
                             <label class="col-md-2">Tiempo de verificaion de red</label>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" min="30" max="500" placeholder="En segundos"
+                                <input type="number" class="form-control" min="2" max="500" placeholder="En segundos"
                                        required ng-model="settings.time_check_network">
                             </div>
                         </div>

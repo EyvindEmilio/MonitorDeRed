@@ -56,6 +56,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/device_types', 'DeviceTypesController');
     Route::resource('/devices', 'DevicesController');
     Route::resource('/settings', 'SettingsController');
+    Route::resource('/nmap/all_scan', 'NmapAllScanController');
 
     Route::get('/monitor/list_status', "MonitoringController@list_status");
     Route::get('/monitor/scan_ports', "MonitoringController@scan_ports");
