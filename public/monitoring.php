@@ -40,6 +40,25 @@ if ($mask == 8) {
     $ip_scan = $network_address;
 }
 
+
+$list = "
+Starting Nmap 7.01 ( https://nmap.org ) at 2016-08-10 15:26 EDT
+Nmap scan report for 192.168.43.1
+Host is up (0.024s latency).
+MAC Address: 44:74:6C:B3:DE:C4 (Sony Mobile Communications AB)
+Nmap scan report for EyvindTC (192.168.43.85)
+Host is up (0.00012s latency).
+MAC Address: 7C:DD:90:69:02:6F (Shenzhen Ogemray Technology)
+Nmap scan report for 192.168.43.102
+Host is up (0.12s latency).
+MAC Address: 68:5D:43:D9:27:77 (Intel Corporate)
+Nmap scan report for Adriana (192.168.43.213)
+Host is up (0.071s latency).
+MAC Address: 68:5D:43:D9:27:77 (Intel Corporate)
+Nmap scan report for kali (192.168.43.131)
+Host is up.
+Nmap done: 256 IP addresses (5 hosts up) scanned in 16.08 seconds
+";
 $list = shell_exec('nmap -sP ' . $ip_scan);
 $list = explode(PHP_EOL, $list);
 
@@ -58,14 +77,19 @@ for ($index = 2; $index < sizeof($list) - 4; $index += 3) {
     $latency = str_replace("(", "", $latency);
     $latency = str_replace("s", "", $latency);
 
-    $second_line = explode(' ', $list[$index]);
-    $ip = $second_line[4];
+    $second_line = $list[$index];
+    //$ip = $second_line[4];
+
+    //print_r($second_line);
+    preg_match_all('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $second_line, $ip_matches);
+    //print_r($ip_matches);
+    //echo "<br>";
+    $ip = (sizeof($ip_matches) > 0) ? $ip_matches[0][0] : "-- unknown --";
 
     array_push($pc, ['mac' => $mac, 'ip' => $ip, 'manufacturer' => $manufacturer, 'latency' => $latency]);
 
     $sql = 'INSERT INTO nmap_all_scan (ip, mac, latency, manufacturer) VALUES ("' . $ip . '","' . $mac . '","' . $latency . '","' . $manufacturer . '");';
     mysqli_query($CONN, $sql);
 }
-
-print_r($pc);
+echo "<h1>SERVICIO EJECUTADO</h1>";
 mysqli_close($CONN);
