@@ -22,7 +22,12 @@ Route::resource('/users_types', 'UsersTypesController');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
-        return view('dashboard', ['settings' => $settings]);
+        return view('dashboard/monitor', ['settings' => $settings]);
+    });
+
+    Route::get('/dashboard/attacks', function () {
+        $settings = \App\SettingsModel::find(1)->toArray();
+        return view('dashboard/attacks', ['settings' => $settings]);
     });
 
     Route::get('/devices', function () {
@@ -60,4 +65,5 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
 
     Route::get('/monitor/list_status', "MonitoringController@list_status");
     Route::get('/monitor/scan_ports', "MonitoringController@scan_ports");
+    Route::get('/monitor/denial_service', "MonitoringController@getDenialOfService");
 });

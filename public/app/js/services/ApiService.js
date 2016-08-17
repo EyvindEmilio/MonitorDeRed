@@ -10,6 +10,7 @@
 angular.module('Monitor')
     .service('$API', function ($q, $resource) {
         var api_url = localStorage.getItem('monitor_api');
+        var base_url = (api_url || '') + '/api/';
         var base_url = (api_url || '') + 'api/';
 
         function getModelResource(url) {

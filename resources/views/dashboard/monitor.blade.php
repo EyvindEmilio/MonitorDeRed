@@ -14,7 +14,7 @@
     <div class="col-md-7">
         <section class="panel">
             <div class="panel-heading"> Dispositivos
-                <img src="images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_list_status">
+                <img src="../../../public/images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_list_status">
             </div>
             <div class="panel-body">
                 <table class="table table-bordered table-striped table-condensed table-hover cf small">
@@ -53,7 +53,7 @@
     <div class="col-md-5">
         <section class="panel">
             <div class="panel-heading"> Escaneo de dispositvo @{{pc_scanned.name}}
-                <img src="images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_scan_device">
+                <img src="/images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_scan_device">
             </div>
             <div class="panel-body">
                 <table class="table table-bordered table-striped table-condensed cf small">

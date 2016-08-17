@@ -61,6 +61,38 @@ class MonitoringController extends BaseController
 
     }
 
+    public function getDenialOfService()
+    {
+        $data = file(public_path() . "/capture.txt", FILE_SKIP_EMPTY_LINES);
+
+        $capture = array();
+
+        for ($i = 0; $i < sizeof($data); $i++) {
+            $info = array();
+            $line = explode(' ', $data[$i]);
+            $info['date'] = $line[0];
+            $info['src'] = array();
+            $info['dst'] = array();
+
+            $ip_port = explode('.', $line[2]);
+            $info['src']['ip'] = $ip_port[0] . '.' . $ip_port[1] . '' . $ip_port[2] . '' . $ip_port[3];
+            $info['src']['port'] = $ip_port[4];
+
+            $ip_port = explode('.', $line[4]);
+            $info['dst']['ip'] = $ip_port[0] . '.' . $ip_port[1] . '' . $ip_port[2] . '' . $ip_port[3];;
+            $info['dst']['port'] = $ip_port[4];
+
+            $info['size'] = intval($line[6]);
+            if ($info['size'] != 0 || $info['size'] != '0' || $info['size'] != '0\n') {
+                $info['size'] /= 1024.0;
+                $info['size'] = round($info['size'], 3);
+                array_push($capture, $info);
+            }
+        }
+
+        return Response::create($capture);
+    }
+
     public function getInfo($IP)
     {
         return 2;

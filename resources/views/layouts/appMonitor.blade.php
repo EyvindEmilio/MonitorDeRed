@@ -217,6 +217,24 @@
                             </a>
                         </li>
 
+
+                        <li class="sub-menu">
+                            <a href="javascript:;" class="active">
+                                <i class="fa fa-laptop"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <ul class="sub">
+                                <li class="{{ (Request::is('/'))?'active':'' }}">
+                                    <a href="{{ url('/') }}">Monitor</a>
+                                </li>
+
+                                <li class="{{ (Request::is('/dashboard/attacks'))?'active':'' }}">
+                                    <a href="{{ url('/dashboard/attacks') }}">Ataques</a>
+                                </li>
+                            </ul>
+                        </li>
+
+
                         <li>
                             <a class="{{ (Request::is('standard'))?'active':'' }}" href="{{ url('/standard') }}">
                                 <i class="fa fa-legal"></i>
