@@ -33,7 +33,7 @@
     <div class="col-md-7">
         <section class="panel">
             <div class="panel-heading">
-                Captura de paquetes <a href="" ng-click="show_capture()"> (presione aqui)</a>
+                Captura de paquetes (últimos)<a href="" ng-click="show_capture()"> (presione aqui)</a>
             </div>
             <div class="panel-body">
                 <table class="table table-bordered table-striped table-condensed cf small">
@@ -48,44 +48,9 @@
                     <tbody>
                     <tr ng-repeat="cap in data_capture">
                         <td ng-bind="$index+1"></td>
-                        <td ng-bind="cap.src.ip+':'+cap.src.port"></td>
-                        <td ng-bind="cap.dst.ip+':'+cap.dst.port"></td>
+                        <td ng-bind="cap.src.ip+' : '+cap.src.port"></td>
+                        <td ng-bind="cap.dst.ip+' : '+cap.dst.port"></td>
                         <td ng-bind="cap.size+' kb'"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <div class="col-md-5">
-        <section class="panel">
-            <div class="panel-heading"> Escaneo de dispositvo @{{pc_scanned.name}}
-                <img src="images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_scan_device">
-            </div>
-            <div class="panel-body">
-                <table class="table table-bordered table-striped table-condensed cf small">
-                    <thead class="cf">
-                    <tr>
-                        <th>#</th>
-                        <th>Puerto</th>
-                        <th>Tipo</th>
-                        <th>Estado</th>
-                        <th>Servicio</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="pc_scan in pc_scanned.list_ports">
-                        <td ng-bind="$index +1 "></td>
-                        <td ng-bind="pc_scan.port" class="text-right"></td>
-                        <td ng-bind="pc_scan.type"></td>
-                        <td>
-                            <button class="btn btn-xs btn-@{{pc_scan.status=='open'?'success':'danger'}}"
-                                    style="width: 100%">
-                                @{{pc_scan.status=='open'?'Abierto':'Cerrado'}}
-                            </button>
-                        </td>
-                        <td ng-bind="pc_scan.service"></td>
                     </tr>
                     </tbody>
                 </table>

@@ -67,7 +67,7 @@ class MonitoringController extends BaseController
 
         $capture = array();
 
-        for ($i = 0; $i < sizeof($data); $i++) {
+        for ($i = ((sizeof($data) > 100) ? ( sizeof($data) - 100) : 0); $i < sizeof($data); $i++) {
             $info = array();
             $line = explode(' ', $data[$i]);
             $info['date'] = $line[0];

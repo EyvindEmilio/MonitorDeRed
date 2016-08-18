@@ -1,6 +1,8 @@
 @extends('layouts.appMonitor')
 
 @section('main-content')
+
+
     <div class="col-md-12">
         <section class="panel">
             <div class="panel-heading"> Uso de la red</div>
@@ -14,7 +16,8 @@
     <div class="col-md-7">
         <section class="panel">
             <div class="panel-heading"> Dispositivos
-                <img src="../../../public/images/gif_loader.gif" width="20" class="pull-right" ng-show="!finish_loading_list_status">
+                <img src="../../../public/images/gif_loader.gif" width="20" class="pull-right"
+                     ng-show="!finish_loading_list_status">
             </div>
             <div class="panel-body">
                 <table class="table table-bordered table-striped table-condensed table-hover cf small">
@@ -87,8 +90,13 @@
 
 @endsection
 @section('angular-scripts')
+    <script src="/js/socket.io.js"></script>
+
     <script type="text/javascript">
         angular.module('Monitor').run(function ($rootScope, $API, $resource, $http, $interval, toastr) {
+
+            var socket = io.connect('http://192.168.1.20:8890');
+
             $rootScope.finish_loading_list_status = false;
             $rootScope.pcs = [];
 
@@ -108,7 +116,7 @@
                                     list_pcs_for_monitoring.push($rootScope.pcs[i]);
                                 }
                             }
-                            $rootScope.verify_pc_scan_monitoring(list_pcs_for_monitoring);
+                            //$rootScope.verify_pc_scan_monitoring(list_pcs_for_monitoring);
                         });
             };
 
@@ -136,7 +144,11 @@
                     $rootScope.finish_loading_scan_device = true;
                 }
             };
-
+            Highcharts.setOptions({
+                global: {
+                    //        useUTC: false
+                }
+            });
             $rootScope.chart_monitor = {
                 options: {
                     chart: {
@@ -144,22 +156,28 @@
                         heiht: 100
                     }
                 },
-                series: [],
+                series: [{
+                    data: []
+                }],
                 title: {
                     text: 'Monitoreo de red'
                 },
                 xAxis: {
                     title: {text: 'Seg'},
-                    min: 0,
-                    max: 60,
-                    lineWidth: 1
+                    lineWidth: 1,
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        minute: '%H:%M'
+                    },
+                    tickInterval: 1000,
+                    gridLineWidth: 1,
                 },
                 yAxis: {
                     title: {
                         text: 'Tasa (kbps)'
                     },
                     min: 0,
-                    max: 100
+                    max: 10
                 }
             };
 
@@ -167,32 +185,50 @@
                 $rootScope.chart_monitor.series.push(series_array_name);
             };
 
-            $rootScope.verify_pc_scan_monitoring = function (list_pcs) {
-//                for demo
-                for (var i = 0; i < list_pcs.length; i++) {
-                    var exist_pc = false;
-                    var index_exist_pc = 0;
-                    for (var j = 0; j < $rootScope.chart_monitor.series.length; j++) {
-                        if ($rootScope.chart_monitor.series[j].name == list_pcs[i].name) {
-                            exist_pc = true;
-                            index_exist_pc = j;
-                            break;
-                        }
-                    }
-
-                    if (!exist_pc) {
-                        $rootScope.chart_monitor.series.push({
-                            data: [{
-                                x: 1,
-                                y: Math.random() * 100
-                            }],
-                            name: list_pcs[i].name
-                        });
-                    } else {
-                        $rootScope.chart_monitor.series[j].data.push({x: 2, y: Math.random() * 100})
+            function getNameFromIp(ip) {
+                var pcs = $rootScope.pcs;
+                var ip_name = false;
+                for (var index = 0; index < pcs.length; index++) {
+                    if (pcs[index].ip == ip) {
+                        ip_name = pcs[index].name;
                     }
                 }
-            };
+                return name;
+            }
+
+            socket.on('captured_packets', function (data) {
+                console.log(data);
+                if ($rootScope.pcs.length <= 0) {
+                    return;
+                }
+
+                var packet_received = data;
+                var exist_pc = false;
+                var index_exist_pc = 0;
+                for (var j = 0; j < $rootScope.chart_monitor.series.length; j++) {
+                    if ($rootScope.chart_monitor.series[j].ip == packet_received.dst.ip) {
+                        exist_pc = true;
+                        index_exist_pc = j;
+                        break;
+                    }
+                }
+
+                if (!exist_pc) {
+                    $rootScope.chart_monitor.series.push({
+                        data: [[(new Date(data.date)).getTime(), data.size]],
+                        name: getNameFromIp(data.dst.ip) || data.dst.ip,
+                        ip: data.dst.ip
+                    });
+                } else {
+                    $rootScope.chart_monitor.series[index_exist_pc].data.push([(new Date(data.date)).getTime(), data.size]);
+                }
+
+                //$rootScope.chart_monitor.redraw();
+            });
+
         });
     </script>
 @endsection
+
+
+
