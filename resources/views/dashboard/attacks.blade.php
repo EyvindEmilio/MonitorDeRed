@@ -3,31 +3,7 @@
 @section('main-content')
     <div class="col-md-12">
         <section class="panel">
-            <div class="panel-heading"> Ataques detectados</div>
-            <div class="panel-body">
-                <table class="table table-bordered table-striped table-condensed cf small">
-                    <thead class="cf">
-                    <tr>
-                        <th>#</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Origen</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Denegacion de servicios</td>
-                        <td>--</td>
-                        <td>
-                            <button class="btn btn-xs  btn-warning">Alerta</button>
-                        </td>
-                        <td>192.168.1.1</td>
-                    </tr>
-                </table>
-            </div>
+            <div crud-directive="model_alerts"></div>
         </section>
     </div>
     <div class="col-md-7">
@@ -61,8 +37,11 @@
 @endsection
 @section('angular-scripts')
     <script type="text/javascript">
-        angular.module('Monitor').run(function ($rootScope, $API, $resource, $http, $interval, toastr) {
+        angular.module('Monitor').run(function ($rootScope, $API, $resource, $http, $interval, toastr, ModelService) {
             $rootScope.data_capture = {};
+            $rootScope.model_alerts = new ModelService.Alerts();
+
+
             $rootScope.show_capture = function () {
                 $http.get('/' + $API.path + 'monitor/denial_service')
                         .then(function (data) {

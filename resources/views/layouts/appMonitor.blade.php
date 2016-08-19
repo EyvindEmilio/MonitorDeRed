@@ -211,12 +211,12 @@
                 <!-- sidebar menu start-->
                 <div class="leftside-navigation">
                     <ul class="sidebar-menu" id="nav-accordion">
-                        <li>
+                   {{--     <li>
                             <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
                                 <i class="fa fa-dashboard"></i>
                                 <span>Dashboard</span>
                             </a>
-                        </li>
+                        </li>--}}
 
 
                         <li class="sub-menu">
@@ -229,8 +229,8 @@
                                     <a href="{{ url('/') }}">Monitor</a>
                                 </li>
 
-                                <li class="{{ (Request::is('/dashboard/attacks'))?'active':'' }}">
-                                    <a href="{{ url('/dashboard/attacks') }}">Ataques</a>
+                                <li class="{{ (Request::is('/attacks'))?'active':'' }}">
+                                    <a href="{{ url('/attacks') }}">Ataques</a>
                                 </li>
                             </ul>
                         </li>
@@ -320,6 +320,24 @@
 
             $rootScope.GLOBALS.alert_number_pc_inactive = 0;
 
+            function removeAlert(name) {
+                for (var i = 0; i < $rootScope.GLOBALS.alerts.length; i++) {
+                    if ($rootScope.GLOBALS.alerts[i].name == name) {
+                        $rootScope.GLOBALS.alerts.splice(i, 1);
+                    }
+                }
+                $rootScope.$apply();
+            }
+
+            socket.on('alert_denial_service', function (data) {
+                console.log('denial');
+                removeAlert('alert_denial_service');
+                $rootScope.GLOBALS.alerts.push({
+                    name: 'alert_denial_service',
+                    message: 'Se ha detectado, posible ataque de denegacion de servicios de ip: ' + data.ip + ' a en fecha:' + data.date.toString()
+                });
+                $rootScope.$apply();
+            });
             socket.on('active_pcs', function (data) {
                 $rootScope.GLOBALS.alert_number_pc_inactive = 0;
                 $rootScope.GLOBALS.active_pcs = data;
@@ -330,13 +348,6 @@
                     }
                 }
 
-                function removeAlert(name) {
-                    for (var i = 0; i < $rootScope.GLOBALS.alerts.length; i++) {
-                        if ($rootScope.GLOBALS.alerts[i].name == name) {
-                            $rootScope.GLOBALS.alerts.splice(i, 1);
-                        }
-                    }
-                }
 
                 removeAlert('inactive_pcs');
                 if ($rootScope.GLOBALS.alert_number_pc_inactive > 0) {

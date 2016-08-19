@@ -143,7 +143,8 @@
                             },
                             tickInterval: 1000,
                             gridLineWidth: 1,
-                            maxZoom: 60 * 1000,
+                            maxZoom: 30 * 1000,
+                            minZoom: 30 * 1000,
 //                            min: (new Date(moment().subtract(30, 'seconds'))).getUTCDate(),
 //                            max: (new Date(moment())).getUTCDate()
 
@@ -153,9 +154,7 @@
                                 text: 'Tasa (kbps)'
                             },
                             min: 0,
-                            max: 10,
-                            minPadding: 0.2,
-                            maxPadding: 0.2,
+                            max: 20,
                         }
                     };
 
@@ -174,14 +173,34 @@
                         return name;
                     }
 
+                    $rootScope.chart_monitor_tmp = {};
+                    $rootScope.chart_monitor_tmp.series = [];
+                    setInterval(function () {
+                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
+                        /*$rootScope.chart_monitor.series = [];
+                         for (var i = 0; i < $rootScope.chart_monitor_tmp.series.length; i++) {
+                         for (var j = 0; j < $rootScope.chart_monitor_tmp.series[i].data.length; j++) {
+                         //$rootScope.chart_monitor_tmp.series[i].data[j].x = (new Date()).getTime();
+                         }
+                         $rootScope.chart_monitor.series.push($rootScope.chart_monitor_tmp.series[i]);
+                         }
+
+                         $rootScope.chart_monitor_tmp.series = [];
+                         $rootScope.$apply();*/
+                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getTime();
+                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(30, 'seconds'))).getTime();
+                        $rootScope.$apply();
+                    }, 1000);
+
+
                     socket.on('captured_packets', function (data) {
                         console.log(data);
 
                         var packet_received = data;
                         var exist_pc = false;
                         var index_exist_pc = 0;
-                        for (var j = 0; j < $rootScope.chart_monitor.series.length; j++) {
-                            if ($rootScope.chart_monitor.series[j].ip == packet_received.dst.ip) {
+                        for (var j = 0; j < $rootScope.chart_monitor_tmp.series.length; j++) {
+                            if ($rootScope.chart_monitor_tmp.series[j].ip == packet_received.dst.ip) {
                                 exist_pc = true;
                                 index_exist_pc = j;
                                 break;
@@ -189,6 +208,7 @@
                         }
                         var pcs = $rootScope.GLOBALS.active_pcs.data;
                         var exist_in_list = false;
+                        if (pcs == 'undefined')return;
 
                         for (var index = 0; index < pcs.length; index++) {
                             if (packet_received.dst.ip == pcs[index].ip) {
@@ -200,33 +220,41 @@
                         }
 
                         if (!exist_pc) {
-                            $rootScope.chart_monitor.series.push({
-                                data: [{x: (new Date(data.date)).getTime(), y: data.size}],
+                            $rootScope.chart_monitor_tmp.series.push({
+                                data: [{x: (new Date()).getTime(), y: data.size}],
                                 name: getNameFromIp(data.dst.ip) || data.dst.ip,
                                 ip: data.dst.ip
                             });
                         } else {
-                            if ($rootScope.chart_monitor.series[index_exist_pc].data.length >= 60) {
-                                $rootScope.chart_monitor.series[index_exist_pc].data.splice(0, 1);
+                            if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length >= 60) {
+                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.splice(0, 1);
                             }
-                            $rootScope.chart_monitor.series[index_exist_pc].data.push({
-                                x: (new Date(data.date)).getTime(),
-                                y: data.size
-                            });
+                            console.log($rootScope.chart_monitor_tmp.series[index_exist_pc].data);
+                            if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length > 1 && new Date($rootScope.chart_monitor_tmp.series[index_exist_pc].data[$rootScope.chart_monitor_tmp.series[index_exist_pc].data.length - 2].x).getSeconds() != (new Date()).getSeconds()) {
+                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                                    x: (new Date()).getTime(),
+                                    y: data.size
+                                });
+                            } else if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length < 2) {
+                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                                    x: (new Date()).getTime(),
+                                    y: data.size
+                                });
+                            }
+
                             function sortFunction(a, b) {
                                 var dateA = new Date(a.x).getTime();
                                 var dateB = new Date(b.x).getTime();
                                 return dateA > dateB ? 1 : -1;
                             }
 
-//                            var array = [{id: 1, date: "Mar 12 2012 10:00:00 AM"},{id: 2, date: "Mar 28 2012 08:00:00 AM"}];
-//                            array.sort(sortFunction);​
-                            $rootScope.chart_monitor.series[index_exist_pc].data.sort(sortFunction);
+                            $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
                         }
 //                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getUTCDate();
 //                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(1, 'hour'))).getUTCDate();
 
                         //$rootScope.chart_monitor.redraw();
+//                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
                         $rootScope.$apply();
                     });
 
