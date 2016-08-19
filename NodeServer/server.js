@@ -75,7 +75,9 @@ connection.query('SELECT * from settings', function (err, rows, fields) {
     if (err) throw err;
     SETTINGS = rows[0];
     server.listen(8890);
-    start_monitoring();
+    setTimeout(function(){
+        start_monitoring();
+    },0);
     scan_network();
 });
 var number_attacks_denial_service = 0;
@@ -158,7 +160,9 @@ function start_monitoring() {
         cmd_monitoring.kill('SIGINT');
         cmd_monitoring.kill();
         console.log('Monitoring has stopped, Restarting..');
-        start_monitoring();
+        setTimeout(function(){
+            start_monitoring();
+        },0);
     }
 
     //noinspection JSUnresolvedVariable
