@@ -24,6 +24,7 @@ angular.module('Monitor')
         return {
             UsersTypes: getModelResource(base_url + 'usersTypes/:id/'),
             Areas: getModelResource(base_url + 'areas/:id/'),
+            Alerts: getModelResource('/' + base_url + 'alerts/:id/'),
             Settings: getModelResource(base_url + 'settings/:id/'),
             Devices: getModelResource(base_url + 'devices/:id/'),
             DeviceTypes: getModelResource(base_url + 'device_types/:id/'),

@@ -85,6 +85,27 @@ angular.module('Monitor')
             );
         };
 
+        var Alerts = function (config) {
+            return new BaseModel(function (context) {
+                    context.id_name = 'id';
+                    context.resource = $API.Alerts;
+                    context.fields = [
+                        {label: 'Tipo de ataque registado', name: 'type', type: 'string', required: true},
+                        {label: 'Direccion IP Origen', name: 'ip_src', type: 'string', required: true},
+                        {label: 'Direccion IP Destino', name: 'ip_dst', type: 'string', required: true}
+                    ];
+                    context.extra_fields = [{label: 'Fecha de incidente', name: 'created_at'}];
+                    context.showFields = ['type', 'ip_src', 'ip_dst'];
+                    context.nameView = 'type';
+                    context.config = {title: 'Alertas de ataques detectados'};
+                    context.add_new = false;
+                    context.delete = false;
+                    context.editable = false;
+                    context.searchEnabled = false;
+                }, config
+            );
+        };
+
         var Areas = function (config) {
             return new BaseModel(function (context) {
                     context.id_name = 'id';
@@ -223,6 +244,15 @@ angular.module('Monitor')
             Areas: Areas,
             DeviceTypes: DeviceTypes,
             Devices: Devices,
-            Users: Users
+            Users: Users,
+            Alerts: Alerts
         };
+    });
+
+angular.module('Monitor')
+    .service('SocketService', function ($API, $rootScope) {
+        var socket = io.connect('http://192.168.1.20:8890');
+        return {
+            socket: socket
+        }
     });

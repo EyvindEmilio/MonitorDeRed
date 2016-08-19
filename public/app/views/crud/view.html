@@ -24,7 +24,7 @@
                 <div class="input-group">
                       <span class="input-group-btn">
                         <button class="btn btn-default btn-sm" type="button"><span
-                            class="glyphicon glyphicon-search"></span>
+                                class="glyphicon glyphicon-search"></span>
                         </button>
                       </span>
                     <input type="text" class="form-control input-sm" placeholder="Buscar"
@@ -56,8 +56,8 @@
                                autocomplete="on">
                         <datalist id="{{'filter_' + filterField}}">
                             <option
-                                ng-repeat="result in (((Model.fields | filter:{name:filterField})[0]).dataFilter.data)"
-                                ng-value="result[filterField]">
+                                    ng-repeat="result in (((Model.fields | filter:{name:filterField})[0]).dataFilter.data)"
+                                    ng-value="result[filterField]">
                             </option>
                         </datalist>
                     </div>
@@ -66,7 +66,7 @@
                     <div class="form-group small">
                         <label style="opacity: 0">.</label><br>
                         <button class="btn btn-default btn-sm" type="submit"><span
-                            class="glyphicon glyphicon-search"></span>
+                                class="glyphicon glyphicon-search"></span>
                             Buscar
                         </button>
                     </div>
@@ -117,10 +117,10 @@
                 </tbody>
             </table>
             <div class="text-center">
-                <uib-pagination total-items="Model.dataResponse.total" items-per-page="paginationParams.page_size"
-                                ng-model="currentPage" class="pagination-sm" previous-text="Anterior"
-                                ng-change="changePage()"
-                                next-text="Siguiente"></uib-pagination>
+                <ul uib-pagination total-items="Model.dataResponse.total" items-per-page="paginationParams.page_size"
+                    ng-model="currentPage" class="pagination-sm" previous-text="Anterior"
+                    ng-change="changePage()"
+                    next-text="Siguiente"></ul>
             </div>
         </div>
         <hr>

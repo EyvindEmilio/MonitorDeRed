@@ -158,17 +158,18 @@
                     <li id="header_notification_bar" class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <i class="fa fa-bell-o"></i>
-                            <span class="badge bg-warning" ng-show="alert_number_pc_inactive">1</span>
+                            <span class="badge bg-warning" ng-show="GLOBALS.alerts.length>0"
+                                  ng-bind="GLOBALS.alerts.length"></span>
                         </a>
                         <ul class="dropdown-menu extended notification">
                             <li>
                                 <p>Alertas</p>
                             </li>
-                            <li ng-show="alert_number_pc_inactive">
+                            <li ng-repeat="alert in GLOBALS.alerts">
                                 <div class="alert alert-info clearfix">
                                     <span class="alert-icon"><i class="fa fa-bolt"></i></span>
                                     <div class="noti-info">
-                                        <a href="/"> Existen @{{alert_number_pc_inactive}} equipos inactivos</a>
+                                        <a href="" ng-bind="alert.message"></a>
                                     </div>
                                 </div>
                             </li>
@@ -210,12 +211,12 @@
                 <!-- sidebar menu start-->
                 <div class="leftside-navigation">
                     <ul class="sidebar-menu" id="nav-accordion">
-                        <li>
+                   {{--     <li>
                             <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
                                 <i class="fa fa-dashboard"></i>
                                 <span>Dashboard</span>
                             </a>
-                        </li>
+                        </li>--}}
 
 
                         <li class="sub-menu">
@@ -228,8 +229,8 @@
                                     <a href="{{ url('/') }}">Monitor</a>
                                 </li>
 
-                                <li class="{{ (Request::is('/dashboard/attacks'))?'active':'' }}">
-                                    <a href="{{ url('/dashboard/attacks') }}">Ataques</a>
+                                <li class="{{ (Request::is('/attacks'))?'active':'' }}">
+                                    <a href="{{ url('/attacks') }}">Ataques</a>
                                 </li>
                             </ul>
                         </li>
@@ -308,12 +309,57 @@
     </section>
 @endsection
 
-@section('angular-scripts')
+@section('angular-run-script')
+    <!--suppress JSUnresolvedVariable -->
     <script type="text/javascript">
-        angular.module('Monitor').run(function ($rootScope, ModelService) {
+        angular.module('Monitor').run(function ($rootScope, ModelService, SocketService) {
+            $rootScope.GLOBALS = {};
+            $rootScope.GLOBALS.active_pcs = {};
+            $rootScope.GLOBALS.alerts = [];
+            var socket = SocketService.socket;
+
+            $rootScope.GLOBALS.alert_number_pc_inactive = 0;
+
+            function removeAlert(name) {
+                for (var i = 0; i < $rootScope.GLOBALS.alerts.length; i++) {
+                    if ($rootScope.GLOBALS.alerts[i].name == name) {
+                        $rootScope.GLOBALS.alerts.splice(i, 1);
+                    }
+                }
+                $rootScope.$apply();
+            }
+
+            socket.on('alert_denial_service', function (data) {
+                console.log('denial');
+                removeAlert('alert_denial_service');
+                $rootScope.GLOBALS.alerts.push({
+                    name: 'alert_denial_service',
+                    message: 'Se ha detectado, posible ataque de denegacion de servicios de ip: ' + data.ip + ' a en fecha:' + data.date.toString()
+                });
+                $rootScope.$apply();
+            });
+            socket.on('active_pcs', function (data) {
+                $rootScope.GLOBALS.alert_number_pc_inactive = 0;
+                $rootScope.GLOBALS.active_pcs = data;
+
+                for (var index = 0; index < data.data.length; index++) {
+                    if (data.data[index].status_network == 'N') {
+                        $rootScope.GLOBALS.alert_number_pc_inactive++;
+                    }
+                }
+
+
+                removeAlert('inactive_pcs');
+                if ($rootScope.GLOBALS.alert_number_pc_inactive > 0) {
+                    $rootScope.GLOBALS.alerts.push({
+                        name: 'inactive_pcs',
+                        message: 'Existen ' + $rootScope.GLOBALS.alert_number_pc_inactive + ' equipos inactivos'
+                    });
+                }
+                $rootScope.$apply();
+            });
 
             $rootScope.user =  {{ 2+2 }} ;
-
             $rootScope.contracts_model = new ModelService.UsersTypes();
         });
     </script>

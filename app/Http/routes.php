@@ -25,7 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
         return view('dashboard/monitor', ['settings' => $settings]);
     });
 
-    Route::get('/dashboard/attacks', function () {
+    Route::get('/attacks', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
         return view('dashboard/attacks', ['settings' => $settings]);
     });
@@ -61,6 +61,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/device_types', 'DeviceTypesController');
     Route::resource('/devices', 'DevicesController');
     Route::resource('/settings', 'SettingsController');
+    Route::resource('/alerts', 'AlertsController');
     Route::resource('/nmap/all_scan', 'NmapAllScanController');
 
     Route::get('/monitor/list_status', "MonitoringController@list_status");
