@@ -211,12 +211,12 @@
                 <!-- sidebar menu start-->
                 <div class="leftside-navigation">
                     <ul class="sidebar-menu" id="nav-accordion">
-                   {{--     <li>
-                            <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
-                                <i class="fa fa-dashboard"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>--}}
+                        {{--     <li>
+                                 <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
+                                     <i class="fa fa-dashboard"></i>
+                                     <span>Dashboard</span>
+                                 </a>
+                             </li>--}}
 
 
                         <li class="sub-menu">
@@ -312,6 +312,13 @@
 @section('angular-run-script')
     <!--suppress JSUnresolvedVariable -->
     <script type="text/javascript">
+        angular.module('Monitor')
+                .service('SocketService', function ($API, $rootScope) {
+                    var socket = io.connect('http://{{ $_SERVER['SERVER_NAME']}}:8890');
+                    return {
+                        socket: socket
+                    }
+                });
         angular.module('Monitor').run(function ($rootScope, ModelService, SocketService) {
             $rootScope.GLOBALS = {};
             $rootScope.GLOBALS.active_pcs = {};
@@ -319,6 +326,21 @@
             var socket = SocketService.socket;
 
             $rootScope.GLOBALS.alert_number_pc_inactive = 0;
+
+            $rootScope.getNameFromIp = function (ip) {
+                if (!$rootScope.GLOBALS.active_pcs) {
+                    return ip;
+                }
+                var pcs = $rootScope.GLOBALS.active_pcs.data;
+                var ip_name = ip;
+                for (var index = 0; index < pcs.length; index++) {
+                    if (pcs[index].ip == ip) {
+                        ip_name = pcs[index].name;
+                    }
+                }
+
+                return ip_name;
+            };
 
             function removeAlert(name) {
                 for (var i = 0; i < $rootScope.GLOBALS.alerts.length; i++) {
@@ -334,7 +356,7 @@
                 removeAlert('alert_denial_service');
                 $rootScope.GLOBALS.alerts.push({
                     name: 'alert_denial_service',
-                    message: 'Se ha detectado, posible ataque de denegacion de servicios de ip: ' + data.ip + ' a en fecha:' + data.date.toString()
+                    message: 'Se ha detectado, posible incidente de denegacion de servicios de ip: ' + data.ip
                 });
                 $rootScope.$apply();
             });
@@ -347,8 +369,6 @@
                         $rootScope.GLOBALS.alert_number_pc_inactive++;
                     }
                 }
-
-
                 removeAlert('inactive_pcs');
                 if ($rootScope.GLOBALS.alert_number_pc_inactive > 0) {
                     $rootScope.GLOBALS.alerts.push({
@@ -359,7 +379,31 @@
                 $rootScope.$apply();
             });
 
-            $rootScope.user =  {{ 2+2 }} ;
+            $rootScope.GLOBALS.list_scan_all_ports = [];
+
+            $rootScope.finish_loading_scan_all_ports = false;
+            socket.on('scan_all_ports', function (data) {
+                $rootScope.GLOBALS.list_scan_all_ports = data;
+                $rootScope.finish_loading_scan_all_ports = true;
+                var number_services_unknown = 0;
+                for (var index = 0; index < data.length; index++) {
+                    data[index].ip = $rootScope.getNameFromIp(data[index].ip) + ' (' + data[index].ip + ')';
+                    for (var j = 0; j < data[index].ports.length; j++) {
+                        if (data[index].ports[j].service === 'unknown') {
+                            number_services_unknown++;
+                        }
+                    }
+                }
+                removeAlert('unknown_ports');
+                if (number_services_unknown > 0) {
+                    $rootScope.GLOBALS.alerts.push({
+                        name: 'unknown_ports',
+                        message: 'Se ha detectado:' + number_services_unknown + ' puerto(s) abiertos con servicio desconocido'
+                    });
+                }
+                $rootScope.$apply();
+            });
+
             $rootScope.contracts_model = new ModelService.UsersTypes();
         });
     </script>

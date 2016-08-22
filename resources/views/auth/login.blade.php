@@ -3,14 +3,14 @@
 @section('body-content')
     <div class="login-body">
         <div class="container">
-
             <form class="form-signin" role="form" method="POST" action="{{ url('/login') }}">
                 {{ csrf_field() }}
-
-
-                <h2 class="form-signin-heading">INGRESO AL SISTEMA</h2>
+                <h2 class="form-signin-heading">SISTEMA DE MONITOREO DE RED PARA LA GESTION DE SEGURIDAD EN REDES BASADO
+                    EN LA NORMA NB/ISO/IEC 18028-1</h2>
                 <div class="login-wrap">
                     <div class="user-login-info">
+                        <h5 class="center-block text-center">INGRESO AL SISTEMMA</h5>
+                        <hr style="border-color: #1a1a1a">
                         <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}"
                                placeholder="Correo electronico">
                         <input id="password" type="password" class="form-control" name="password"
