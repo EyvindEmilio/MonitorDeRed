@@ -3,7 +3,7 @@
  */
 var exec = require('child_process').exec;
 var fs = require("fs");
-var INTERVAL_SCAN_PORTS = 2;
+var INTERVAL_SCAN_PORTS = 30;
 var nmap = function (onData, settings) {
     var output_text = '';
 
@@ -64,6 +64,3 @@ var nmap = function (onData, settings) {
     return this;
 };
 module.exports.start = nmap;
-nmap(function (data) {
-    console.log(data);
-}, {network_address: '192.168.1.0', mask: '24'});

@@ -67,7 +67,7 @@ function monitoring_on_data(data_output) {
     var data = data_output.split('\n'), tmp_buffer = [];
     for (var i = 0; i < data.length - 1; i++) {
         var is_contain_denial = false;
-        // console.log(data[i]);
+
         if (data[i].search('ip-proto') != -1) {
             is_contain_denial = true;
             number_attacks_denial_service++;
@@ -263,7 +263,7 @@ io.on('connection', function (socket) {
 
     var redisClient = redis.createClient();
     redisClient.subscribe('message');
-    socket.emit("hol", "hhh");
+
     redisClient.on("message", function (channel, message) {
         console.log("mew message in queue " + message + "channel");
         socket.emit(channel, message);
