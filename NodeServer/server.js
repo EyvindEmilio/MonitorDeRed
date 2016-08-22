@@ -5,6 +5,9 @@ var redis = require('redis');
 var mysql = require('mysql');
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
+var fs = require("fs");
+var watch = require('node-watch');
+var iftop = require('./iftop');
 
 var connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -12,111 +15,53 @@ var connection = mysql.createConnection({
     password: 'emilio',
     database: 'monitor_red'
 });
+
 connection.connect();
 var number_clients = 0;
 var SETTINGS = {};
-var watch = require('node-watch');
-var fs = require("fs");
-/*
- setInterval(function () {
- fs.readFile('/root/MonitorDeRed/NodeServer/output.txt', 'utf8', function (err, data_output) {
- if (err) throw err;
- fs.writeFile('/root/MonitorDeRed/NodeServer/output.txt', '', function (err) {
- if (err) throw err;
- console.log('complete');
- });
 
- data = data_output.split('\n');
- for (var i = 0; i < data.length - 1; i++) {
- var line_array = data[i].split(' ');
- if (line_array.length < 6) {
- continue;
- }
- var json_data = {};
- var tmp_ip = '';
-
- var tmp_date = (line_array[0].split('.'))[0];
-
- json_data['date'] = new Date();
- json_data['date'].setHours(tmp_date.split(':')[0]);
- json_data['date'].setMinutes(tmp_date.split(':')[1]);
- json_data['date'].setSeconds(tmp_date.split(':')[2]);
- json_data['date'].setMilliseconds(0);
- //json_data['date'] = json_data['date'];
-
- json_data['src'] = {};
- tmp_ip = line_array[2].split('.');
- json_data['src']['ip'] = tmp_ip[0] + '.' + tmp_ip[1] + '.' + tmp_ip[2] + '.' + tmp_ip[3];
- json_data['src']['port'] = tmp_ip[4] && tmp_ip[4].replace(':', '');
-
- json_data['dst'] = {};
- tmp_ip = line_array[4].split('.');
- json_data['dst']['ip'] = tmp_ip[0] + '.' + tmp_ip[1] + '.' + tmp_ip[2] + '.' + tmp_ip[3];
- json_data['dst']['port'] = tmp_ip[4] && tmp_ip[4].replace(':', '');
-
- json_data['size'] = Math.round(parseFloat(line_array[6])) / 1000.0;
-
- if (json_data['size'] > 0 && number_clients > 0) {
- io.sockets.emit('captured_packets', json_data);
- }
- }
-
-
- }
- );
-
- }, 1000);
-
-
- var cmd_monitoring = exec('tcpdump -i eth0 -nnq tcp | tee -a output.txt', {async: true});
-
- */
-connection.query('SELECT * from settings', function (err, rows, fields) {
+connection.query('SELECT * from settings', function (err, rows) {
     if (err) throw err;
     SETTINGS = rows[0];
     server.listen(8890);
-
     start_monitoring();
-
     scan_network();
+    start_bandwidth();
 });
+
 var number_attacks_denial_service = 0;
 var ip_attack_denial_service = 0;
 var ip_dst_attack_denial_service = 0;
+var buffer_lines = [];
+var INTERVAL_SEND_DATA_MONITORING = 1;
 
 setInterval(function () {
-    console.log(number_attacks_denial_service);
+    console.log('Number request from ip-proto: ' + number_attacks_denial_service);
     if (number_attacks_denial_service > 7200) {
         io.sockets.emit('alert_denial_service', {
             ip: ip_attack_denial_service,
             number_packets: number_attacks_denial_service,
             date: new Date()
         });
-        var query = 'INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());';
-        connection.query(query);
-
+        connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());');
     }
     number_attacks_denial_service = 0;
-
 }, 30000);
-var buffer_lines = [];
+
 function start_monitoring() {
     console.log('---- Start monitoring ----');
-
-    child = spawn('./tcpdump_out_server.sh', []);
-    child.on('close', function (code) {
-        console.log('Close monitoring, restaring..');
+    var cmd = spawn('./tcpdump_out_server.sh', []);
+    cmd.on('close', function () {
+        console.log('Close monitoring, restarting..');
         start_monitoring();
     });
 }
 
 function monitoring_on_data(data_output) {
     var data = data_output.split('\n'), tmp_buffer = [];
-
     for (var i = 0; i < data.length - 1; i++) {
-
         var is_contain_denial = false;
-        if (data[i].search('ip-proto-17') != -1) {
+        if (data[i].search('ip-proto') != -1) {
             is_contain_denial = true;
             number_attacks_denial_service++;
         }
@@ -126,15 +71,12 @@ function monitoring_on_data(data_output) {
         }
         var json_data = {};
         var tmp_ip = '';
-
         var tmp_date = (line_array[0].split('.'))[0];
-
         json_data['date'] = new Date();
         json_data['date'].setHours(tmp_date.split(':')[0]);
         json_data['date'].setMinutes(tmp_date.split(':')[1]);
         json_data['date'].setSeconds(tmp_date.split(':')[2]);
         json_data['date'].setMilliseconds(0);
-        //json_data['date'] = json_data['date'];
 
         json_data['src'] = {};
         tmp_ip = line_array[2].split('.');
@@ -147,8 +89,7 @@ function monitoring_on_data(data_output) {
         json_data['dst']['ip'] = json_data['dst']['ip'].replace(':', '');
         json_data['dst']['port'] = tmp_ip[4] && tmp_ip[4].replace(':', '');
 
-        json_data['size'] = Math.round(parseFloat(line_array[6])) / 1000.0;
-
+        json_data['size'] = parseFloat(line_array[6]);
 
         var exist = false;
         for (var j = tmp_buffer.length - 1; j >= 0; j--) {
@@ -160,10 +101,6 @@ function monitoring_on_data(data_output) {
         }
         if (!exist) {
             tmp_buffer.push(json_data);
-        }
-
-        if (json_data['size'] > 0 && number_clients > 0.1) {
-            // io.sockets.emit('captured_packets', json_data);
         }
         if (is_contain_denial) {
             ip_attack_denial_service = json_data['src']['ip'];
@@ -177,20 +114,17 @@ setInterval(function () {
     fs.readFile('out.cap', 'utf8', function (err, data_output) {
             if (err) throw err;
             monitoring_on_data(data_output);
-
             for (var i = 0; i < buffer_lines.length; i++) {
-                io.sockets.emit('captured_packets', buffer_lines[i]);
+                //io.sockets.emit('captured_packets', buffer_lines[i]);
             }
             buffer_lines = [];
             setTimeout(function () {
                 fs.truncate('out.cap', 0, function () {
-                    // console.log('done')
                 });
             }, 0);
-
         }
     );
-}, 1000);
+}, INTERVAL_SEND_DATA_MONITORING * 1000);
 
 function send_data_scan(list_device_capture) {
     connection.query('SELECT * from devices', function (err, rows) {
@@ -260,7 +194,6 @@ function scan_network() {
     }
 
     function scan() {
-
         exec('nmap -sP ' + network, function (err, stdout) {
             if (err == null) {
                 connection.query('DELETE FROM nmap_all_scan');
@@ -291,15 +224,18 @@ function scan_network() {
     setTimeout(scan, 10);
 }
 
+function start_bandwidth() {
+    iftop.start(function (data) {
+        io.sockets.emit('captured_packets_2', data);
+    }, SETTINGS);
+}
 io.on('connection', function (socket) {
     number_clients++;
-    console.log("Maquina conectada");
-
+    console.log("Machine connected from: ", socket.handshake.headers.origin);
     connection.query('SELECT * from nmap_all_scan', function (err, rows) {
         if (err) throw err;
         send_data_scan(rows);
     });
-
 
     var redisClient = redis.createClient();
     redisClient.subscribe('message');
@@ -313,5 +249,4 @@ io.on('connection', function (socket) {
         redisClient.quit();
         number_clients--;
     });
-
 });

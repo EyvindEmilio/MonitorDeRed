@@ -211,12 +211,12 @@
                 <!-- sidebar menu start-->
                 <div class="leftside-navigation">
                     <ul class="sidebar-menu" id="nav-accordion">
-                   {{--     <li>
-                            <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
-                                <i class="fa fa-dashboard"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>--}}
+                        {{--     <li>
+                                 <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
+                                     <i class="fa fa-dashboard"></i>
+                                     <span>Dashboard</span>
+                                 </a>
+                             </li>--}}
 
 
                         <li class="sub-menu">
@@ -312,6 +312,13 @@
 @section('angular-run-script')
     <!--suppress JSUnresolvedVariable -->
     <script type="text/javascript">
+        angular.module('Monitor')
+                .service('SocketService', function ($API, $rootScope) {
+                    var socket = io.connect('http://{{ $_SERVER['SERVER_NAME']}}:8890');
+                    return {
+                        socket: socket
+                    }
+                });
         angular.module('Monitor').run(function ($rootScope, ModelService, SocketService) {
             $rootScope.GLOBALS = {};
             $rootScope.GLOBALS.active_pcs = {};

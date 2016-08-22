@@ -248,11 +248,3 @@ angular.module('Monitor')
             Alerts: Alerts
         };
     });
-
-angular.module('Monitor')
-    .service('SocketService', function ($API, $rootScope) {
-        var socket = io.connect('http://192.168.1.20:8890');
-        return {
-            socket: socket
-        }
-    });

@@ -36,6 +36,7 @@
 <!-- Angular dependences -->
 <script src="{{ asset('js/socket.io.js') }} "></script>
 <script src="{{ asset('app/js/moment.min.js') }} "></script>
+<script src="{{ asset('app/js/moment-timezone.min.js') }} "></script>
 <script src="{{ asset('app/js/complemenrts/locale-es.js')}} "></script>
 <script src="{{ asset('app/js/highcharts.src.js')}} "></script>
 <script src="{{ asset('app/js/angular.min.js')}} "></script>
@@ -59,6 +60,7 @@
 <script src="{{ asset('app/js/filters/momentdate.js')}} "></script>
 
 <!-- Angular Scripts -->
+
 @yield('angular-run-script')
 @yield('angular-scripts')
 

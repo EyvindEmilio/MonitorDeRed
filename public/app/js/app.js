@@ -23,10 +23,10 @@ angular
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
         $httpProvider.interceptors.push('InterceptorService');
     })
+    // .constant('moment', require('moment-timezone'))
     .constant('angularMomentConfig', {
         timezone: 'America/La_Paz' // e.g. 'Europe/London'
     });
-
 angular.module('Monitor').controller('ModalConfirm', function ($scope, $uibModalInstance, message, title) {
     $scope.mensaje = message;
     $scope.title = title;

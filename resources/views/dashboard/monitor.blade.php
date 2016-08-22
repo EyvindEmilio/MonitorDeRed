@@ -92,6 +92,7 @@
 @endsection
 @section('angular-scripts')
     <script type="text/javascript">
+
         angular.module('Monitor')
                 .controller('DashboardController', function ($rootScope, $API, $resource, $http, $interval, toastr, SocketService) {
                     var socket = SocketService.socket;
@@ -120,14 +121,18 @@
                     };
                     Highcharts.setOptions({
                         global: {
-                            //        useUTC: false
+                            useUTC: false,
+                            timezone: 'America/La_Paz'
                         }
                     });
                     $rootScope.chart_monitor = {
                         options: {
                             chart: {
                                 type: 'spline',
-                                heiht: 10
+                                height: 500
+                            }, tooltip: {
+                                headerFormat: '<b>{series.name}</b><br>',
+                                pointFormat: 'Transferencia: {point.y:.2f} Kbps'
                             }
                         },
                         series: [],
@@ -154,7 +159,7 @@
                                 text: 'Tasa (kbps)'
                             },
                             min: 0,
-                            max: 20,
+                            max: 2000
                         }
                     };
 
@@ -164,13 +169,14 @@
 
                     function getNameFromIp(ip) {
                         var pcs = $rootScope.GLOBALS.active_pcs.data;
-                        var ip_name = false;
+                        var ip_name = ip;
                         for (var index = 0; index < pcs.length; index++) {
                             if (pcs[index].ip == ip) {
-                                ip_name = pcs[index].name;
+                                ip_name = pcs[index].name + ' <br>(' + ip + ')';
                             }
                         }
-                        return name;
+
+                        return ip_name;
                     }
 
                     $rootScope.chart_monitor_tmp = {};
@@ -192,71 +198,139 @@
                         $rootScope.$apply();
                     }, 1000);
 
-
-                    socket.on('captured_packets', function (data) {
-                        console.log(data);
-
-                        var packet_received = data;
-                        var exist_pc = false;
-                        var index_exist_pc = 0;
-                        for (var j = 0; j < $rootScope.chart_monitor_tmp.series.length; j++) {
-                            if ($rootScope.chart_monitor_tmp.series[j].ip == packet_received.dst.ip) {
-                                exist_pc = true;
-                                index_exist_pc = j;
-                                break;
+                    socket.on('captured_packets_2', function (data_in) {
+                        var data = data_in;
+                        for (var k = 0; k < data_in.length; k++) {
+                            data = data_in[k];
+                            var packet_received = data_in[k];
+                            var exist_pc = false;
+                            var index_exist_pc = 0;
+                            for (var j = 0; j < $rootScope.chart_monitor_tmp.series.length; j++) {
+                                if ($rootScope.chart_monitor_tmp.series[j].ip == packet_received.src.ip) {
+                                    exist_pc = true;
+                                    index_exist_pc = j;
+                                    break;
+                                }
                             }
-                        }
-                        var pcs = $rootScope.GLOBALS.active_pcs.data;
-                        var exist_in_list = false;
-                        if (pcs == 'undefined')return;
+                            var pcs = $rootScope.GLOBALS.active_pcs.data;
+                            var exist_in_list = false;
+                            if (pcs == 'undefined')return;
 
-                        for (var index = 0; index < pcs.length; index++) {
-                            if (packet_received.dst.ip == pcs[index].ip) {
-                                exist_in_list = true;
+                            for (var index = 0; index < pcs.length; index++) {
+                                if (packet_received.src.ip == pcs[index].ip) {
+                                    exist_in_list = true;
+                                }
                             }
-                        }
-                        if (!exist_in_list) {
-                            return;
-                        }
-
-                        if (!exist_pc) {
-                            $rootScope.chart_monitor_tmp.series.push({
-                                data: [{x: (new Date()).getTime(), y: data.size}],
-                                name: getNameFromIp(data.dst.ip) || data.dst.ip,
-                                ip: data.dst.ip
-                            });
-                        } else {
-                            if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length >= 60) {
-                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.splice(0, 1);
-                            }
-                            console.log($rootScope.chart_monitor_tmp.series[index_exist_pc].data);
-                            if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length > 1 && new Date($rootScope.chart_monitor_tmp.series[index_exist_pc].data[$rootScope.chart_monitor_tmp.series[index_exist_pc].data.length - 2].x).getSeconds() != (new Date()).getSeconds()) {
-                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
-                                    x: (new Date()).getTime(),
-                                    y: data.size
+                            /*if (!exist_in_list) {
+                             return;
+                             }
+                             */
+                            if (!exist_pc) {
+                                $rootScope.chart_monitor_tmp.series.push({
+                                    data: [{x: (new Date()).getTime(), y: data.size}],
+                                    name: getNameFromIp(data.src.ip) || data.src.ip,
+                                    ip: data.src.ip, marker: {
+                                        enabled: false
+                                    }
                                 });
-                            } else if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length < 2) {
-                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
-                                    x: (new Date()).getTime(),
-                                    y: data.size
-                                });
-                            }
+                            } else {
+                                if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length >= 60) {
+                                    $rootScope.chart_monitor_tmp.series[index_exist_pc].data.splice(0, 1);
+                                }
+//                                console.log($rootScope.chart_monitor_tmp.series[index_exist_pc].data);
+                                if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length > 1 && new Date($rootScope.chart_monitor_tmp.series[index_exist_pc].data[$rootScope.chart_monitor_tmp.series[index_exist_pc].data.length - 2].x).getSeconds() != (new Date()).getSeconds()) {
+                                    $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                                        x: (new Date()).getTime(),
+                                        y: data.size
+                                    });
+                                } else if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length < 2) {
+                                    $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                                        x: (new Date()).getTime(),
+                                        y: data.size
+                                    });
+                                }
 
-                            function sortFunction(a, b) {
-                                var dateA = new Date(a.x).getTime();
-                                var dateB = new Date(b.x).getTime();
-                                return dateA > dateB ? 1 : -1;
-                            }
+                                function sortFunction(a, b) {
+                                    var dateA = new Date(a.x).getTime();
+                                    var dateB = new Date(b.x).getTime();
+                                    return dateA > dateB ? 1 : -1;
+                                }
 
-                            $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
-                        }
+                                $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
+                            }
 //                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getUTCDate();
 //                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(1, 'hour'))).getUTCDate();
 
-                        //$rootScope.chart_monitor.redraw();
+                            //$rootScope.chart_monitor.redraw();
 //                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
-                        $rootScope.$apply();
+                            $rootScope.$apply();
+                        }
                     });
+                    /*socket.on('captured_packets', function (data) {
+                     //                        console.log(data);
+
+                     var packet_received = data;
+                     var exist_pc = false;
+                     var index_exist_pc = 0;
+                     for (var j = 0; j < $rootScope.chart_monitor_tmp.series.length; j++) {
+                     if ($rootScope.chart_monitor_tmp.series[j].ip == packet_received.dst.ip) {
+                     exist_pc = true;
+                     index_exist_pc = j;
+                     break;
+                     }
+                     }
+                     var pcs = $rootScope.GLOBALS.active_pcs.data;
+                     var exist_in_list = false;
+                     if (pcs == 'undefined')return;
+
+                     for (var index = 0; index < pcs.length; index++) {
+                     if (packet_received.dst.ip == pcs[index].ip) {
+                     exist_in_list = true;
+                     }
+                     }
+                     if (!exist_in_list) {
+                     return;
+                     }
+
+                     if (!exist_pc) {
+                     $rootScope.chart_monitor_tmp.series.push({
+                     data: [{x: (new Date()).getTime(), y: data.size}],
+                     name: getNameFromIp(data.dst.ip) || data.dst.ip,
+                     ip: data.dst.ip
+                     });
+                     } else {
+                     if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length >= 60) {
+                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.splice(0, 1);
+                     }
+                     console.log($rootScope.chart_monitor_tmp.series[index_exist_pc].data);
+                     if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length > 1
+                     && new Date($rootScope.chart_monitor_tmp.series[index_exist_pc].data[$rootScope.chart_monitor_tmp.series[index_exist_pc].data.length - 2].x).getSeconds() != (new Date()).getSeconds()) {
+                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                     x: (new Date()).getTime(),
+                     y: data.size
+                     });
+                     } else if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length < 2) {
+                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
+                     x: (new Date()).getTime(),
+                     y: data.size
+                     });
+                     }
+
+                     function sortFunction(a, b) {
+                     var dateA = new Date(a.x).getTime();
+                     var dateB = new Date(b.x).getTime();
+                     return dateA > dateB ? 1 : -1;
+                     }
+
+                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
+                     }
+                     //                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getUTCDate();
+                     //                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(1, 'hour'))).getUTCDate();
+
+                     //$rootScope.chart_monitor.redraw();
+                     //                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
+                     $rootScope.$apply();
+                     });*/
 
                 });
     </script>
