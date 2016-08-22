@@ -8,6 +8,7 @@ var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
 var iftop = require('./iftop');
+var nmap = require('./nmap');
 
 var connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -27,6 +28,7 @@ connection.query('SELECT * from settings', function (err, rows) {
     start_monitoring();
     scan_network();
     start_bandwidth();
+    start_nmap_ports();
 });
 
 var number_attacks_denial_service = 0;
@@ -43,7 +45,7 @@ setInterval(function () {
             number_packets: number_attacks_denial_service,
             date: new Date()
         });
-        connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());');
+        connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());');
     }
     number_attacks_denial_service = 0;
 }, 30000);
@@ -51,6 +53,10 @@ setInterval(function () {
 function start_monitoring() {
     console.log('---- Start monitoring ----');
     var cmd = spawn('./tcpdump_out_server.sh', []);
+    cmd.stdout.on('data', function (data) {//not delete,or error not constant send tio file
+        // console.log(data.toString('utf8'));
+    });
+
     cmd.on('close', function () {
         console.log('Close monitoring, restarting..');
         start_monitoring();
@@ -61,6 +67,7 @@ function monitoring_on_data(data_output) {
     var data = data_output.split('\n'), tmp_buffer = [];
     for (var i = 0; i < data.length - 1; i++) {
         var is_contain_denial = false;
+        // console.log(data[i]);
         if (data[i].search('ip-proto') != -1) {
             is_contain_denial = true;
             number_attacks_denial_service++;
@@ -227,6 +234,23 @@ function scan_network() {
 function start_bandwidth() {
     iftop.start(function (data) {
         io.sockets.emit('captured_packets_2', data);
+    }, SETTINGS);
+}
+function start_nmap_ports() {
+    nmap.start(function (data) {
+        console.log('-----> scan all ports finished, starting new scan');
+        for (var index = 0; index < data.length; index++) {
+            var number_services_unknown = 0;
+            for (var j = 0; j < data[index].ports.length; j++) {
+                if (data[index].ports[j].service === 'unknown') {
+                    number_services_unknown++;
+                }
+            }
+            if (number_services_unknown > 0) {
+                connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Puerta trasera (Backdoor)","' + data[index].ip + '","' + (data[index].ip + '; Puertos desconocidos detectados <b>' + number_services_unknown + '</b>') + '",NOW());');
+            }
+        }
+        io.sockets.emit('scan_all_ports', data);
     }, SETTINGS);
 }
 io.on('connection', function (socket) {

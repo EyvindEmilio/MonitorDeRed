@@ -1,0 +1,78 @@
+Nmap scan report for 192.168.1.1
+Host is up (0.0069s latency).
+Not shown: 995 filtered ports
+PORT    STATE SERVICE
+21/tcp  open  ftp
+53/tcp  open  domain
+80/tcp  open  http
+443/tcp open  https
+990/tcp open  ftps
+MAC Address: 9C:C1:72:7D:87:21 (Huawei Technologies)
+
+Nmap scan report for 192.168.1.2
+Host is up (0.021s latency).
+Not shown: 996 closed ports
+PORT      STATE SERVICE
+554/tcp   open  rtsp
+8080/tcp  open  http-proxy
+20000/tcp open  dnp
+49153/tcp open  unknown
+MAC Address: D0:6F:4A:09:C9:4C (Topwell International Holdings Limited)
+
+Nmap scan report for 192.168.1.3
+Host is up (0.0035s latency).
+All 1000 scanned ports on 192.168.1.3 are closed
+MAC Address: F0:72:8C:04:A7:9E (Samsung Electronics)
+
+Nmap scan report for 192.168.1.4
+Host is up (0.012s latency).
+All 1000 scanned ports on 192.168.1.4 are closed
+MAC Address: F0:27:65:43:76:F7 (Murata Manufacturing)
+
+Nmap scan report for 192.168.1.5
+Host is up (0.066s latency).
+All 1000 scanned ports on 192.168.1.5 are closed
+MAC Address: C0:BD:D1:0F:51:47 (Samsung Electro Mechanics)
+
+Nmap scan report for 192.168.1.9
+Host is up (0.012s latency).
+Not shown: 998 closed ports
+PORT     STATE SERVICE
+8008/tcp open  http
+8009/tcp open  ajp13
+MAC Address: 80:D2:1D:20:D1:1D (AzureWave Technology)
+
+Nmap scan report for 192.168.1.13
+Host is up (0.020s latency).
+All 1000 scanned ports on 192.168.1.13 are closed
+MAC Address: E4:58:E7:0A:6A:0E (Samsung Electronics)
+
+Nmap scan report for 192.168.1.15
+Host is up (0.0063s latency).
+All 1000 scanned ports on 192.168.1.15 are closed
+MAC Address: 18:21:95:1B:C2:1F (Unknown)
+
+Nmap scan report for 192.168.1.17
+Host is up (0.010s latency).
+All 1000 scanned ports on 192.168.1.17 are closed
+MAC Address: F0:34:04:25:CB:08 (Unknown)
+
+Nmap scan report for 192.168.1.20
+Host is up (0.00020s latency).
+Not shown: 995 closed ports
+PORT     STATE SERVICE
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+2869/tcp open  icslap
+5357/tcp open  wsdapi
+MAC Address: 7C:DD:90:69:02:6F (Shenzhen Ogemray Technology)
+
+Nmap scan report for 192.168.1.8
+Host is up (0.0000020s latency).
+Not shown: 998 closed ports
+PORT     STATE SERVICE
+80/tcp   open  http
+8000/tcp open  http-alt
+
+Nmap done: 256 IP addresses (11 hosts up) scanned in 34.23 seconds
