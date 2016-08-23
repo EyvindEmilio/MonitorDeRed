@@ -221,10 +221,9 @@
                                     exist_in_list = true;
                                 }
                             }
-                            /*if (!exist_in_list) {
+                            if (!exist_in_list) {
                              return;
                              }
-                             */
                             if (!exist_pc) {
                                 $rootScope.chart_monitor_tmp.series.push({
                                     data: [{x: (new Date()).getTime(), y: data.size}],
