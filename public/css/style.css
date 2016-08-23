@@ -53,14 +53,60 @@ a, a:hover, a:focus {
 
 /*login page*/
 .login-body {
-    background: url(/images/icono-emi.svg), #32323A;
-    background-size: 20%, cover;
-    background-repeat: no-repeat, no-repeat;
-    background-position: bottom center, center;
-
-    width: 100%;
-    height: 100%;
+    background-size: cover;
+    min-width: 100%;
+    min-height: 100%;
     position: absolute;
+    background: red; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(180deg, #34495e, #2980b9); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(180deg, #34495e, #2980b9); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(180deg, #34495e, #2980b9); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(180deg, #34495e, #2980b9); /* Standard syntax */
+    /*overflow: hidden;*/
+}
+
+.login-body .login-content-logo {
+    position: absolute;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.login-body .login-content-logo .logo-emi {
+    background: url(/images/icono-emi.svg);
+    background-position: center left;
+    background-repeat: no-repeat;
+    background-size: 20%;
+    opacity: 0.5;
+    position: absolute;
+    min-width: 100%;
+    min-height: 100%;
+    left: 6%;
+}
+
+.login-body .login-content-logo .logo-carrera {
+    background: url(/images/icono-emi.svg);
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: 20%;
+    opacity: 0.5;
+    position: absolute;
+    min-width: 100%;
+    min-height: 100%;
+    right: 6%;
+}
+
+.login-body .container {
+}
+
+.login-body h2 {
+    color: yellow;
+    text-shadow: 0 0 20px blue;
+}
+
+.login-body h4 {
+    color: #f1c40f;
+    text-shadow: 0 0 20px blue;
 }
 
 .form-signin {
@@ -86,6 +132,7 @@ a, a:hover, a:focus {
     font-weight: 300;
     font-family: 'Open Sans', sans-serif;
     border-bottom: 10px solid #2980b9;
+
 }
 
 .form-signin .checkbox {

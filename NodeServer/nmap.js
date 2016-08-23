@@ -8,8 +8,9 @@ var nmap = function (onData, settings) {
     var output_text = '';
 
     function get_info(output) {
-        var list = output.match(/Nmap scan report for \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\n(([0-9a-zA-Z(). -:/\t]+)\n)+/g);
+        var list = output.match(/Nmap scan report for [ a-zA-Z.\-0-9]+\(?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\)?\n(([0-9a-zA-Z(). -:/\t]+)\n)+/g);
         var list_object = [];
+        if (list == null)return;
         for (var i = 0; i < list.length; i++) {
             var mac = list[i].match(/[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}/g);
             var latency = list[i].match(/(\d+.\d+s latency)/g)[0];
@@ -40,16 +41,13 @@ var nmap = function (onData, settings) {
             }
             list_object.push(object);
         }
-        onData && onData(list_object);
+        onData(list_object);
     }
 
     function init() {
         var args = ' -Pn ' + settings['network_address'] + '/' + settings['mask'];
         var child = exec('nmap ' + args);
         child.stdout.on('data', function (data) {
-            if (data.search('Starting') != -1) {
-                return;
-            }
             output_text += data.toString('utf8');
         });
         child.on('close', function () {
