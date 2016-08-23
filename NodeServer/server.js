@@ -222,9 +222,11 @@ function scan_network() {
                     } catch (e) {
                     }
                 }
-                send_data_scan(active_pcs);
+
+                send_data_scan(active_pcs)
+
             }
-            setTimeout(scan, 10);
+            setTimeout(scan, 10000);
         });
     }
 

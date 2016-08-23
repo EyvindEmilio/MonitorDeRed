@@ -31,12 +31,12 @@ var iftop = function (onData, settings) {
     cmd.stdout.on('data', function (data) {
     });
     cmd.on('close', function () {
+        iftop(onData, settings);
         console.log('Close iftop, restaring..');
     });
     fs.truncate('iftop.out', 0, function () {
         chage_by_truncate = true;
     });
-
 
     var chage_by_truncate = false;
 

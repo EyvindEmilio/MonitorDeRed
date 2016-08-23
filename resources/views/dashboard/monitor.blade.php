@@ -159,7 +159,7 @@
                                 text: 'Tasa (kbps)'
                             },
                             min: 0,
-                            max: 2000
+                            max: 5000
                         }
                     };
 
