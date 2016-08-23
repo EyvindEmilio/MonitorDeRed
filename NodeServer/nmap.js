@@ -10,7 +10,6 @@ var nmap = function (onData, settings) {
     function get_info(output) {
         var list = output.match(/Nmap scan report for [ a-zA-Z.\-0-9]+\(?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\)?\n(([0-9a-zA-Z(). -:/\t]+)\n)+/g);
         var list_object = [];
-        //console.log(list);
         if (list == null)return;
         for (var i = 0; i < list.length; i++) {
             var mac = list[i].match(/[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}:[0-9a-zA-Z]{1,2}/g);
@@ -46,17 +45,12 @@ var nmap = function (onData, settings) {
     }
 
     function init() {
-        //console.log(settings);
         var args = ' -Pn ' + settings['network_address'] + '/' + settings['mask'];
         var child = exec('nmap ' + args);
         child.stdout.on('data', function (data) {
-            /*if (data.search('Starting') != -1) {
-             return;
-             }*/
             output_text += data.toString('utf8');
         });
         child.on('close', function () {
-            console.log("close scan por");
             get_info(output_text);
             output_text = '';
             setTimeout(init, INTERVAL_SCAN_PORTS * 1000);
