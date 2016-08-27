@@ -5,23 +5,6 @@
 var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
-/*
- fs.readFile('iftop.out', 'utf8', function (err, data) {
- var matches = data.match(/([\d]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+[0-9.a-zA-Z]+)\n?([\t ]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+[0-9.a-zA-Z]+)/g);
- for (var i = 0; i < matches.length; i++) {
- console.log(matches[i]);
- console.log("*********************************************************************************************************************************");
- }
-
- /!*var matches = data.match(/# Host name[a-zA-Z0-9 \-().:=<>\[\]/\t\n\r]+[=]{50,1000}/g);
- matches = matches[0].match(/[\d ]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+/g);
-
- for (var i = 0; i < matches.length; i++) {
- console.log(matches[i]);
- console.log("*********************************************************************************************************************************");
- }*!/
- });
- */
 
 var iftop = function (onData, settings) {
     var args = [];
@@ -37,12 +20,11 @@ var iftop = function (onData, settings) {
         chage_by_truncate = true;
     });
 
-
-    var chage_by_truncate = false;
+    var change_by_truncate = false;
 
     watch('iftop.out', function () {
-        if (chage_by_truncate) {
-            chage_by_truncate = false;
+        if (change_by_truncate) {
+            change_by_truncate = false;
             return;
         }
         fs.readFile('iftop.out', 'utf8', function (err, data) {
@@ -89,7 +71,7 @@ var iftop = function (onData, settings) {
             }
 
             fs.truncate('iftop.out', 0, function () {
-                chage_by_truncate = true;
+                change_by_truncate = true;
             });
 
             onData(list_objects);

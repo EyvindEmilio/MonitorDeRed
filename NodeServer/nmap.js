@@ -3,10 +3,10 @@
  */
 var exec = require('child_process').exec;
 var fs = require("fs");
-var INTERVAL_SCAN_PORTS = 30;
+var INTERVAL_SCAN_PORTS = 30;//default in seg
 var nmap = function (onData, settings) {
     var output_text = '';
-
+    INTERVAL_SCAN_PORTS = parseInt(settings['time_interval_for_scan_ports']);
     function get_info(output) {
         var list = output.match(/Nmap scan report for [ a-zA-Z.\-0-9]+\(?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\)?\n(([0-9a-zA-Z(). -:/\t]+)\n)+/g);
         var list_object = [];
@@ -31,7 +31,6 @@ var nmap = function (onData, settings) {
             if (list_open_ports != null) {
                 for (var j = 0; j < list_open_ports.length; j++) {
                     var line = list_open_ports[j].split(/[ \t]+/g);
-                    // console.log(line);
                     object.ports.push({
                         port: line[0],
                         status: line[1],

@@ -17,7 +17,10 @@ class SettingsTable extends Migration
             $table->string('network_address');
             $table->string('gateway');
             $table->integer('mask');
-            $table->integer('time_check_network');
+            $table->integer('time_interval_for_sending_monitoring_data')->default(1);
+            $table->integer('time_interval_for_scan_ports')->default(30);
+            $table->integer('dos_time_for_check_attacks')->default(30);
+            $table->integer('dos_max_packets_received')->default(10000);
             $table->char('active_system', 1)->default('N');
         });
     }

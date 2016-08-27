@@ -20,35 +20,42 @@ var connection = mysql.createConnection({
 connection.connect();
 var number_clients = 0;
 var SETTINGS = {};
+var INTERVAL_SEND_DATA_MONITORING = 1;//default 1 seg
+var DOS_TIME_FOR_CHECK_ATTACKS = 30;//default 30 seg
 
 connection.query('SELECT * from settings', function (err, rows) {
     if (err) throw err;
     SETTINGS = rows[0];
+    INTERVAL_SEND_DATA_MONITORING = parseInt(SETTINGS['time_interval_for_sending_monitoring_data']);
+    DOS_TIME_FOR_CHECK_ATTACKS = parseInt(SETTINGS['dos_time_for_check_attacks']);
+
     server.listen(8890);
     start_monitoring();
     scan_network();
     start_bandwidth();
     start_nmap_ports();
+    start_dos_attack();
 });
 
 var number_attacks_denial_service = 0;
 var ip_attack_denial_service = 0;
 var ip_dst_attack_denial_service = 0;
 var buffer_lines = [];
-var INTERVAL_SEND_DATA_MONITORING = 1;
 
-setInterval(function () {
-    console.log('Number request from ip-proto: ' + number_attacks_denial_service);
-    if (number_attacks_denial_service > 7200) {
-        io.sockets.emit('alert_denial_service', {
-            ip: ip_attack_denial_service,
-            number_packets: number_attacks_denial_service,
-            date: new Date()
-        });
-        connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());');
-    }
-    number_attacks_denial_service = 0;
-}, 30000);
+function start_dos_attack() {
+    setInterval(function () {
+        console.log('Number request from ip-proto: ' + number_attacks_denial_service);
+        if (number_attacks_denial_service > parseInt(SETTINGS['dos_max_packets_received'])) {
+            io.sockets.emit('alert_denial_service', {
+                ip: ip_attack_denial_service,
+                number_packets: number_attacks_denial_service,
+                date: new Date()
+            });
+            connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + ip_attack_denial_service + '","' + ip_dst_attack_denial_service + '",NOW());');
+        }
+        number_attacks_denial_service = 0;
+    }, (DOS_TIME_FOR_CHECK_ATTACKS * 1000));
+}
 
 function start_monitoring() {
     console.log('---- Start monitoring ----');
@@ -236,6 +243,7 @@ function start_bandwidth() {
         io.sockets.emit('captured_packets_2', data);
     }, SETTINGS);
 }
+
 function start_nmap_ports() {
     nmap.start(function (data) {
         console.log('-----> scan all ports finished, starting new scan');
@@ -253,6 +261,7 @@ function start_nmap_ports() {
         io.sockets.emit('scan_all_ports', data);
     }, SETTINGS);
 }
+
 io.on('connection', function (socket) {
     number_clients++;
     console.log("Machine connected from: ", socket.handshake.headers.origin);

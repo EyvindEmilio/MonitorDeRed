@@ -17,7 +17,7 @@ if (!$CONN) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-$sql = "SELECT network_address, gateway, mask, time_check_network, active_system FROM settings";
+$sql = "SELECT * FROM settings";
 $result = mysqli_query($CONN, $sql);
 
 $network_address = "192.168.1.1";
