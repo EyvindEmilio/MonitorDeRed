@@ -9,6 +9,7 @@ var fs = require("fs");
 var watch = require('node-watch');
 var iftop = require('./iftop');
 var nmap = require('./nmap');
+var statistics = require('./statistics');
 
 var connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -26,6 +27,7 @@ var DOS_TIME_FOR_CHECK_ATTACKS = 30;//default 30 seg
 connection.query('SELECT * from settings', function (err, rows) {
     if (err) throw err;
     SETTINGS = rows[0];
+    SETTINGS.connection = connection;//assign connection for other modules
     INTERVAL_SEND_DATA_MONITORING = parseInt(SETTINGS['time_interval_for_sending_monitoring_data']);
     DOS_TIME_FOR_CHECK_ATTACKS = parseInt(SETTINGS['dos_time_for_check_attacks']);
 
@@ -35,6 +37,7 @@ connection.query('SELECT * from settings', function (err, rows) {
     start_bandwidth();
     start_nmap_ports();
     start_dos_attack();
+    start_statistics();
 });
 
 var number_attacks_denial_service = 0;
@@ -283,3 +286,9 @@ io.on('connection', function (socket) {
         number_clients--;
     });
 });
+
+function start_statistics() {
+    statistics.start(function (data) {
+        io.sockets.emit('daily_statistics', data);
+    }, SETTINGS);
+}

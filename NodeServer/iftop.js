@@ -74,6 +74,22 @@ var iftop = function (onData, settings) {
                 change_by_truncate = true;
             });
 
+            function save_network_usage(i) {
+                if (i >= list_objects.length)return;
+                settings.connection.query('SELECT * from network_usage WHERE date = date(now()) AND ip = "' + list_objects[i].src.ip + '";', function (err, rows) {
+                    if (rows.length > 0) {//add
+                        settings.connection.query('UPDATE network_usage SET size=' + (list_objects[i].size + parseFloat(rows[0].size)) + ' WHERE ip="' + list_objects[i].src.ip + '" AND date = date(now());', function () {
+                            save_network_usage(i++);
+                        });
+                    } else {//set
+                        settings.connection.query('INSERT INTO network_usage (ip, size, date) VALUES("' + list_objects[i].src.ip + '",' + list_objects[i].size + ',date(now()))', function (err2, rows2) {
+                            save_network_usage(i++)
+                        });
+                    }
+                });
+            }
+
+            save_network_usage(0);
             onData(list_objects);
         });
     });
