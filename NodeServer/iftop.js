@@ -5,23 +5,6 @@
 var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
-/*
- fs.readFile('iftop.out', 'utf8', function (err, data) {
- var matches = data.match(/([\d]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+[0-9.a-zA-Z]+)\n?([\t ]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+[0-9.a-zA-Z]+)/g);
- for (var i = 0; i < matches.length; i++) {
- console.log(matches[i]);
- console.log("*********************************************************************************************************************************");
- }
-
- /!*var matches = data.match(/# Host name[a-zA-Z0-9 \-().:=<>\[\]/\t\n\r]+[=]{50,1000}/g);
- matches = matches[0].match(/[\d ]+ [0-9.]+[ \t]+[<>=]{1,2}[ \t]+([0-9.a-zA-Z]+[ \t]+)+/g);
-
- for (var i = 0; i < matches.length; i++) {
- console.log(matches[i]);
- console.log("*********************************************************************************************************************************");
- }*!/
- });
- */
 
 var iftop = function (onData, settings) {
     var args = [];
@@ -31,18 +14,17 @@ var iftop = function (onData, settings) {
     cmd.stdout.on('data', function (data) {
     });
     cmd.on('close', function () {
-        iftop(onData, settings);
         console.log('Close iftop, restaring..');
     });
     fs.truncate('iftop.out', 0, function () {
         chage_by_truncate = true;
     });
 
-    var chage_by_truncate = false;
+    var change_by_truncate = false;
 
     watch('iftop.out', function () {
-        if (chage_by_truncate) {
-            chage_by_truncate = false;
+        if (change_by_truncate) {
+            change_by_truncate = false;
             return;
         }
         fs.readFile('iftop.out', 'utf8', function (err, data) {
@@ -89,9 +71,25 @@ var iftop = function (onData, settings) {
             }
 
             fs.truncate('iftop.out', 0, function () {
-                chage_by_truncate = true;
+                change_by_truncate = true;
             });
 
+            function save_network_usage(i) {
+                if (i >= list_objects.length)return;
+                settings.connection.query('SELECT * from network_usage WHERE date = date(now()) AND ip = "' + list_objects[i].src.ip + '";', function (err, rows) {
+                    if (rows.length > 0) {//add
+                        settings.connection.query('UPDATE network_usage SET size=' + (list_objects[i].size + parseFloat(rows[0].size)) + ' WHERE ip="' + list_objects[i].src.ip + '" AND date = date(now());', function () {
+                            save_network_usage(i++);
+                        });
+                    } else {//set
+                        settings.connection.query('INSERT INTO network_usage (ip, size, date) VALUES("' + list_objects[i].src.ip + '",' + list_objects[i].size + ',date(now()))', function (err2, rows2) {
+                            save_network_usage(i++)
+                        });
+                    }
+                });
+            }
+
+            save_network_usage(0);
             onData(list_objects);
         });
     });

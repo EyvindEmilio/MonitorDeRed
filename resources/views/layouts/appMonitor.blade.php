@@ -226,7 +226,11 @@
                             </a>
                             <ul class="sub">
                                 <li class="{{ (Request::is('/'))?'active':'' }}">
-                                    <a href="{{ url('/') }}">Monitor</a>
+                                    <a href="{{ url('/') }}">Dashboard</a>
+                                </li>
+
+                                <li class="{{ (Request::is('/monitor'))?'active':'' }}">
+                                    <a href="{{ url('/monitor') }}">Monitor</a>
                                 </li>
 
                                 <li class="{{ (Request::is('/attacks'))?'active':'' }}">

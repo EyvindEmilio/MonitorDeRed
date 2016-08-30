@@ -33,10 +33,35 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-2">Tiempo de verificaion de red</label>
+                            <label class="col-md-2">Intervalo de tiempo para envio de datos de monitoreo</label>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" min="2" max="500" placeholder="En segundos"
-                                       required ng-model="settings.time_check_network">
+                                <input type="number" class="form-control" min="1" max="5" placeholder="En segundos"
+                                       required ng-model="settings.time_interval_for_sending_monitoring_data">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2">Intervalo de tiempo para escaneo de puertos</label>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" min="20" max="180" placeholder="En segundos"
+                                       required ng-model="settings.time_interval_for_scan_ports">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2">Intervalo de tiempo de deteccion de Denegacion de servicios</label>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" min="30" max="180" placeholder="En segundos"
+                                       required ng-model="settings.dos_time_for_check_attacks">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2">Paquetes ICMP, para comprobacion de DoS</label>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" min="1000" max="10000"
+                                       placeholder="En segundos"
+                                       required ng-model="settings.dos_max_packets_received">
                             </div>
                         </div>
 

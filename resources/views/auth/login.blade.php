@@ -13,7 +13,7 @@
             <br>
             <h2 class="text-center">SISTEMA DE MONITOREO DE RED PARA LA GESTION DE SEGURIDAD EN REDES BASADO
                 EN LA NORMA NB/ISO/IEC 18028-1</h2>
-            <h4 class="text-center">Trabajo de grado de la Escuela Militar de Ingenieria en la Carrera de Imngenieria de
+            <h4 class="text-center">Trabajo de grado de la Escuela Militar de Ingenieria en la Carrera de Ingenieria de
                 Sistemas</h4>
             <form class="form-signin" role="form" method="POST" action="{{ url('/login') }}">
                 {{ csrf_field() }}

@@ -22,6 +22,12 @@ Route::resource('/users_types', 'UsersTypesController');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
+        $areas = \App\AreasModel::all();
+        return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas]);
+    });
+
+    Route::get('/monitor', function () {
+        $settings = \App\SettingsModel::find(1)->toArray();
         return view('dashboard/monitor', ['settings' => $settings]);
     });
 
