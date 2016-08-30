@@ -4,6 +4,7 @@
 var exec = require('child_process').exec;
 var fs = require("fs");
 var INTERVAL_SCAN_PORTS = 30;//default in seg
+
 var nmap = function (onData, settings) {
     var output_text = '';
     INTERVAL_SCAN_PORTS = parseInt(settings['time_interval_for_scan_ports']);
@@ -17,7 +18,7 @@ var nmap = function (onData, settings) {
             latency = parseFloat(latency.replace(/[() a-z] latency/, ''));
             var ip = list[i].match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/g)[0];
             var list_open_ports = list[i].match(/\d+\/[a-zA-Z]{1,5}[ \t]+[a-zA-Z]{4,6}[ \t]+[a-zA-Z-() 0-9]+/g);
-            if (mac == null && i + 1 == list.length) {
+            if (mac == null || i + 1 == list.length) {
                 mac = 'server';
             } else {
                 mac = mac[0]

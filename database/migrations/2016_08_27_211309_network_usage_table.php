@@ -15,7 +15,7 @@ class NetworkUsageTable extends Migration
         Schema::create('network_usage', function (Blueprint $table) {
             $table->increments('id');
             $table->string('ip');
-            $table->float('size');
+            $table->double('size', 15, 3);
             $table->date('date');
         });
     }

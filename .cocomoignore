@@ -1,0 +1,8 @@
+/vendor
+/tests
+/storage
+/node_modules
+/bootstrap
+/public
+/.idea
+/.git
