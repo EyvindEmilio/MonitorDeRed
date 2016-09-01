@@ -317,13 +317,14 @@
     <!--suppress JSUnresolvedVariable -->
     <script type="text/javascript">
         angular.module('Monitor')
-                .service('SocketService', function ($API, $rootScope) {
+                .service('SocketService', function () {
                     var socket = io.connect('http://{{ $_SERVER['SERVER_NAME']}}:8890');
                     return {
                         socket: socket
                     }
                 });
         angular.module('Monitor').run(function ($rootScope, ModelService, SocketService) {
+            Highcharts.setOptions({global: {useUTC: false, timezone: 'America/La_Paz'}});
             $rootScope.GLOBALS = {};
             $rootScope.GLOBALS.active_pcs = {};
             $rootScope.GLOBALS.alerts = [];
@@ -356,14 +357,14 @@
             }
 
             socket.on('alert_denial_service', function (data) {
-                console.log('denial');
                 removeAlert('alert_denial_service');
                 $rootScope.GLOBALS.alerts.push({
                     name: 'alert_denial_service',
-                    message: 'Se ha detectado, posible incidente de denegacion de servicios de ip: ' + data.ip
+                    message: 'Se ha detectado, posible incidente de denegacion de servicios de ip: ' + data.src
                 });
                 $rootScope.$apply();
             });
+
             socket.on('active_pcs', function (data) {
                 $rootScope.GLOBALS.alert_number_pc_inactive = 0;
                 $rootScope.GLOBALS.active_pcs = data;

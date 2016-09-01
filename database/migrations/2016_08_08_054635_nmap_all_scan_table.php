@@ -16,7 +16,6 @@ class NmapAllScanTable extends Migration
             $table->increments('id');
             $table->string('ip');
             $table->string('mac');
-            $table->string('latency');
             $table->string('manufacturer');
         });
     }

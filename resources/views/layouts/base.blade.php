@@ -48,7 +48,6 @@
 <script src="{{ asset('app/js/highcharts-ng.min.js')}} "></script>
 <script src="{{ asset('app/js/ui-bootstrap-tpls-2.0.1.min.js')}} "></script>
 <script src="{{ asset('app/js/app.js')}} "></script>
-
 <!-- services -->
 <script src="{{ asset('app/js/services/InterceptorService.js')}} "></script>
 <script src="{{ asset('app/js/services/ModelService.js')}} "></script>
@@ -71,6 +70,7 @@
 <script src="{{ asset('js/jquery.scrollTo.min.js') }}"></script>
 <script src="{{ asset('js/jQuery-slimScroll-1.3.0/jquery.slimscroll.js') }}"></script>
 <script src="{{ asset('js/jquery.nicescroll.js') }}"></script>
+<script src="{{ asset('js/highcharts-more.js')}} "></script>
 <!--[if lte IE 8]>
 <script language="javascript" type="text/javascript" src="{{ asset('js/flot-chart/excanvas.min.js') }}"></script>
 <![endif]-->

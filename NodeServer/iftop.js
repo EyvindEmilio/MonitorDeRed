@@ -5,6 +5,7 @@
 var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
+var max_usage = 0;
 
 var iftop = function (onData, settings) {
     var args = [];
@@ -20,6 +21,9 @@ var iftop = function (onData, settings) {
         chage_by_truncate = true;
     });
 
+    setInterval(function () {
+        max_usage = 0;
+    }, 7000);
     var change_by_truncate = false;
 
     watch('iftop.out', function () {
@@ -68,6 +72,7 @@ var iftop = function (onData, settings) {
                 if (!exist) {
                     list_objects.push(object);
                 }
+                if (object.size > max_usage) max_usage = object.size;
             }
 
             fs.truncate('iftop.out', 0, function () {
@@ -93,7 +98,16 @@ var iftop = function (onData, settings) {
             onData(list_objects);
         });
     });
+
     return this;
 };
 
 module.exports.start = iftop;
+module.exports.getMaxUsage = function () {
+    return max_usage;
+};
+/*
+ iftop(function (data) {
+ console.log(data);
+ console.log('******************************');
+ }, {network_address: '192.168.1.0', mask: 24});*/

@@ -15,8 +15,10 @@
         <div class="col-md-7">
             <section class="panel">
                 <div class="panel-heading"> Dispositivos
-                    <img src="{{ asset('images/infinite_loader.gif')}}" width="30" class="pull-right">
-                    <span class="badge pull-right" ng-bind="GLOBALS.active_pcs.date | amParse:'HH:mm:ss'"></span>
+                    <input ng-model="filter_list_pcs_scanned" placeholder="Buscar.." class="form-control input-sm"
+                           style="display: inline-block;width: auto">
+                    <img src="{{ asset('images/infinite_loader.gif')}}" width="30" class="pull-right"
+                         title="Escaneando...">
                 </div>
                 <div class="panel-body">
                     <table class="table table-bordered table-condensed table-hover cf small">
@@ -27,21 +29,23 @@
                             <th>IP</th>
                             <th>MAC</th>
                             <th>Fabricante</th>
+                            <th>Tipo de dispositivo / Area</th>
                             <th>Estado</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="pc in GLOBALS.active_pcs.data" ng-click="scan_pc(pc)"
-                            style="cursor: pointer;@{{ (pc.name=='-- desconocido --')?'background: rgba(241, 196, 15,0.1) !important;':'' }}">
+                        <tr ng-repeat="pc in GLOBALS.active_pcs.data | filter: filter_list_pcs_scanned"
+                            data-ng-click="scan_pc(pc)"
+                            style="cursor: pointer;@{{ (pc.name=='-- Desconocido --')?'background: rgba(241, 196, 15,0.1) !important;':'' }}">
                             <td ng-bind="$index +1 "></td>
                             <td ng-bind="pc.name"></td>
                             <td ng-bind="pc.ip"></td>
-                            <td ng-bind="pc.mac"></td>
-                            <td ng-bind="pc.manufacturer"></td>
+                            <td ng-bind="pc.mac || '--'"></td>
+                            <td ng-bind="pc.manufacturer || '--'"></td>
+                            <td ng-bind="pc.device_type?(pc.device_type+' / '+pc.area):'--'"></td>
                             <td>
                                 <button class="btn btn-xs btn-@{{pc.status_network=='Y'?'success':'danger'}}"
-                                        style="width: 100%">
-                                    @{{pc.status_network=='Y'?'Activo':'inactivo'}}
+                                        style="width: 100%" ng-bind="pc.status_network=='Y'?'Activo':'inactivo'">
                                 </button>
                             </td>
                         </tr>
@@ -55,12 +59,21 @@
 
         <div class="col-md-5">
             <section class="panel">
-                <div class="panel-heading"> Escaneo de dispositvo @{{pc_scanned.name}}
+                <div class="panel-heading">
+                    <span>Escaneo de dispositvo</span>
+                    <span ng-show="pc_scanned.name">: @{{pc_scanned.name +' ('+pc_scanned.ip+')'}}</span>
                     <img src="/images/gif_loader.gif" width="20" class="pull-right"
                          ng-show="!finish_loading_scan_device">
                 </div>
                 <div class="panel-body">
-                    <table class="table table-bordered table-striped table-condensed cf small">
+                    <p ng-show="!pc_scanned.name" class="alert alert-info">
+                        ** Selecciones el dispositivo a escanear puertos
+                    </p>
+                    <p ng-show="!finish_loading_scan_device" class="alert alert-info">
+                        Escaneando . . .
+                    </p>
+                    <table class="table table-bordered table-striped table-condensed cf small"
+                           ng-show="pc_scanned.name">
                         <thead class="cf">
                         <tr>
                             <th>#</th>
@@ -84,6 +97,11 @@
                             <td ng-bind="pc_scan.service"></td>
                         </tr>
                         </tbody>
+                        <tfoot>
+                        <tr ng-show="pc_scanned.name && pc_scanned.list_ports.length == 0 " class="alert-success">
+                            <td colspan="5">No se ha detectado puertos abiertos en el dispositivo</td>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </section>
@@ -150,8 +168,8 @@
                             gridLineWidth: 1,
                             maxZoom: 30 * 1000,
                             minZoom: 30 * 1000,
-//                            min: (new Date(moment().subtract(30, 'seconds'))).getUTCDate(),
-//                            max: (new Date(moment())).getUTCDate()
+                            min: (new Date(moment().subtract(30, 'seconds'))).getTime(),
+                            max: (new Date(moment())).getTime()
 
                         },
                         yAxis: {
@@ -183,16 +201,6 @@
                     $rootScope.chart_monitor_tmp.series = [];
                     setInterval(function () {
                         $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
-                        /*$rootScope.chart_monitor.series = [];
-                         for (var i = 0; i < $rootScope.chart_monitor_tmp.series.length; i++) {
-                         for (var j = 0; j < $rootScope.chart_monitor_tmp.series[i].data.length; j++) {
-                         //$rootScope.chart_monitor_tmp.series[i].data[j].x = (new Date()).getTime();
-                         }
-                         $rootScope.chart_monitor.series.push($rootScope.chart_monitor_tmp.series[i]);
-                         }
-
-                         $rootScope.chart_monitor_tmp.series = [];
-                         $rootScope.$apply();*/
                         $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getTime();
                         $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(30, 'seconds'))).getTime();
                         $rootScope.$apply();
@@ -214,7 +222,7 @@
                             }
                             var pcs = $rootScope.GLOBALS.active_pcs.data;
                             var exist_in_list = false;
-                            if (pcs == 'undefined')return;
+                            if (pcs == undefined)return;
 
                             for (var index = 0; index < pcs.length; index++) {
                                 if (packet_received.src.ip == pcs[index].ip) {
@@ -258,80 +266,9 @@
 
                                 $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
                             }
-//                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getUTCDate();
-//                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(1, 'hour'))).getUTCDate();
-
-                            //$rootScope.chart_monitor.redraw();
-//                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
                             $rootScope.$apply();
                         }
                     });
-                    /*socket.on('captured_packets', function (data) {
-                     //                        console.log(data);
-
-                     var packet_received = data;
-                     var exist_pc = false;
-                     var index_exist_pc = 0;
-                     for (var j = 0; j < $rootScope.chart_monitor_tmp.series.length; j++) {
-                     if ($rootScope.chart_monitor_tmp.series[j].ip == packet_received.dst.ip) {
-                     exist_pc = true;
-                     index_exist_pc = j;
-                     break;
-                     }
-                     }
-                     var pcs = $rootScope.GLOBALS.active_pcs.data;
-                     var exist_in_list = false;
-                     if (pcs == 'undefined')return;
-
-                     for (var index = 0; index < pcs.length; index++) {
-                     if (packet_received.dst.ip == pcs[index].ip) {
-                     exist_in_list = true;
-                     }
-                     }
-                     if (!exist_in_list) {
-                     return;
-                     }
-
-                     if (!exist_pc) {
-                     $rootScope.chart_monitor_tmp.series.push({
-                     data: [{x: (new Date()).getTime(), y: data.size}],
-                     name: getNameFromIp(data.dst.ip) || data.dst.ip,
-                     ip: data.dst.ip
-                     });
-                     } else {
-                     if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length >= 60) {
-                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.splice(0, 1);
-                     }
-                     console.log($rootScope.chart_monitor_tmp.series[index_exist_pc].data);
-                     if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length > 1
-                     && new Date($rootScope.chart_monitor_tmp.series[index_exist_pc].data[$rootScope.chart_monitor_tmp.series[index_exist_pc].data.length - 2].x).getSeconds() != (new Date()).getSeconds()) {
-                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
-                     x: (new Date()).getTime(),
-                     y: data.size
-                     });
-                     } else if ($rootScope.chart_monitor_tmp.series[index_exist_pc].data.length < 2) {
-                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.push({
-                     x: (new Date()).getTime(),
-                     y: data.size
-                     });
-                     }
-
-                     function sortFunction(a, b) {
-                     var dateA = new Date(a.x).getTime();
-                     var dateB = new Date(b.x).getTime();
-                     return dateA > dateB ? 1 : -1;
-                     }
-
-                     $rootScope.chart_monitor_tmp.series[index_exist_pc].data.sort(sortFunction);
-                     }
-                     //                        $rootScope.chart_monitor.xAxis.max = (new Date(moment())).getUTCDate();
-                     //                        $rootScope.chart_monitor.xAxis.min = (new Date(moment().subtract(1, 'hour'))).getUTCDate();
-
-                     //$rootScope.chart_monitor.redraw();
-                     //                        $rootScope.chart_monitor.series = $rootScope.chart_monitor_tmp.series;
-                     $rootScope.$apply();
-                     });*/
-
                 });
     </script>
 @endsection
