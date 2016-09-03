@@ -17,7 +17,7 @@ angular.module('Monitor')
             return $resource(url, {id: '@id'}, {
                 update: {method: 'PUT'},
                 create: {method: 'POST', transformRequest: angular.identity, headers: {'Content-Type': undefined}},
-                patch: {method: 'PATCH', transformRequest: angular.identity, headers: {'Content-Type': undefined}}
+                patch: {method: 'POST', transformRequest: angular.identity, headers: {'Content-Type': undefined}}
             });
         }
 

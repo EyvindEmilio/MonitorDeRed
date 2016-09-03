@@ -233,6 +233,7 @@ angular.module('Monitor')
                     element.html(text || '--');
                     $compile(element.contents())(scope);
                 }
+
                 //noinspection JSUnresolvedVariable
                 if (scope.itemCrud.custom) {
                     var bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
@@ -242,6 +243,10 @@ angular.module('Monitor')
                     if (scope.itemCrud.model.onView) {
                         compile_text(scope.itemCrud.model.onView(bindObject));
                     }
+                } else if (scope.itemCrud.type == 'image') {
+                    var imgSrc = scope.itemCrudModel[scope.itemCrud.name] || 'images/no-img-available.jpg';
+                    var imageTemplate = '<img src="' + imgSrc + '" width="' + (scope.itemCrud.width || 80) + '" height="' + (scope.itemCrud.height || 80) + '">';
+                    compile_text(imageTemplate);
                 } else {
                     var bindText = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
                     compile_text(bindText);
@@ -300,7 +305,7 @@ angular.module('Monitor')
                     '<div ng-class="itemF.type==\'boolean\'?\'col-sm-2\':\'col-sm-9\'" form-model="newFormModel" form-item-crud="itemF" form-item-init="(ngModel.default_fields | filter: {name: itemF.name})[0]" form-item-disabled="((ngModel.disabled_fields | filter: itemF.name)[0])?true:false" ></div></div>' +
                     '<i class="clearfix"></i><div class="text-center">' +
                     (scope.initForm ? ('<button type="submit" class="btn btn-success btn-sm mH5"><span class="glyphicon glyphicon-floppy-save"></span> Actualizar datos</button>') : ('<button type="submit" class="btn btn-success btn-sm mH5"> <span class="glyphicon glyphicon-floppy-save"></span> Guardar</button>') ) +
-                        /*'<button type="button" class="btn btn-primary btn-sm mH5" ng-click="cleanForm()"><span class="glyphicon glyphicon-remove"></span> Limpiar</button>' +*/
+                    /*'<button type="button" class="btn btn-primary btn-sm mH5" ng-click="cleanForm()"><span class="glyphicon glyphicon-remove"></span> Limpiar</button>' +*/
                     '<button type="button" class="btn btn-info btn-sm mH5" ng-click="modalInstance.cancel()"><span class="glyphicon glyphicon-minus"></span> Cancelar</button>' +
                     '</div>' +
                     '</form>';
@@ -391,7 +396,8 @@ angular.module('Monitor')
                         var aa = angular.copy(formDataModels);
                         aa.id = formDataModels[scope.ngModel.id_name];
                         //sendData.patch({id: formDataModels[scope.ngModel.id_name]}, formData, successRequest, errorRequest);
-                        sendData.patch(aa, formData, successRequest, errorRequest);
+                        formData.append('id', aa.id);
+                        sendData.patch({}, formData, successRequest, errorRequest);
                     } else {
                         sendData.create(formData, successRequest, errorRequest);
                     }
@@ -454,7 +460,7 @@ angular.module('Monitor')
                     } else if (scope.formItemCrud.type === 'color') {
                         templateReturn = '<input type="color" class="form-control input-sm" data-ng-model="formModel[formItemCrud.name]" placeholder="{{formItemCrud.label}}" data-ng-required="formItemCrud.required" title="{{formItemCrud.label}}"  data-ng-disabled="formItemDisabled">';
                     } else if (scope.formItemCrud.type === 'image') {
-                        templateReturn = '<label for="{{ formItemCrud.name+\'_id\' }}" class="cursor-pointer"> <img ng-src="{{(  ( (formModel[formItemCrud.name].length) > 0 ? formModel[formItemCrud.name]:false) ||  formItemCrud[formItemCrud.name+\'_id\']) || \'images/no-img-available.png\'}}" width="130" height="130"><span class="mH5" ng-bind-html="formModel[formItemCrud.name].name || \'Seleccione una imagen\'"></span></label>' +
+                        templateReturn = '<label for="{{ formItemCrud.name+\'_id\' }}" class="cursor-pointer"> <img ng-src="{{(  ( (formModel[formItemCrud.name].length) > 0 ? formModel[formItemCrud.name]:false) ||  formItemCrud[formItemCrud.name+\'_id\']) || \'images/no-img-available.jpg\'}}" width="130" height="130"><span class="mH5" ng-bind-html="formModel[formItemCrud.name].name || \'Seleccione una imagen\'"></span></label>' +
                             '<input id="{{ (formItemCrud.name+\'_id\')}}"  type="file" class="input-sm hidden" image-preview="formItemCrud[formItemCrud.name+\'_id\']" data-ng-model="formModel[formItemCrud.name]" file-model="formModel[formItemCrud.name]" placeholder="{{formItemCrud.label}}" data-ng-required="formItemCrud.required" title="{{formItemCrud.label}}" accept="image/jpg, image/jpeg, image/png" data-ng-disabled="formItemDisabled">';
                     } else if (scope.formItemCrud.type === 'password') {
                         templateReturn = '<input type="password" class="form-control input-sm" data-ng-model="formModel[formItemCrud.name]" placeholder="{{formItemCrud.label}}" data-ng-required="formItemCrud.required" data-ng-disabled="formItemDisabled">';

@@ -5,7 +5,7 @@
  * @description
  * # FileModel
  */
-angular.module('planillasApp')
+angular.module('Monitor')
     .directive('fileModel', function ($parse) {
         return {
             restrict: 'A',

@@ -131,10 +131,11 @@ angular.module('Monitor')
                     context.resource = $API.DeviceTypes;
                     context.fields = [
                         {label: 'Nombre', name: 'name', type: 'string', required: true},
+                        {label: 'Imagen', name: 'image', type: 'image', required: false, width: 120, height: 120},
                         {label: 'Descripcion', name: 'description', type: 'string', required: true},
                         {label: 'Fabricante', name: 'manufacturer', type: 'string', required: true}
                     ];
-                    context.showFields = ['name', 'description', 'manufacturer'];
+                    context.showFields = ['name', 'image', 'description', 'manufacturer'];
                     context.nameView = 'name';
                     context.config = {title: 'Tipos de dispositivos'};
                     context.add_new = true;

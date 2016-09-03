@@ -12,5 +12,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiBaseModel extends Model
 {
- 
+
 }
