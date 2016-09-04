@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Expr\Cast\Int_;
 
 class BaseController extends Controller
 {
@@ -21,7 +22,23 @@ class BaseController extends Controller
             $page_size = Input::get('page_size');
         }
         $response = $this->indexShowCustom($_model, $input);
-        $response = $response->paginate($page_size);
+        $response = $response->paginate($page_size)->toArray();
+
+        if (isset($_model->image_fields)) {
+            $image_fields = $_model->image_fields;
+            for ($i = 0; $i < sizeof($image_fields); $i++) {
+                $field = $image_fields[$i]['field'];
+                $path = $image_fields[$i]['path'];
+                for ($j = 0; $j < sizeof($response['data']); $j++) {
+                    if (isset($response['data'][$j][$field]) && $response['data'][$j][$field] != null && $response['data'][$j][$field] != '') {
+                        $response['data'][$j][$field] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $response['data'][$j][$field];
+                    } else {
+                        $response['data'][$j][$field] = null;
+                    }
+                }
+            }
+        }
+
         return Response::create($response);
     }
 
@@ -74,12 +91,28 @@ class BaseController extends Controller
         /** @noinspection PhpUndefinedMethodInspection */
         $input = Input::all();
         $response = $this->indexShowCustom($_model, $input, 'SHOW');
-        $response = $response->find($id);
+        $response = $response->find($id)->toArray();
+
+        if (isset($_model->image_fields)) {
+            $image_fields = $_model->image_fields;
+            for ($i = 0; $i < sizeof($image_fields); $i++) {
+                $field = $image_fields[$i]['field'];
+                $path = $image_fields[$i]['path'];
+                if (isset($response[$field]) && $response[$field] != null && $response[$field] != '') {
+                    $response[$field] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $response[$field];
+                } else {
+                    $response[$field] = null;
+                }
+            }
+        }
         return Response::create($response);
     }
 
     public function _store(Model $_model)
     {
+        if (Input::has('id')) {
+            return $this->_update(Input::get('id'), $_model);
+        }
         //	try {
         if (isset($_model->rules)) {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -96,12 +129,31 @@ class BaseController extends Controller
             }
         } else {
             /** @noinspection PhpUndefinedMethodInspection */
-            $data = $_model->create(Input::all());
+            $input = Input::all();
+            $input = $this->parseImageFields($_model, $input);
+            $data = $_model->create($input);
             return Response::create($data);
         }
         //} catch (QueryException $e) {
         //				return Response::create(['detail' => 'No se pudo agregar registro'], 401);
         //	}
+    }
+
+    public function parseImageFields($_model, $input)
+    {
+        if (isset($_model->image_fields)) {
+            $image_fields = $_model->image_fields;
+            for ($i = 0; $i < sizeof($image_fields); $i++) {
+                $field = $image_fields[$i]['field'];
+                if (!Input::file($field)) break;
+                $extension = Input::file($field)->getClientOriginalExtension();
+                $path = $image_fields[$i]['path'];
+                $new_name = uniqid("img_") . '.' . $extension;
+                Input::file($field)->move($path, $new_name);
+                $input[$field] = $new_name;
+            }
+        }
+        return $input;
     }
 
     public function _update($id, Model $_model)
@@ -128,7 +180,10 @@ class BaseController extends Controller
                 }
             } else {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $_model->find($id)->update(Input::all());
+                $input = Input::all();
+                $input = $this->parseImageFields($_model, $input);
+                /** @noinspection PhpUndefinedMethodInspection */
+                $_model->find($id)->update($input);
                 return Response::create($_model->find($id));
             }
         } catch (QueryException $e) {

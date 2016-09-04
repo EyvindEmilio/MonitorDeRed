@@ -8,8 +8,10 @@ class DeviceTypesModel extends ApiBaseModel
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'manufacturer', 'description',
+        'name', 'image', 'manufacturer', 'description',
     ];
+
+    public $image_fields = [['field' => 'image', 'path' => 'images/device_types']];
 
     public function getSearchFields()
     {

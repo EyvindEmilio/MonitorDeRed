@@ -15,8 +15,8 @@ class device_types extends Seeder
         DB::table('device_types')->delete();
         DB::table('device_types')->truncate();
         DB::table('device_types')->delete();
-        DeviceTypesModel::create(['id' => 1, 'name' => 'Switch', 'description' => 'Switch capa 3', 'manufacturer' => 'Cisco']);
-        DeviceTypesModel::create(['id' => 2, 'name' => 'Router', 'description' => '--', 'manufacturer' => 'Cisco']);
-        DeviceTypesModel::create(['id' => 3, 'name' => 'Computadora', 'description' => '--', 'manufacturer' => 'TP-LINK']);
+        DeviceTypesModel::create(['id' => 1, 'image' => '', 'name' => 'Switch', 'description' => 'Switch capa 3', 'manufacturer' => 'Cisco']);
+        DeviceTypesModel::create(['id' => 2, 'image' => '', 'name' => 'Router', 'description' => '--', 'manufacturer' => 'Cisco']);
+        DeviceTypesModel::create(['id' => 3, 'image' => '', 'name' => 'Computadora', 'description' => '--', 'manufacturer' => 'TP-LINK']);
     }
 }

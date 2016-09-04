@@ -54,6 +54,8 @@
 <script src="{{ asset('app/js/services/ApiService.js')}} "></script>
 <!-- directives -->
 <script src="{{ asset('app/js/directives/CrudGenerator.js')}} "></script>
+<script src="{{ asset('app/js/directives/FileModel.js')}} "></script>
+<script src="{{ asset('app/js/directives/ImagePreview.js')}} "></script>
 <!-- filtes -->
 <script src="{{ asset('app/js/filters/CrudFilter.js')}} "></script>
 <script src="{{ asset('app/js/filters/momentdate.js')}} "></script>
