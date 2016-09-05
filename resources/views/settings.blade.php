@@ -89,7 +89,7 @@
                         $rootScope.save_params_settings = function () {
                             var data = angular.copy($rootScope.settings);
                             data.id = 1;
-                            (new $API.Settings()).$patch(data)
+                            (new $API.Settings()).$update(data)
                                     .then(function (data) {
                                         window.location.reload();
                                     })
