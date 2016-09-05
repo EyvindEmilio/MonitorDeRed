@@ -103,6 +103,10 @@
                         })
                     };
 
+                    function convertToMbps(value) {
+                        return Math.round(value * 100 / 1024.0) / 100.0;
+                    }
+
                 });
     </script>
 @endsection
