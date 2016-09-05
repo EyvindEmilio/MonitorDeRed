@@ -16,8 +16,8 @@ class settings extends Seeder
         DB::table('settings')->truncate();
         DB::table('settings')->delete();
         SettingsModel::create(['id' => 1,
-            'network_address' => '192.168.1.0',
-            'gateway' => '192.168.1.1',
+            'network_address' => '192.168.137.0',
+            'gateway' => '192.168.137.1',
             'mask' => 24,
             'time_interval_for_sending_monitoring_data' => 1,
             'time_interval_for_scan_ports' => 30,
