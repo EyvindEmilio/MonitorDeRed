@@ -31,6 +31,30 @@ Route::group(['middleware' => 'auth'], function () {
         return view('dashboard/monitor', ['settings' => $settings]);
     });
 
+    Route::get('/consumo', function () {
+        $settings = \App\SettingsModel::find(1)->toArray();
+        $areas = \App\AreasModel::all();
+        $consumo_per_areas = DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
+        //print_r($consumo_per_areas[1]);
+        return view('dashboard/consumo', ['settings' => $settings, 'areas' => $areas, 'consumo_per_areas' => $consumo_per_areas]);
+    });
+
+    Route::get('/info_per_area', function () {
+        $input = \Illuminate\Support\Facades\Input::all();
+        if (isset($input['id'])) {
+            $id = $input['id'];
+            $days_comsumo = [];
+            for ($i = 0; $i < 7; $i++) {
+                $consumo_area = DB::select('SELECT date(now() - INTERVAL ' . $i . ' DAY) as date, network_usage.ip, network_usage.size, devices.name, areas.name AS area, areas.id AS area_id, (SELECT device_types.name FROM device_types WHERE device_types.id = devices.device_type) as type FROM network_usage LEFT JOIN devices ON devices.ip = network_usage.ip LEFT JOIN areas ON areas.id = devices.area WHERE network_usage.date = date(now() - INTERVAL ' . $i . ' DAY) AND areas.id = ' . $id);
+//                $consumo_area['date']
+                array_push($days_comsumo, $consumo_area);
+            }
+            return \Illuminate\Http\Response::create($days_comsumo);
+        } else {
+            return \Illuminate\Http\Response::create(['id' => 0], 400);
+        }
+    });
+
     Route::get('/attacks', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
         return view('dashboard/attacks', ['settings' => $settings]);
