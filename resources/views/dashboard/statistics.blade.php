@@ -2,55 +2,50 @@
 
 @section('main-content')
     <div ng-controller="DashboardController">
-      {{--  <div class="col-md-10">
+        <div class="col-md-12">
             <section class="panel">
-                <div class="panel-heading"> SISTEMA DE MONITOREO DE RED</div>
+                <div class="panel-heading"> Informacion</div>
                 <div class="panel-body">
-
-                </div>
-            </section>
-        </div>--}}
-
-
-        <div class="col-md-8">
-            <section class="panel">
-                <div class="panel-body">
-                    <uib-tabset active="active">
-                        <uib-tab ng-repeat="area in areas" index="$index" heading="@{{ area.name }}">
-                            <highchart id="chart@{{$index}}" config="areas[$index].chart"></highchart>
-                            <hr>
-                            <table class="table table-bordered table-condensed table-hover cf small">
-                                <thead>
-                                <th>#</th>
-                                <th>Maquina</th>
-                                <th>Dirección IP</th>
-                                <th>Dispositivo/Area</th>
-                                <th>Uso de red</th>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="pcs_areas in areas[$index].chart.series[0].data">
-                                    <td ng-bind="$index+1"></td>
-                                    <td ng-bind="pcs_areas.name_text"></td>
-                                    <td ng-bind="pcs_areas.ip"></td>
-                                    <td ng-bind="pcs_areas.area + ' / '+pcs_areas.type"></td>
-                                    <td ng-bind="pcs_areas.y_name"></td>
-                                </tr>
-                                </tbody>
-
-                                <tfoot ng-show="areas[$index].chart.series[0].data.length == 0">
-                                <tr class="alert-info">
-                                    <td colspan="7" class="text-center"> -- No se encontraron registros --</td>
-                                </tr>
-                                </tfoot>
-                            </table>
-                        </uib-tab>
-                    </uib-tabset>
+                    <div class="profile-nav alt col-sm-4">
+                        <section class="panel  text-center">
+                            <div class="user-heading alt wdgt-row bg-green">
+                                <i class="fa fa-shield "></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="wdgt-value">
+                                    <h1 class="count" ng-bind="alerts_today.length"></h1>
+                                    <p ng-bind="alerts_today.length+' alertas(s) detectadas el dia de hoy'"></p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-sm-4 text-center pull-right">
+                        <b>Velocidad en red</b>
+                        <highchart id="chart_max_current_usage" config="chart_max_current_usage"></highchart>
+                    </div>
                 </div>
             </section>
         </div>
 
-        <div class="col-md-2">
-            <highchart id="chart_max_current_usage" config="chart_max_current_usage"></highchart>
+        <div class="col-md-12">
+            <section class="panel">
+                <div class="panel-heading"> SISTEMA DE MONITOREO DE RED</div>
+                <div class="panel-body">
+                    <div class="profile-nav alt col-sm-3" ng-repeat="list_con in list_connected">
+                        <section class="panel  text-center">
+                            <div class="user-heading alt wdgt-row terques-bg">
+                                <img ng-src="@{{ list_con.image }}" height="90">
+                            </div>
+                            <div class="panel-body">
+                                <div class="wdgt-value">
+                                    <h1 class="count" ng-bind="list_con.connected+' / '+list_con.total"></h1>
+                                    <p ng-bind="list_con.connected+' '+list_con.device_type+'(s) conectados'"></p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 @endsection
@@ -60,6 +55,8 @@
                 .controller('DashboardController', function ($rootScope, $API, $resource, $http, $interval, toastr, SocketService) {
                     var socket = SocketService.socket, i;
                     $rootScope.areas = {!! $areas !!};
+                    $rootScope.list_connected = {!! json_encode($list_connected) !!};
+                    $rootScope.alerts_today = {!! json_encode($alerts_today) !!};
 
                     $rootScope.chart_max_current_usage = {
                         options: {
@@ -108,7 +105,6 @@
                     }
 
                     socket.on('statistics', function (data) {
-                        console.log(data);
                         daily_statistics(data.daily_per_areas);
                         max_current_usage(data.current_max_usage);
                     });

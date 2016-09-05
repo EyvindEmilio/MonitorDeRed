@@ -23,7 +23,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
         $areas = \App\AreasModel::all();
-        return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas]);
+        $device_types = \App\DeviceTypesModel::all()->toArray();
+
+        $list_connected = array();
+        for ($i = 0; $i < sizeof($device_types); $i++) {
+            $connected = (DB::select('SELECT COUNT(*) As connected, (SELECT COUNT(*) FROM devices WHERE devices.device_type = ' . $device_types[$i]['id'] . ') AS total from devices INNER JOIN nmap_all_scan on nmap_all_scan.ip = devices.ip INNER JOIN device_types on device_types.id = devices.device_type WHERE devices.device_type = ' . $device_types[$i]['id']))[0];
+            $connected->device_type = $device_types[$i]['name'];
+            $connected->image = 'http://' . $_SERVER['HTTP_HOST'] . '/images/device_types/' . $device_types[$i]['image'];
+            array_push($list_connected, $connected);
+        }
+
+        $alerts_today = DB::select('SELECT * FROM `alerts` WHERE DATE(created_at) = DATE(NOW())');
+
+        return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas, 'list_connected' => $list_connected, 'alerts_today' => $alerts_today]);
     });
 
     Route::get('/monitor', function () {
@@ -32,11 +44,8 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/consumo', function () {
-        $settings = \App\SettingsModel::find(1)->toArray();
-        $areas = \App\AreasModel::all();
         $consumo_per_areas = DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
-        //print_r($consumo_per_areas[1]);
-        return view('dashboard/consumo', ['settings' => $settings, 'areas' => $areas, 'consumo_per_areas' => $consumo_per_areas]);
+        return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
     });
 
     Route::get('/info_per_area', function () {

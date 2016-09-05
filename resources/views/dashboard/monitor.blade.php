@@ -12,7 +12,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <section class="panel">
                 <div class="panel-heading"> Dispositivos
                     <input ng-model="filter_list_pcs_scanned" placeholder="Buscar.." class="form-control input-sm"
@@ -45,7 +45,8 @@
                             <td ng-bind="pc.device_type?(pc.device_type+' / '+pc.area):'--'"></td>
                             <td>
                                 <button class="btn btn-xs btn-@{{pc.status_network=='Y'?'success':'danger'}}"
-                                        style="width: 100%" ng-bind="pc.status_network=='Y'?'Activo':'inactivo'">
+                                        style="width: 100%" ng-bind="pc.status_network=='Y'?'o':'-'"
+                                        title="@{{ pc.status_network=='Y'?'Activo':'Inactivo' }}">
                                 </button>
                             </td>
                         </tr>
@@ -57,10 +58,11 @@
             </section>
         </div>
 
-        <div class="col-md-5">
+        <div class="col-md-4">
             <section class="panel">
                 <div class="panel-heading">
                     <span>Escaneo de dispositvo</span>
+                    <br>
                     <span ng-show="pc_scanned.name">: @{{pc_scanned.name +' ('+pc_scanned.ip+')'}}</span>
                     <img src="/images/gif_loader.gif" width="20" class="pull-right"
                          ng-show="!finish_loading_scan_device">
@@ -76,7 +78,6 @@
                            ng-show="pc_scanned.name">
                         <thead class="cf">
                         <tr>
-                            <th>#</th>
                             <th>Puerto</th>
                             <th>Tipo</th>
                             <th>Estado</th>
@@ -85,7 +86,6 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="pc_scan in pc_scanned.list_ports">
-                            <td ng-bind="$index +1 "></td>
                             <td ng-bind="pc_scan.port" class="text-right"></td>
                             <td ng-bind="pc_scan.type"></td>
                             <td>
