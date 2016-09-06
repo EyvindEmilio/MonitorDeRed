@@ -46,7 +46,7 @@ angular.module('Monitor')
                         var modalInstance;
                         if (Model.name === "accounts") {
                             modalInstance = $uibModal.open({
-                                templateUrl: 'app/views/modals/profile_modal.html',
+                                templateUrl: 'app/views/crud/modals/profile_modal.html',
                                 controller: 'ProfileController',
                                 size: 'md',
                                 resolve: {
@@ -107,7 +107,7 @@ angular.module('Monitor')
                         var modalInstance;
                         if (Model.name === "accounts") {
                             modalInstance = $uibModal.open({
-                                templateUrl: 'app/views/modals/profile_modal.html',
+                                templateUrl: 'app/views/crud/modals/profile_modal.html',
                                 controller: 'ProfileController',
                                 size: 'md',
                                 resolve: {
@@ -172,8 +172,7 @@ angular.module('Monitor')
                     }
 
                     scope.loadData = loadData;
-
-                    $templateRequest('app/views/crud/view.html').then(function (data) {
+                    $templateRequest('app/views/crud/' + (scope.Model.view_template || 'view.html')).then(function (data) {
                         element.html(data);
                         $compile(element.contents())(scope);
                     });
@@ -234,12 +233,13 @@ angular.module('Monitor')
                     $compile(element.contents())(scope);
                 }
 
+                var bindObject;
                 //noinspection JSUnresolvedVariable
                 if (scope.itemCrud.custom) {
-                    var bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
+                    bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
                     compile_text(scope.itemCrud.custom(bindObject, scope.itemCrudModel));
                 } else if (scope.itemCrud.model) {
-                    var bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
+                    bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
                     if (scope.itemCrud.model.onView) {
                         compile_text(scope.itemCrud.model.onView(bindObject));
                     }

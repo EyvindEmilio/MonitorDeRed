@@ -59,6 +59,7 @@
 <!-- filtes -->
 <script src="{{ asset('app/js/filters/CrudFilter.js')}} "></script>
 <script src="{{ asset('app/js/filters/momentdate.js')}} "></script>
+<script src="{{ asset('app/js/controllers/ProfileController.js')}} "></script>
 
 <!-- Angular Scripts -->
 

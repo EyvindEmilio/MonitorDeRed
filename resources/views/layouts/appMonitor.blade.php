@@ -10,7 +10,7 @@
 
                 <a href="index.html" class="logo">
                     <img src="{{ asset('images/icono-emi.svg') }} " alt="Icono emi" style="max-height: 40px">
-                    Red EMI
+                    EMI
                 </a>
                 <div class="sidebar-toggle-box">
                     <div class="fa fa-bars"></div>
@@ -20,7 +20,8 @@
             <div class="nav notify-row" id="top_menu">
                 <!--  notification start -->
                 <ul class="nav top-menu">
-                    <!-- notification dropdown start-->
+                {{--<h4 class="pull-left">SISTEMA DE MONITOREO DE RED</h4>--}}
+                <!-- notification dropdown start-->
                     <li id="header_notification_bar" class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <i class="fa fa-bell-o"></i>
@@ -55,12 +56,14 @@
                 <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <img alt="" src="images/icon_default_user.png" width="33">
+                            <img alt="" ng-src="@{{ currentUser.image || 'images/icon_default_user.png' }}" height="40"
+                                 width="40">
                             <span class="username">{{ Auth::user()->first_name }}</span>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu extended logout">
-                            <li><a href=""><i class=" fa fa-suitcase"></i>Perfil de usuario</a></li>
+                            <li><a href="" ng-click="show_profile()"><i class=" fa fa-suitcase"></i>Perfil de
+                                    usuario</a></li>
                             <li><a href="{{ url('/settings') }}"><i class="fa fa-cog"></i> Configuracion</a></li>
                             <li><a href="/logout"><i class="fa fa-key"></i> Salir</a></li>
                         </ul>
@@ -193,7 +196,9 @@
                         socket: socket
                     }
                 });
-        angular.module('Monitor').run(function ($rootScope, ModelService, SocketService) {
+        angular.module('Monitor').run(function ($rootScope, ModelService, SocketService, $uibModal) {
+            $rootScope.currentUser =  {!! Auth::user() !!};
+            $rootScope.currentUser.image = "{!! 'http://'.$_SERVER['HTTP_HOST'].'/images/users/'.Auth::user()->image !!}";
             Highcharts.setOptions({global: {useUTC: false, timezone: 'America/La_Paz'}});
             $rootScope.GLOBALS = {};
             $rootScope.GLOBALS.active_pcs = {};
@@ -280,6 +285,22 @@
             });
 
             $rootScope.contracts_model = new ModelService.UsersTypes();
+
+            $rootScope.show_profile = function () {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'app/views/crud/modals/profile_modal.html',
+                    controller: 'ProfileController',
+                    size: 'md',
+                    resolve: {
+                        user: function () {
+                            return $rootScope.currentUser;
+                        },
+                        Model: function () {
+                            return new ModelService.Users();
+                        }
+                    }
+                });
+            };
         });
     </script>
 @endsection

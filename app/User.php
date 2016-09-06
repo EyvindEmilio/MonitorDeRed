@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -12,8 +13,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'user_type', 'status', 'email', 'password',
+        'first_name', 'last_name', 'image', 'user_type', 'status', 'email', 'password',
     ];
+
+    public $image_fields = [['field' => 'image', 'path' => 'images/users']];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -34,8 +37,9 @@ class User extends Authenticatable
         return ['user_type'];
     }
 
-    public function docente()
+    public function setPasswordAttribute($password)
     {
-        return $this->hasOne('App\user_type_model', 'id', 'user_type');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->attributes['password'] = Hash::make($password);
     }
 }

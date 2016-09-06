@@ -131,11 +131,11 @@ angular.module('Monitor')
                     context.resource = $API.DeviceTypes;
                     context.fields = [
                         {label: 'Nombre', name: 'name', type: 'string', required: true},
-                        {label: 'Imagen', name: 'image', type: 'image', required: false, width: 120, height: 120},
+                        {label: 'Logo', name: 'image', type: 'image', required: false, width: 120, height: 120},
                         {label: 'Descripcion', name: 'description', type: 'string', required: true},
                         {label: 'Fabricante', name: 'manufacturer', type: 'string', required: true}
                     ];
-                    context.showFields = ['name', 'image', 'description', 'manufacturer'];
+                    context.showFields = ['image', 'name', 'description', 'manufacturer'];
                     context.nameView = 'name';
                     context.config = {title: 'Tipos de dispositivos'};
                     context.add_new = true;
@@ -204,6 +204,7 @@ angular.module('Monitor')
                     context.fields = [
                         {label: 'Nombres', name: 'first_name', type: 'string', required: true},
                         {label: 'Apellidos', name: 'last_name', type: 'string', required: true},
+                        {label: 'Foto de Perfil', name: 'image', type: 'image', required: false},
                         {label: 'Correo', name: 'email', type: 'string', required: true},
                         {
                             label: 'Estado', name: 'status', type: 'boolean', required: false,
@@ -228,13 +229,16 @@ angular.module('Monitor')
                         }
                     ];
                     context.extra_fields = [{label: 'Fecha de creacion', name: 'created_at'}];
-                    context.showFields = ['first_name', 'last_name', 'email', 'status', 'user_type'];
+                    context.showFields = ['image', 'first_name', 'last_name', 'email', 'status', 'user_type'];
                     context.nameView = 'email';
                     context.config = {title: 'Lista de usuarios'};
                     context.add_new = true;
                     context.delete = true;
                     context.editable = true;
                     context.searchEnabled = true;
+                    context.table_name = 'account';
+                    context.name = 'accounts';
+                    // context.view_template = 'view_2.html';
                 },
                 config
             );

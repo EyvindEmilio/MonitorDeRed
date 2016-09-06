@@ -1,0 +1,81 @@
+<div class="modal-header text-center">
+    <h3 class="modal-title"
+        ng-bind="is_new?'Registro de nuevo usuario':'Editar usuario'"></h3>
+    <h4 class="modal-title" ng-show="!is_new">{{_user.user_type.name}}</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="formProfile" name="formProfile">
+        <div class="form-group">
+            <label class="col-sm-3 control-label small">Nombres y Apellidos: </label>
+            <div class="col-sm-4">
+                <input ng-model="user.first_name" type="text" class="form-control input-sm"
+                       placeholder="Nombre completo" required>
+            </div>
+            <div class="col-sm-5">
+                <input ng-model="user.last_name" type="text" class="form-control input-sm"
+                       placeholder="Apellido paterno y materno" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label small">Email: </label>
+            <div class="col-sm-9">
+                <input ng-model="user.email" type="email" class="form-control input-sm"
+                       placeholder="Correo electrónico" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label small">Tipo de usuario: </label>
+            <div class="col-sm-4">
+                <select ng-model="user.user_type.id" class="form-control input-sm"
+                        ng-options="user_type.id as user_type.name for user_type in list_user_type"
+                        data-ng-disabled="disable_user_type"
+                        required></select>
+            </div>
+            <label class="col-sm-2 control-label small">Cuenta activa: </label>
+            <div class="col-sm-3">
+                <input type="checkbox" ng-model="user.status" class="form-control input-sm"
+                       data-ng-disabled="disable_active_account">
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label small">Foto de perfil: </label>
+            <div class="col-sm-9">
+                <label for="photo" class="cursor-pointer">
+                    <img
+                            ng-src="{{(((user.image.length) > 0 ? user.image:false) || photo_preview) || 'images/no-img-available.jpg'}}"
+                            width="130" height="130">
+                    <span class="mH5" ng-bind="user.image.name|| 'Seleccione una imagen'"></span></label>
+                <input id="photo" type="file" class="input-sm hidden" image-preview="photo_preview"
+                       data-ng-model="user.image" file-model="user.image" accept="image/jpg, image/jpeg, image/png">
+            </div>
+        </div>
+
+        <div class="text-center" ng-show="!is_new">
+            <button type="button" class="btn btn-info btn-sm" ng-click="update_password = !update_password">
+                {{update_password ? 'Mantener contraseña':'Modificar contraseña'}}
+            </button>
+        </div>
+        <br>
+        <div class="form-group" uib-collapse="!update_password">
+            <label class="col-sm-3 control-label small">Nueva contraseña: </label>
+            <div class="col-sm-9">
+                <input ng-model="new_password" type="password" class="form-control input-sm"
+                       minlength="6"
+                       placeholder="contraseña" ng-required="update_password">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10 text-right">
+                <button type="s" ng-click="save()" class="btn btn-success" data-ng-disabled="formProfile.$invalid">
+                    {{text_save}}
+                </button>
+                <button type="button" ng-click="cancel()" class="btn btn-info">Cancelar</button>
+            </div>
+        </div>
+
+    </form>
+</div>
