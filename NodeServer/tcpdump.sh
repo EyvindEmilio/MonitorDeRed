@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-tcpdump -i eth0 -nnq -t not arp -l
+tcpdump -i wlan0 -nnq -t not arp -l

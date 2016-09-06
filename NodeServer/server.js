@@ -16,7 +16,7 @@ var net_discover = require('./net_discover');
 var connection = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
-    password: 'emilio',
+    password: 'adriana95',
     database: 'monitor_red'
 });
 
