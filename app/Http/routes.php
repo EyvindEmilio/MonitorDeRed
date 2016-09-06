@@ -12,6 +12,8 @@
 */
 
 
+use Dompdf\Dompdf;
+
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
@@ -27,7 +29,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         $list_connected = array();
         for ($i = 0; $i < sizeof($device_types); $i++) {
-            $connected = (DB::select('SELECT COUNT(*) As connected, (SELECT COUNT(*) FROM devices WHERE devices.device_type = ' . $device_types[$i]['id'] . ') AS total from devices INNER JOIN nmap_all_scan on nmap_all_scan.ip = devices.ip INNER JOIN device_types on device_types.id = devices.device_type WHERE devices.device_type = ' . $device_types[$i]['id']))[0];
+            $connected = DB::select('SELECT COUNT(*) As connected, (SELECT COUNT(*) FROM devices WHERE devices.device_type = ' . $device_types[$i]['id'] . ') AS total from devices INNER JOIN nmap_all_scan on nmap_all_scan.ip = devices.ip INNER JOIN device_types on device_types.id = devices.device_type WHERE devices.device_type = ' . $device_types[$i]['id']);
+            $connected = $connected [0];
             $connected->device_type = $device_types[$i]['name'];
             $connected->image = 'http://' . $_SERVER['HTTP_HOST'] . '/images/device_types/' . $device_types[$i]['image'];
             array_push($list_connected, $connected);
@@ -46,6 +49,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/consumo', function () {
         $consumo_per_areas = DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
         return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
+    });
+
+    Route::get('/test_pdf', function () {
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml('<h1>hello world</h1>');
+        $dompdf->setPaper('letter', 'portrait');
+        $dompdf->render();
+        $dompdf->stream('reporte', ['Attachment' => 0]);
     });
 
     Route::get('/info_per_area', function () {
