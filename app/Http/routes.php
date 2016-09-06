@@ -51,14 +51,23 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/info_per_area', function () {
         $input = \Illuminate\Support\Facades\Input::all();
         if (isset($input['id'])) {
-            $id = $input['id'];
-            $days_comsumo = [];
-            for ($i = 0; $i < 7; $i++) {
-                $consumo_area = DB::select('SELECT date(now() - INTERVAL ' . $i . ' DAY) as date, network_usage.ip, network_usage.size, devices.name, areas.name AS area, areas.id AS area_id, (SELECT device_types.name FROM device_types WHERE device_types.id = devices.device_type) as type FROM network_usage LEFT JOIN devices ON devices.ip = network_usage.ip LEFT JOIN areas ON areas.id = devices.area WHERE network_usage.date = date(now() - INTERVAL ' . $i . ' DAY) AND areas.id = ' . $id);
-//                $consumo_area['date']
-                array_push($days_comsumo, $consumo_area);
+            $id = $input['id'];//id_area
+
+            $sd = $input['start_date'];
+            $ed = $input['end_date'];
+
+            $start_date = new DateTime($sd);
+            $end_date = (new DateTime($ed))->modify('+1 day');
+            $date_range = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
+            $consumo = [];
+            foreach ($date_range as $date) {
+                $current_date = $date->format('Y-m-d');
+                $size = \App\NetworkUsageModel::where('date', $current_date)
+                    ->join('devices', 'devices.ip', '=', 'network_usage.ip')
+                    ->where('devices.area', $id)->sum('size');
+                array_push($consumo, ['date' => $current_date, 'size' => $size]);
             }
-            return \Illuminate\Http\Response::create($days_comsumo);
+            return \Illuminate\Http\Response::create($consumo);
         } else {
             return \Illuminate\Http\Response::create(['id' => 0], 400);
         }

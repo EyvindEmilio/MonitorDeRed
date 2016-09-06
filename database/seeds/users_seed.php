@@ -16,7 +16,7 @@ class users_seed extends Seeder
         DB::table('users')->delete();
         DB::table('users')->truncate();
         DB::table('users')->delete();
-        User::create(['id' => 1, 'first_name' => 'Judy Adriana', 'last_name' => 'Quispe Geronimo', 'status' => 'Y', 'user_type' => 1, 'email' => 'q@q.com', 'password' => bcrypt('judy')]);
-        User::create(['id' => 2, 'first_name' => 'Luis Alberto', 'last_name' => 'Ruiz Lara', 'status' => 'Y', 'user_type' => 2, 'email' => 'w@w.com', 'password' => bcrypt('luis')]);
+        User::create(['id' => 1, 'first_name' => 'Judy Adriana', 'last_name' => 'Quispe Geronimo', 'status' => 'Y', 'user_type' => 1, 'email' => 'q@q.com', 'password' => 'judy']);
+        User::create(['id' => 2, 'first_name' => 'Luis Alberto', 'last_name' => 'Ruiz Lara', 'status' => 'Y', 'user_type' => 2, 'email' => 'w@w.com', 'password' => 'luis']);
     }
 }

@@ -27,7 +27,8 @@
                         <th>Consumo hasta la fecha (Mb)</th>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="areas in consumo_por_areas.series" ng-click="info_per_area(areas.id_area)">
+                        <tr ng-repeat="areas in consumo_por_areas.series" ng-click="info_per_area(areas.id_area)"
+                            style="cursor: pointer">
                             <td ng-bind="$index+1"></td>
                             <td ng-bind="areas.name"></td>
                             <td ng-bind="areas.data[0].y+ ' Mb'"></td>
@@ -37,55 +38,61 @@
                 </div>
             </section>
         </div>
-        {{--
-                <div class="col-md-12">
-                    <section class="panel">
-                        <div class="panel-heading"> Consumo de maquinas por area area</div>
-                        <div class="panel-body">
-                            <highchart id="chart_area" config="chart_area"></highchart>
-                        </div>
-                    </section>
-                </div>
-                --}}
 
 
-        <div class="col-md-8">
+        <div class="col-md-12" uib-collapse="!current_filter_area">
             <section class="panel">
+                <div class="panel-heading"> Consumo de maquinas por area area</div>
                 <div class="panel-body">
-                    <uib-tabset active="active">
-                        <uib-tab ng-repeat="area in areas" index="$index" heading="@{{ area.name }}">
-                            <highchart id="chart@{{$index}}" config="areas[$index].chart"></highchart>
-                            <hr>
-                            <table class="table table-bordered table-condensed table-hover cf small">
-                                <thead>
-                                <th>#</th>
-                                <th>Maquina</th>
-                                <th>Dirección IP</th>
-                                <th>Dispositivo/Area</th>
-                                <th>Uso de red</th>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="pcs_areas in areas[$index].chart.series[0].data">
-                                    <td ng-bind="$index+1"></td>
-                                    <td ng-bind="pcs_areas.name_text"></td>
-                                    <td ng-bind="pcs_areas.ip"></td>
-                                    <td ng-bind="pcs_areas.area + ' / '+pcs_areas.type"></td>
-                                    <td ng-bind="pcs_areas.y_name"></td>
-                                </tr>
-                                </tbody>
-
-                                <tfoot ng-show="areas[$index].chart.series[0].data.length == 0">
-                                <tr class="alert-info">
-                                    <td colspan="7" class="text-center"> -- No se encontraron registros --</td>
-                                </tr>
-                                </tfoot>
-                            </table>
-                        </uib-tab>
-                    </uib-tabset>
+                    <section class="text-center">
+                        Fecha Inicio:<input type="date" ng-model="interval_filter_area.start_date">
+                        Fecha Fin: <input type="date" ng-model="interval_filter_area.end_date">
+                    </section>
+                    <highchart id="chart_area" config="chart_area"></highchart>
                 </div>
             </section>
         </div>
 
+        {{--
+
+                <div class="col-md-8">
+                    <section class="panel">
+                        <div class="panel-body">
+                            <uib-tabset active="active">
+                                <uib-tab ng-repeat="area in areas" index="$index" heading="@{{ area.name }}">
+                                    <highchart id="chart@{{$index}}" config="areas[$index].chart"></highchart>
+                                    <hr>
+                                    <table class="table table-bordered table-condensed table-hover cf small">
+                                        <thead>
+                                        <th>#</th>
+                                        <th>Maquina</th>
+                                        <th>Dirección IP</th>
+                                        <th>Dispositivo/Area</th>
+                                        <th>Uso de red</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="pcs_areas in areas[$index].chart.series[0].data">
+                                            <td ng-bind="$index+1"></td>
+                                            <td ng-bind="pcs_areas.name_text"></td>
+                                            <td ng-bind="pcs_areas.ip"></td>
+                                            <td ng-bind="pcs_areas.area + ' / '+pcs_areas.type"></td>
+                                            <td ng-bind="pcs_areas.y_name"></td>
+                                        </tr>
+                                        </tbody>
+
+                                        <tfoot ng-show="areas[$index].chart.series[0].data.length == 0">
+                                        <tr class="alert-info">
+                                            <td colspan="7" class="text-center"> -- No se encontraron registros --</td>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </uib-tab>
+                            </uib-tabset>
+                        </div>
+                    </section>
+                </div>
+
+        --}}
 
     </div>
 @endsection
@@ -124,22 +131,43 @@
                     $rootScope.chart_area = {
                         options: {
                             chart: {type: 'spline', height: 400},
-                            tooltip: {pointFormat: 'Transferencia: {point.y_name}'}
+                            tooltip: {pointFormat: 'Transferencia: {point.y} Mb'}
                         },
                         title: {text: 'Consumo por area'},
-                        xAxis: {type: 'category'},
+                        xAxis: {
+                            title: {text: 'Fecha'},
+                            lineWidth: 1,
+                            type: 'datetime',
+                            dateTimeLabelFormats: { // don't display the dummy year
+                                date: '%d:%m'
+                            }
+                        },
                         yAxis: {title: {text: 'Transferencia total(Mb)'}},
                         series: []
                     };
 
-                    $rootScope.info_per_area = function (id_area) {
-                        $http.get('/info_per_area?id=' + id_area).then(function (data) {
-                            var list_ips = data.data;
-                            $rootScope.chart_area.series = [];
-                            var data_areas;
-                            for (i = 0; i < list_ips.length; i++) {
+                    $rootScope.interval_filter_area = {
+                        start_date: new Date((new moment()).subtract(7, 'days')),
+                        end_date: new Date(new moment())
+                    };
+                    $rootScope.current_filter_area = null;
 
+                    $rootScope.$watch('interval_filter_area', function (new_data) {
+                        $rootScope.info_per_area($rootScope.current_filter_area);
+                    }, true);
+
+                    $rootScope.info_per_area = function (id_area) {
+                        $rootScope.current_filter_area = id_area;
+                        $http.get('/info_per_area?id=' + id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D')).then(function (data) {
+                            data = data.data;
+                            for (i = 0; i < data.length; i++) {
+                                data[i].name = data[i].date;
+                                data[i].y = convertToMbps(data[i].size);
                             }
+                            $rootScope.chart_area.series = [{
+                                name: 'Tranderencia de datos entre ' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + ' a ' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D'),
+                                data: data
+                            }];
                         })
                     };
 
@@ -236,7 +264,8 @@
                         $rootScope.chart_monitor.series.push(series_array_name);
                     };
 
-                });
+                })
+        ;
     </script>
 @endsection
 
