@@ -23,10 +23,9 @@ var iftop = function (onData, settings) {
             var lines = matches[i].split('\n');
             var ip = lines[0].match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)[0];
             var ip_d = lines[1].match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)[0];
-            var size_len = lines[1].match(/[0-9.]+[a-zA-Z]+/)[0];
+            var size_len = lines[1].match(/[0-9.,]+[a-zA-Z]+/)[0];
             var len = size_len.match(/[a-zA-Z]+/)[0];
-            var size = parseFloat(size_len.match(/[0-9.]+/)[0]);
-            console.log("st->" + size);
+            var size = parseFloat(size_len.match(/[0-9.,]+/)[0]);
             if (len === 'b') {
                 size = size / 1024;
             } else if (len === 'Mb') {
