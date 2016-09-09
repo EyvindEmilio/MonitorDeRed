@@ -33,6 +33,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-md-2">Interfaz de red</label>
+                            <div class="col-md-6">
+                                <select class="form-control" ng-model="settings.interface"
+                                        ng-options="inter for inter in ['eth0','eth1','wlan0','wlan1']"
+                                        required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-md-2">Intervalo de tiempo para envio de datos de monitoreo</label>
                             <div class="col-md-6">
                                 <input type="number" class="form-control" min="1" max="5" placeholder="En segundos"
@@ -90,7 +99,7 @@
                             var data = angular.copy($rootScope.settings);
                             data.id = 1;
                             (new $API.Settings()).$update(data)
-                                    .then(function (data) {
+                                    .then(function () {
                                         window.location.reload();
                                     })
                         };

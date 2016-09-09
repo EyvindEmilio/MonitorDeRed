@@ -3,8 +3,6 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var redis = require('redis');
 var mysql = require('mysql');
-var exec = require('child_process').exec;
-var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
 var iftop = require('./iftop');
@@ -13,33 +11,48 @@ var statistics = require('./statistics');
 var tcpdump = require('./tcpdump');
 var net_discover = require('./net_discover');
 
-var connection = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'adriana95',
-    database: 'monitor_red'
-});
-
-connection.connect();
+var ENV = [];
+var connection = null;
 var number_clients = 0;
 var SETTINGS = {};
 var INTERVAL_SEND_DATA_MONITORING = 1;//default 1 seg
 
-connection.query('SELECT * from settings', function (err, rows) {
-    if (err) throw err;
-    SETTINGS = rows[0];
-    SETTINGS.connection = connection;//assign connection for other modules
-    INTERVAL_SEND_DATA_MONITORING = parseInt(SETTINGS['time_interval_for_sending_monitoring_data']);
-
-    server.listen(8890);
-
-    // scan_network();
-    start_scan_network();
-    start_bandwidth();
-    start_nmap_ports();
-    start_statistics();
-    start_denial_service();
+fs.readFile('../.env', 'utf-8', function (err, data) {
+    var TMP = data.match(/[A-Z_]{1,100}=[a-zA-Z0-9.,_$:=/ ]{0,100}/g);
+    if (TMP == null) return 0;
+    ENV = [];
+    for (var i = 0; i < TMP.length; i++) {
+        var conf = TMP[i].split('=');
+        ENV[conf[0]] = conf[1];
+    }
+    start_app();
 });
+
+function start_app() {
+    connection = mysql.createConnection({
+        host: ENV['DB_HOST'],
+        user: ENV['DB_USERNAME'],
+        password: ENV['DB_PASSWORD'],
+        database: ENV['DB_DATABASE']
+    });
+
+    connection.connect();
+    connection.query('SELECT * from settings', function (err, rows) {
+        if (err) throw err;
+        SETTINGS = rows[0];
+        SETTINGS.connection = connection;//assign connection for other modules
+        INTERVAL_SEND_DATA_MONITORING = parseInt(SETTINGS['time_interval_for_sending_monitoring_data']);
+
+        server.listen(8890);
+        // scan_network();
+        start_scan_network();
+        start_bandwidth();
+        start_nmap_ports();
+        start_statistics();
+        start_denial_service();
+    });
+
+}
 
 function send_data_scan(list_device_capture) {
     connection.query('SELECT devices.name,devices.ip, areas.name AS area,device_types.name AS device_type from devices INNER JOIN areas on areas.id = devices.area INNER JOIN device_types on device_types.id = devices.device_type WHERE devices.status = "Y"', function (err, rows) {

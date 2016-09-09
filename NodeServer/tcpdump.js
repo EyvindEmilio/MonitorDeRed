@@ -44,7 +44,7 @@ var tcpdump = function (onData, settings) {
 
     function init() {
         // var child = spawn('./tcpdump.sh');
-        var child = spawn('tcpdump', ' -i ' + settings['interface'] + ' -nnq -t not arp -l'.split(' '));
+        var child = spawn('tcpdump', (' -i ' + settings['interface'] + ' -nnq -t not arp -l').split(' '));
 
         child.stdout.on('data', function (data) {
             var lines = data.toString('utf8').split('\n');

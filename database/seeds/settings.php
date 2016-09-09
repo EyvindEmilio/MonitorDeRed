@@ -16,8 +16,8 @@ class settings extends Seeder
         DB::table('settings')->truncate();
         DB::table('settings')->delete();
         SettingsModel::create(['id' => 1,
-            'network_address' => '192.168.137.0',
-            'gateway' => '192.168.137.1',
+            'network_address' => '10.42.0.0',
+            'gateway' => '10.42.0.1',
             'mask' => 24,
             'interface' => 'wlan0',
             'time_interval_for_sending_monitoring_data' => 1,
