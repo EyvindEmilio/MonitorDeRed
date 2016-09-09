@@ -26,6 +26,14 @@ function convertToMb($value)
     return round($value / 1024.0, 2);
 }
 
+Route::get('/close', function () {
+    if (!Auth::check()) return redirect()->to('login');
+    if (\Illuminate\Support\Facades\Auth::user()['user_type'] == 1) {
+        return redirect()->to('/');
+    }
+    return view('close_system');
+});
+
 Route::get('/report_for_areas', function () {
     date_default_timezone_set('America/La_Paz');
     setlocale(LC_TIME, 'es_ES');
@@ -126,6 +134,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/devices', function () {
         return view('devices_and_areas.devices');
     });
+
     Route::get('/device_types', function () {
         return view('devices_and_areas.device_types');
     });

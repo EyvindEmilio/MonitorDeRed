@@ -80,16 +80,8 @@
                 <!-- sidebar menu start-->
                 <div class="leftside-navigation">
                     <ul class="sidebar-menu" id="nav-accordion">
-                        {{--     <li>
-                                 <a class="{{ (Request::is('/'))?'active':'' }}" href="/">
-                                     <i class="fa fa-dashboard"></i>
-                                     <span>Dashboard</span>
-                                 </a>
-                             </li>--}}
-
-
                         <li class="sub-menu">
-                            <a href="javascript:;" class="active">
+                            <a class="active">
                                 <i class="fa fa-laptop"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -111,7 +103,6 @@
                                 </li>
                             </ul>
                         </li>
-
 
                         <li>
                             <a class="{{ (Request::is('standard'))?'active':'' }}" href="{{ url('/standard') }}">
@@ -198,7 +189,7 @@
                 });
         angular.module('Monitor').run(function ($rootScope, ModelService, SocketService, $uibModal) {
             $rootScope.currentUser =  {!! Auth::user() !!};
-            $rootScope.currentUser.image = "{!! 'http://'.$_SERVER['HTTP_HOST'].'/images/users/'.Auth::user()->image !!}";
+            $rootScope.currentUser.image = "{!! Auth::user()->image?('http://'.$_SERVER['HTTP_HOST'].'/images/users/'.Auth::user()->image):null !!}";
             Highcharts.setOptions({global: {useUTC: false, timezone: 'America/La_Paz'}});
             $rootScope.GLOBALS = {};
             $rootScope.GLOBALS.active_pcs = {};
