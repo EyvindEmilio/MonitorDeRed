@@ -17,6 +17,7 @@ class SettingsTable extends Migration
             $table->string('network_address');
             $table->string('gateway');
             $table->integer('mask');
+            $table->string('interface');
             $table->integer('time_interval_for_sending_monitoring_data')->default(1);
             $table->integer('time_interval_for_scan_ports')->default(30);
             $table->integer('dos_time_for_check_attacks')->default(30);

@@ -19,6 +19,7 @@ class settings extends Seeder
             'network_address' => '192.168.137.0',
             'gateway' => '192.168.137.1',
             'mask' => 24,
+            'interface' => 'wlan0',
             'time_interval_for_sending_monitoring_data' => 1,
             'time_interval_for_scan_ports' => 30,
             'dos_time_for_check_attacks' => 30,

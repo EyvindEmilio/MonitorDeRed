@@ -8,7 +8,7 @@ var watch = require('node-watch');
 var max_usage = 0;
 
 var iftop = function (onData, settings) {
-    var args = ('-i wlan0 -nN -t -o 2s -F ' + settings['network_address'] + '/' + settings['mask']).split(' ');
+    var args = ('-i ' + settings['interface'] + ' -nN -t -o 2s -F ' + settings['network_address'] + '/' + settings['mask']).split(' ');
 
     cmd = spawn('iftop', args);
     cmd.stdout.on('data', function (data) {
