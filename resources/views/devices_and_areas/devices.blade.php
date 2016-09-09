@@ -9,7 +9,16 @@
             @section('angular-scripts')
                 <script type="text/javascript">
                     angular.module('Monitor').run(function ($rootScope, ModelService) {
-                        $rootScope.devices = new ModelService.Devices();
+                        @if(\App\User::isAdminCollaborator())
+                                $rootScope.devices = new ModelService.Devices();
+                        @else
+                                $rootScope.devices = new ModelService.Devices({
+                            editable: false,
+                            add_new: false,
+                            delete: false
+                        });
+
+                        @endif
                     });
                 </script>
             @endsection

@@ -9,7 +9,15 @@
             @section('angular-scripts')
                 <script type="text/javascript">
                     angular.module('Monitor').run(function ($rootScope, ModelService) {
-                        $rootScope.device_types_model = new ModelService.DeviceTypes();
+                        @if(\App\User::isAdminCollaborator())
+                                $rootScope.device_types_model = new ModelService.DeviceTypes();
+                        @else
+                                $rootScope.device_types_model = new ModelService.DeviceTypes({
+                            editable: false,
+                            add_new: false,
+                            delete: false
+                        });
+                        @endif
                     });
                 </script>
             @endsection

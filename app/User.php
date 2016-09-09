@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
@@ -41,5 +42,23 @@ class User extends Authenticatable
     {
         /** @noinspection PhpUndefinedMethodInspection */
         $this->attributes['password'] = Hash::make($password);
+    }
+
+    public static function isAdmin()
+    {
+        if (Auth::check()) {
+            return Auth::user()['user_type'] == 1;
+        } else {
+            return false;
+        }
+    }
+
+    public static function isAdminCollaborator()
+    {
+        if (Auth::check()) {
+            return (Auth::user()['user_type'] == 1) || (Auth::user()['user_type'] == 2);
+        } else {
+            return false;
+        }
     }
 }

@@ -9,7 +9,15 @@
             @section('angular-scripts')
                 <script type="text/javascript">
                     angular.module('Monitor').run(function ($rootScope, ModelService) {
-                        $rootScope.users_model = new ModelService.Users();
+                        @if(\App\User::isAdmin())
+                                $rootScope.users_model = new ModelService.Users();
+                        @else
+                                $rootScope.users_model = new ModelService.Users({
+                            editable: false,
+                            add_new: false,
+                            delete: false
+                        });
+                        @endif
                     });
                 </script>
             @endsection
