@@ -151,9 +151,12 @@
                             }, tooltip: {
                                 headerFormat: '<b>{series.name}</b><br>',
                                 pointFormat: 'Transferencia: {point.y:.2f} Kbps'
+                            }, lang: {
+                                loading: "Cargando.."
                             }
                         },
                         series: [],
+                        loading: true,
                         title: {
                             text: 'Monitoreo de red'
                         },
@@ -207,6 +210,7 @@
                     }, 1000);
 
                     socket.on('captured_packets_2', function (data_in) {
+                        $rootScope.chart_monitor.loading = false;
                         var data = data_in;
                         for (var k = 0; k < data_in.length; k++) {
                             data = data_in[k];

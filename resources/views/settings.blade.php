@@ -109,7 +109,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-3">Sistema habilitado</label>
+                            <label class="col-md-3">Estado del sistema</label>
                             <div class="col-md-6">
                                 @if(\App\User::isAdmin())
                                     <select class="form-control" ng-model="settings.active_system" required>
