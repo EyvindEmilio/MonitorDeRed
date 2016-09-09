@@ -2,20 +2,14 @@
 
 @section('main-content')
     <div ng-controller="DashboardController">
-        {{--  <div class="col-md-10">
-              <section class="panel">
-                  <div class="panel-heading"> SISTEMA DE MONITOREO DE RED</div>
-                  <div class="panel-body">
-
-                  </div>
-              </section>
-          </div>--}}
-
-
         <div class="col-md-12">
             <section class="panel">
                 <div class="panel-body">
                     Consumo de trafico de red por Areas
+                    <a class="pull-right" href="/report_for_areas" target="_blank" download="Reporte por Area">
+                        Descargar Reporte
+                        <img src="/images/pdf.png" width="40">
+                    </a>
                 </div>
                 <div class="panel-heading">
                     <highchart id="consumo_por_areas" config="consumo_por_areas"></highchart>
@@ -27,7 +21,7 @@
                         <th>Consumo hasta la fecha (Mb)</th>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="areas in consumo_por_areas.series" ng-click="info_per_area(areas.id_area)"
+                        <tr ng-repeat="areas in consumo_por_areas.series" ng-click="info_per_area(areas)"
                             style="cursor: pointer">
                             <td ng-bind="$index+1"></td>
                             <td ng-bind="areas.name"></td>
@@ -38,7 +32,6 @@
                 </div>
             </section>
         </div>
-
 
         <div class="col-md-12" uib-collapse="!current_filter_area">
             <section class="panel">
@@ -52,47 +45,6 @@
                 </div>
             </section>
         </div>
-
-        {{--
-
-                <div class="col-md-8">
-                    <section class="panel">
-                        <div class="panel-body">
-                            <uib-tabset active="active">
-                                <uib-tab ng-repeat="area in areas" index="$index" heading="@{{ area.name }}">
-                                    <highchart id="chart@{{$index}}" config="areas[$index].chart"></highchart>
-                                    <hr>
-                                    <table class="table table-bordered table-condensed table-hover cf small">
-                                        <thead>
-                                        <th>#</th>
-                                        <th>Maquina</th>
-                                        <th>Dirección IP</th>
-                                        <th>Dispositivo/Area</th>
-                                        <th>Uso de red</th>
-                                        </thead>
-                                        <tbody>
-                                        <tr ng-repeat="pcs_areas in areas[$index].chart.series[0].data">
-                                            <td ng-bind="$index+1"></td>
-                                            <td ng-bind="pcs_areas.name_text"></td>
-                                            <td ng-bind="pcs_areas.ip"></td>
-                                            <td ng-bind="pcs_areas.area + ' / '+pcs_areas.type"></td>
-                                            <td ng-bind="pcs_areas.y_name"></td>
-                                        </tr>
-                                        </tbody>
-
-                                        <tfoot ng-show="areas[$index].chart.series[0].data.length == 0">
-                                        <tr class="alert-info">
-                                            <td colspan="7" class="text-center"> -- No se encontraron registros --</td>
-                                        </tr>
-                                        </tfoot>
-                                    </table>
-                                </uib-tab>
-                            </uib-tabset>
-                        </div>
-                    </section>
-                </div>
-
-        --}}
 
     </div>
 @endsection
@@ -137,10 +89,7 @@
                         xAxis: {
                             title: {text: 'Fecha'},
                             lineWidth: 1,
-                            type: 'datetime',
-                            dateTimeLabelFormats: { // don't display the dummy year
-                                date: '%d:%m'
-                            }
+                            type: 'category'
                         },
                         yAxis: {title: {text: 'Transferencia total(Mb)'}},
                         series: []
@@ -156,9 +105,11 @@
                         $rootScope.info_per_area($rootScope.current_filter_area);
                     }, true);
 
-                    $rootScope.info_per_area = function (id_area) {
-                        $rootScope.current_filter_area = id_area;
-                        $http.get('/info_per_area?id=' + id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D')).then(function (data) {
+                    $rootScope.info_per_area = function (area) {
+                        if (area == null)return;
+                        $rootScope.current_filter_area = area;
+                        $rootScope.chart_area.title.text = area.name;
+                        $http.get('/info_per_area?id=' + area.id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D')).then(function (data) {
                             data = data.data;
                             for (i = 0; i < data.length; i++) {
                                 data[i].name = data[i].date;

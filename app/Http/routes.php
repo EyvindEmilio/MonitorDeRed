@@ -21,6 +21,47 @@ Route::get('/home', 'HomeController@index');
 Route::resource('/users', 'UsersController');
 Route::resource('/users_types', 'UsersTypesController');
 
+function convertToMb($value)
+{
+    return round($value / 1024.0, 2);
+}
+
+Route::get('/report_for_areas', function () {
+    date_default_timezone_set('America/La_Paz');
+    setlocale(LC_TIME, 'es_ES');
+    $list_values = array();
+    $list = getConsumo();
+    $area_list = $list;
+    for ($i = 0; $i < sizeof($list); $i++) {
+        $size = ($list[$i]->network_usage == null ? 0 : $list[$i]->network_usage);
+        $name = substr($list[$i]->area, 0, 14);
+        if (strlen($name) != strlen($list[$i]->area)) $name .= '..';
+        $list_values[$name] = convertToMb($size);
+        $list[$i]->network_usage = convertToMb($size);
+    }
+    $settings = array(
+        'back_colour' => 'none', 'back_stroke_colour' => 'none',
+        'axis_text_space_v' => '40', 'graph_title' => 'Uso de red por Areas',
+        'axis_text_callback_y' => function ($val) {
+            return $val . " Mb";
+        }
+    );
+    $graph = new SVGGraph(700, 400, $settings);
+    $graph->values = $list_values;
+    $graph = $graph->Fetch('BarGraph', false);
+    $graph64 = 'data:image/svg;base64,' . base64_encode($graph);
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml(view('reports/test', ['area_list' => $area_list, 'graph64' => $graph64]));
+    $dompdf->setPaper('letter', 'portrait');
+    $dompdf->render();
+    $dompdf->stream('Reporte por Area', ['Attachment' => 0]);
+});
+
+function getConsumo()
+{
+    return DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
+}
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         $settings = \App\SettingsModel::find(1)->toArray();
@@ -47,17 +88,10 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/consumo', function () {
-        $consumo_per_areas = DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
+        $consumo_per_areas = getConsumo();
         return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
     });
 
-    Route::get('/test_pdf', function () {
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml('<h1>hello world</h1>');
-        $dompdf->setPaper('letter', 'portrait');
-        $dompdf->render();
-        $dompdf->stream('reporte', ['Attachment' => 0]);
-    });
 
     Route::get('/info_per_area', function () {
         $input = \Illuminate\Support\Facades\Input::all();

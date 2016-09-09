@@ -22,7 +22,8 @@
     "autoload": {
         "classmap": [
             "database",
-            "app/dompdf"
+            "app/dompdf",
+            "app/SVGGraph"
         ],
         "psr-4": {
             "App\\": "app/"
