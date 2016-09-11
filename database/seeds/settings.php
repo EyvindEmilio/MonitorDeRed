@@ -24,6 +24,7 @@ class settings extends Seeder
             'time_interval_for_scan_ports' => 30,
             'dos_time_for_check_attacks' => 30,
             'dos_max_packets_received' => 10000,
+            'interval_snmp_scan' => 30,
             'active_system' => 'Y']);
     }
 }

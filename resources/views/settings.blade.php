@@ -109,6 +109,19 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-md-3">Intervalo de escaneo SNMP</label>
+                            <div class="col-md-6">
+                                @if(\App\User::isAdmin())
+                                    <input type="number" class="form-control" min="10" max="180"
+                                           placeholder="En segundos"
+                                           required ng-model="settings.interval_snmp_scan">
+                                @else
+                                    <span ng-bind="settings.interval_snmp_scan +' Seg.'"></span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-md-3">Estado del sistema</label>
                             <div class="col-md-6">
                                 @if(\App\User::isAdmin())

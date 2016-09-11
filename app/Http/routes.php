@@ -84,10 +84,13 @@ Route::group(['middleware' => 'auth'], function () {
             $connected->image = 'http://' . $_SERVER['HTTP_HOST'] . '/images/device_types/' . $device_types[$i]['image'];
             array_push($list_connected, $connected);
         }
-
+        $number_devices_registered_connected = DB::select('SELECT COUNT(*) AS number FROM devices INNER JOIN nmap_all_scan on nmap_all_scan.ip = devices.ip')[0]->number;
+        $number_devices_connected = \App\NmapAllScanModel::count();
+        $number_devices_not_registered_connected = $number_devices_connected - $number_devices_registered_connected;
+//        print_r($number_devices_registered_connected);
         $alerts_today = DB::select('SELECT * FROM `alerts` WHERE DATE(created_at) = DATE(NOW())');
 
-        return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas, 'list_connected' => $list_connected, 'alerts_today' => $alerts_today]);
+        return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas, 'list_connected' => $list_connected, 'alerts_today' => $alerts_today, 'devices_connected' => ['total' => $number_devices_connected, 'registered' => $number_devices_registered_connected, 'not_registered' => $number_devices_not_registered_connected]]);
     });
 
     Route::get('/monitor', function () {

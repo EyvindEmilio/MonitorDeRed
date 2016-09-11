@@ -44,6 +44,21 @@
                             </div>
                         </section>
                     </div>
+
+                    <div class="profile-nav alt col-sm-3">
+                        <section class="panel  text-center">
+                            <div class="user-heading alt wdgt-row red-bg">
+                                <img src="/images/warring.png" height="90">
+                            </div>
+                            <div class="panel-body">
+                                <div class="wdgt-value">
+                                    <h1 class="count"
+                                        ng-bind="devices_connected.not_registered"></h1>
+                                    <p ng-bind="devices_connected.not_registered+' dispositivo(s)  conectados no has sido registrados'"></p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </section>
         </div>
@@ -57,6 +72,7 @@
                     $rootScope.areas = {!! $areas !!};
                     $rootScope.list_connected = {!! json_encode($list_connected) !!};
                     $rootScope.alerts_today = {!! json_encode($alerts_today) !!};
+                    $rootScope.devices_connected = {!! json_encode($devices_connected) !!};
 
                     $rootScope.chart_max_current_usage = {
                         options: {

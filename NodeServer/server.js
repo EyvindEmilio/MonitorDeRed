@@ -10,6 +10,7 @@ var nmap_ports = require('./nmap_ports');
 var statistics = require('./statistics');
 var tcpdump = require('./tcpdump');
 var net_discover = require('./net_discover');
+var snmp = require('./snmp');
 
 var ENV = [];
 var connection = null;
@@ -50,6 +51,7 @@ function start_app() {
         start_nmap_ports();
         start_statistics();
         start_denial_service();
+        start_snmp();
     });
 
 }
@@ -137,6 +139,20 @@ function start_denial_service() {
         data.date = new Date();
         io.sockets.emit('alert_denial_service', data);
         connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + data.src + '","' + data.dst + '",NOW());');
+    }, SETTINGS);
+}
+
+function start_snmp() {
+    snmp.start(function (data) {
+        var query = 'INSERT INTO snmp_scan (ip,hardware,time_ticks,contact,machine_name,location,updated_at) VALUES(' +
+            '"' + data.ip + '",' +
+            '"' + data.hardware + '",' +
+            '"' + data.time_ticks + '",' +
+            '"' + data.contact + '",' +
+            '"' + data.machine_name + '",' +
+            '"' + data.location + '",' +
+            'NOW());';
+        settings.connection.query(query);
     }, SETTINGS);
 }
 

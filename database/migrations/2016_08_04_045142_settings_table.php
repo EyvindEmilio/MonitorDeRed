@@ -22,6 +22,7 @@ class SettingsTable extends Migration
             $table->integer('time_interval_for_scan_ports')->default(30);
             $table->integer('dos_time_for_check_attacks')->default(30);
             $table->integer('dos_max_packets_received')->default(10000);
+            $table->integer('interval_snmp_scan')->default(30);
             $table->char('active_system', 1)->default('N');
         });
     }

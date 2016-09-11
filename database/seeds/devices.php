@@ -15,7 +15,7 @@ class devices extends Seeder
         DB::table('devices')->delete();
         DB::table('devices')->truncate();
         DB::table('devices')->delete();
-        DevicesModel::create(['id' => 1, 'name' => 'Switch Core EX4200 ', 'ip' => '10.42.0.69', 'description' => '48 puertos', 'status' => 'Y', 'area' => 1, 'device_type' => 2, 'notes' => 'Area Local']);
+        DevicesModel::create(['id' => 1, 'name' => 'Switch Core EX4200 ', 'ip' => '192.168.1.25', 'description' => '48 puertos', 'status' => 'Y', 'area' => 1, 'device_type' => 2, 'notes' => 'Area Local']);
         DevicesModel::create(['id' => 2, 'name' => 'Switch Core EX4200 ', 'ip' => '10.42.0.70', 'description' => '48 puertos', 'status' => 'Y', 'area' => 1, 'device_type' => 2, 'notes' => 'Area Local']);
         DevicesModel::create(['id' => 3, 'name' => 'Switch Core EX4200 ', 'ip' => '10.42.0.71', 'description' => '48 puertos', 'status' => 'Y', 'area' => 1, 'device_type' => 2, 'notes' => 'Area Local']);
         DevicesModel::create(['id' => 4, 'name' => 'Switch Core EX4200 ', 'ip' => '10.42.0.72', 'description' => '24 puertos', 'status' => 'Y', 'area' => 2, 'device_type' => 2, 'notes' => 'Area Local']);
