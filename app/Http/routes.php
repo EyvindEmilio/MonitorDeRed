@@ -146,7 +146,19 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::get('/settings', function () {
         $settings = \App\SettingsModel::find(1);
-        return view('settings', ['settings' => $settings]);
+        try {
+            $str_list_interfaces = shell_exec('ip link show');
+            preg_match_all('/: [a-zA-Z0-9]+:/', $str_list_interfaces, $list_interfaces);
+            $list_interfaces = $list_interfaces[0];
+            $list = [];
+            for ($i = 0; $i < sizeof($list_interfaces); $i++) {
+                $list_interfaces[$i];
+                array_push($list, preg_replace('/[: ]+/', '', $list_interfaces[$i]));
+            }
+        } catch (Exception $e) {
+            $list = ['eth0'];
+        }
+        return view('settings', ['settings' => $settings, 'interfaces' => $list]);
     });
     Route::get('/standard', function () {
         return view('standard');

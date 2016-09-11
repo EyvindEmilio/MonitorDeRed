@@ -49,7 +49,7 @@
                             <div class="col-md-6">
                                 @if(\App\User::isAdmin())
                                     <select class="form-control" ng-model="settings.interface"
-                                            ng-options="inter for inter in ['eth0','eth1','wlan0','wlan1']"
+                                            ng-options='inter for inter in {!! json_encode($interfaces) !!}'
                                             required></select>
                                 @else
                                     <span ng-bind="settings.interface"></span>
@@ -141,6 +141,9 @@
                                 </div>
                             </div>
                         @endif
+                        <div>
+
+                        </div>
                     </form>
                 </div>
             </div>
