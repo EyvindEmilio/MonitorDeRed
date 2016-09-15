@@ -35,11 +35,18 @@
 
         <div class="col-md-12" uib-collapse="!current_filter_area">
             <section class="panel">
-                <div class="panel-heading"> Consumo de maquinas por area area</div>
+                <div class="panel-heading"> Consumo por fechas de Area: @{{current_filter_area.name}}</div>
                 <div class="panel-body">
                     <section class="text-center">
                         Fecha Inicio:<input type="date" ng-model="interval_filter_area.start_date">
                         Fecha Fin: <input type="date" ng-model="interval_filter_area.end_date">
+                        <a class="pull-right"
+                           ng-href="@{{ '/report_for_area?'+query_per_area}}"
+
+                           target="_blank" download="Reporte por Area">
+                            Descargar Reporte
+                            <img src="/images/pdf.png" width="40">
+                        </a>
                     </section>
                     <highchart id="chart_area" config="chart_area"></highchart>
                 </div>
@@ -105,11 +112,13 @@
                         $rootScope.info_per_area($rootScope.current_filter_area);
                     }, true);
 
+                    $rootScope.query_per_area = '';
                     $rootScope.info_per_area = function (area) {
                         if (area == null)return;
                         $rootScope.current_filter_area = area;
                         $rootScope.chart_area.title.text = area.name;
-                        $http.get('/info_per_area?id=' + area.id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D')).then(function (data) {
+                        $rootScope.query_per_area = 'id=' + area.id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D');
+                        $http.get('/info_per_area?' + $rootScope.query_per_area).then(function (data) {
                             data = data.data;
                             for (i = 0; i < data.length; i++) {
                                 data[i].name = data[i].date;

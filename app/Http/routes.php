@@ -12,19 +12,12 @@
 */
 
 
-use Dompdf\Dompdf;
-
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
 
 Route::resource('/users', 'UsersController');
 Route::resource('/users_types', 'UsersTypesController');
-
-function convertToMb($value)
-{
-    return round($value / 1024.0, 2);
-}
 
 Route::get('/close', function () {
     if (!Auth::check()) return redirect()->to('login');
@@ -35,40 +28,17 @@ Route::get('/close', function () {
 });
 
 Route::get('/report_for_areas', function () {
-    date_default_timezone_set('America/La_Paz');
-    setlocale(LC_TIME, 'es_ES');
-    $list_values = array();
-    $list = getConsumo();
-    $area_list = $list;
-    for ($i = 0; $i < sizeof($list); $i++) {
-        $size = ($list[$i]->network_usage == null ? 0 : $list[$i]->network_usage);
-        $name = substr($list[$i]->area, 0, 14);
-        if (strlen($name) != strlen($list[$i]->area)) $name .= '..';
-        $list_values[$name] = convertToMb($size);
-        $list[$i]->network_usage = convertToMb($size);
-    }
-    $settings = array(
-        'back_colour' => 'none', 'back_stroke_colour' => 'none',
-        'axis_text_space_v' => '40', 'graph_title' => 'Uso de red por Areas',
-        'axis_text_callback_y' => function ($val) {
-            return $val . " Mb";
-        }
-    );
-    $graph = new SVGGraph(700, 400, $settings);
-    $graph->values = $list_values;
-    $graph = $graph->Fetch('BarGraph', false);
-    $graph64 = 'data:image/svg;base64,' . base64_encode($graph);
-    $dompdf = new Dompdf();
-    $dompdf->loadHtml(view('reports/test', ['area_list' => $area_list, 'graph64' => $graph64]));
-    $dompdf->setPaper('letter', 'portrait');
-    $dompdf->render();
-    $dompdf->stream('Reporte por Area', ['Attachment' => 0]);
+    return \App\Http\Controllers\ReportsController::perAreas();
 });
 
-function getConsumo()
-{
-    return DB::select('SELECT  (SELECT SUM((SELECT SUM(network_usage.size) AS network_usage FROM network_usage WHERE network_usage.ip = devices.ip)) as network_usage from devices WHERE area = areas.id) AS network_usage ,  areas.name as area, areas.id AS id FROM areas');
-}
+Route::get('/report_for_area', function () {
+    $input = \Illuminate\Support\Facades\Input::all();
+    if (isset($input['id'])) {
+        return \App\Http\Controllers\ReportsController::perArea($input['id'], $input['start_date'], $input['end_date']);
+    } else {
+        return \Illuminate\Http\Response::create(['error' => 0], 400);
+    }
+});
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
@@ -87,7 +57,6 @@ Route::group(['middleware' => 'auth'], function () {
         $number_devices_registered_connected = DB::select('SELECT COUNT(*) AS number FROM devices INNER JOIN nmap_all_scan on nmap_all_scan.ip = devices.ip')[0]->number;
         $number_devices_connected = \App\NmapAllScanModel::count();
         $number_devices_not_registered_connected = $number_devices_connected - $number_devices_registered_connected;
-//        print_r($number_devices_registered_connected);
         $alerts_today = DB::select('SELECT * FROM `alerts` WHERE DATE(created_at) = DATE(NOW())');
 
         return view('dashboard/statistics', ['settings' => $settings, 'areas' => $areas, 'list_connected' => $list_connected, 'alerts_today' => $alerts_today, 'devices_connected' => ['total' => $number_devices_connected, 'registered' => $number_devices_registered_connected, 'not_registered' => $number_devices_not_registered_connected]]);
@@ -99,30 +68,14 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/consumo', function () {
-        $consumo_per_areas = getConsumo();
+        $consumo_per_areas = \App\NetworkUsageModel::getConsumo();
         return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
     });
-
 
     Route::get('/info_per_area', function () {
         $input = \Illuminate\Support\Facades\Input::all();
         if (isset($input['id'])) {
-            $id = $input['id'];//id_area
-
-            $sd = $input['start_date'];
-            $ed = $input['end_date'];
-
-            $start_date = new DateTime($sd);
-            $end_date = (new DateTime($ed))->modify('+1 day');
-            $date_range = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
-            $consumo = [];
-            foreach ($date_range as $date) {
-                $current_date = $date->format('Y-m-d');
-                $size = \App\NetworkUsageModel::where('date', $current_date)
-                    ->join('devices', 'devices.ip', '=', 'network_usage.ip')
-                    ->where('devices.area', $id)->sum('size');
-                array_push($consumo, ['date' => $current_date, 'size' => $size]);
-            }
+            $consumo = \App\NetworkUsageModel::getConsumoAreaPerDate($input['id'], $input['start_date'], $input['end_date']);
             return \Illuminate\Http\Response::create($consumo);
         } else {
             return \Illuminate\Http\Response::create(['id' => 0], 400);
@@ -141,9 +94,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/device_types', function () {
         return view('devices_and_areas.device_types');
     });
+
     Route::get('/areas', function () {
         return view('devices_and_areas.areas');
     });
+
     Route::get('/settings', function () {
         $settings = \App\SettingsModel::find(1);
         try {
@@ -160,6 +115,7 @@ Route::group(['middleware' => 'auth'], function () {
         }
         return view('settings', ['settings' => $settings, 'interfaces' => $list]);
     });
+
     Route::get('/standard', function () {
         return view('standard');
     });
