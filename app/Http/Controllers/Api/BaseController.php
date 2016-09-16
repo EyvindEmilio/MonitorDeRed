@@ -2,13 +2,13 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Expr\Cast\Int_;
 
 class BaseController extends Controller
 {
@@ -22,6 +22,11 @@ class BaseController extends Controller
             $page_size = Input::get('page_size');
         }
         $response = $this->indexShowCustom($_model, $input);
+        if (Input::has('start_date') && Input::has('end_date')) {
+            $start_date = (new DateTime(Input::get('start_date')))->modify('-1 day')->format('Y-m-d');
+            $end_date = (new DateTime(Input::get('end_date')))->modify('-1 day')->format('Y-m-d');
+            $response = $response->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date);
+        }
         $response = $response->paginate($page_size)->toArray();
 
         if (isset($_model->image_fields)) {

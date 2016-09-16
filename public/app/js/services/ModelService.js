@@ -102,6 +102,11 @@ angular.module('Monitor')
                     context.delete = false;
                     context.editable = false;
                     context.searchEnabled = false;
+                    context.view_template = 'view_attacks.html';
+                    context.view_config = function (scope) {
+                        scope.paginationParams['start_date'] = new Date((new moment()).subtract(7, 'days'));
+                        scope.paginationParams['end_date'] = new Date(new moment());
+                    }
                 }, config
             );
         };

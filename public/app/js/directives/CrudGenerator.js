@@ -80,7 +80,6 @@ angular.module('Monitor')
                         }, function () {
                         });
                     };
-
                     scope.openModalDelete = function (rowItem, Model) {
                         var modalInstance = $uibModal.open({
                             animation: true,
@@ -174,6 +173,9 @@ angular.module('Monitor')
                     scope.loadData = loadData;
                     $templateRequest('app/views/crud/' + (scope.Model.view_template || 'view.html')).then(function (data) {
                         element.html(data);
+                        if(scope.Model.view_template){
+                            scope.Model.view_config(scope);
+                        }
                         $compile(element.contents())(scope);
                     });
 
