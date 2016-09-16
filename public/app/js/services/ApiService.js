@@ -30,6 +30,7 @@ angular.module('Monitor')
             DeviceTypes: getModelResource(base_url + 'device_types/:id/'),
             Users: getModelResource(base_url + 'users/:id/'),
             Monitor: getModelResource(base_url + 'monitor/'),
+            Logs: getModelResource(base_url + 'logs/:id'),
             path: base_url
         };
     });

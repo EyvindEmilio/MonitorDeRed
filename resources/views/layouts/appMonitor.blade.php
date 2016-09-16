@@ -158,6 +158,15 @@
                                 </a>
                             </li>
                         @endif
+
+                        @if(\App\User::isAdmin())
+                            <li>
+                                <a class="{{ (Request::is('logs'))?'active':'' }}" href="{{ url('/logs') }}">
+                                    <i class="fa fa-legal"></i>
+                                    <span>Logs</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- sidebar menu end-->

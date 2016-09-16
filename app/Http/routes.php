@@ -133,6 +133,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/standard', function () {
         return view('standard');
     });
+
+    Route::get('/logs', function () {
+        return view('logs');
+    });
 });
 /*
  *
@@ -149,6 +153,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'api', 'middleware' => 'auth'], 
     Route::resource('/devices', 'DevicesController');
     Route::resource('/settings', 'SettingsController');
     Route::resource('/alerts', 'AlertsController');
+    Route::resource('/logs', 'LogsController');
     Route::resource('/nmap/all_scan', 'NmapAllScanController');
 
     Route::get('/monitor/list_status', "MonitoringController@list_status");

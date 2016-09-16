@@ -206,6 +206,44 @@ angular.module('Monitor')
             );
         };
 
+        var Logs = function (config) {
+            return new BaseModel(function (context) {
+                    context.id_name = 'id';
+                    context.resource = $API.Logs;
+                    context.fields = [
+                        {
+                            label: 'Usuario', name: 'user', type: 'string', required: true,
+                            custom: function (data) {
+                                var user_type = '';
+                                if (data.user_type == 1) {
+                                    user_type = 'Administrador';
+                                } else if (data.user_type == 2) {
+                                    user_type = 'Colaborador';
+                                } else {
+                                    user_type = 'Jefe';
+                                }
+                                return data.first_name + ' ' + data.last_name + ' (' + user_type + ')';
+                            }
+                        },
+                        {label: 'Ip Origen', name: 'ip', type: 'string', required: true},
+                        {label: 'Tipo', name: 'type', type: 'string', required: true},
+                        {label: 'Descripcion', name: 'description', type: 'string', required: true}
+                    ];
+                    context.extra_fields = [{label: 'Fecha de registro', name: 'created_at'}, {
+                        label: 'Ultima modificacion',
+                        name: 'updated_at'
+                    }];
+                    context.showFields = ['user', 'ip', 'type', 'description'];
+                    context.nameView = 'name';
+                    context.config = {title: 'Registros del sistema (Logs)'};
+                    context.add_new = false;
+                    context.delete = false;
+                    context.editable = false;
+                    context.searchEnabled = true;
+                }, config
+            );
+        };
+
         var Users = function (config) {
             return new BaseModel(function (context) {
                     context.id_name = 'id';
@@ -259,6 +297,7 @@ angular.module('Monitor')
             DeviceTypes: DeviceTypes,
             Devices: Devices,
             Users: Users,
-            Alerts: Alerts
+            Alerts: Alerts,
+            Logs: Logs
         };
     });
