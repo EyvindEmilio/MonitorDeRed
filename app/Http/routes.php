@@ -99,7 +99,6 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/devices', function () {
-        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         return view('devices_and_areas.devices');
     });
 

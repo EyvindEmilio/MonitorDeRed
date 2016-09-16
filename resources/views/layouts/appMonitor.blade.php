@@ -128,18 +128,18 @@
                                 </ul>
                             </li>
                         @endif
-                        @if(\App\User::isAdmin())
-                            <li class="sub-menu">
-                                <a href="javascript:;"
-                                   class="{{ (Request::is('devices')||Request::is('device_types')||Request::is('areas'))?'active':'' }}">
-                                    <i class="fa fa-laptop"></i>
-                                    <span>Dispositivos y Areas</span>
-                                </a>
-                                <ul class="sub">
-                                    <li class="{{ (Request::is('devices'))?'active':'' }}">
-                                        <a href="{{ url('/devices') }}">Dispositivos</a>
-                                    </li>
 
+                        <li class="sub-menu">
+                            <a href="javascript:;"
+                               class="{{ (Request::is('devices')||Request::is('device_types')||Request::is('areas'))?'active':'' }}">
+                                <i class="fa fa-laptop"></i>
+                                <span>Dispositivos y Areas</span>
+                            </a>
+                            <ul class="sub">
+                                <li class="{{ (Request::is('devices'))?'active':'' }}">
+                                    <a href="{{ url('/devices') }}">Dispositivos</a>
+                                </li>
+                                @if(\App\User::isAdmin())
                                     <li class="{{ (Request::is('device_types'))?'active':'' }}">
                                         <a href="{{ url('/device_types') }}">Tipos de dispositivos</a>
                                     </li>
@@ -147,9 +147,10 @@
                                     <li class="{{ (Request::is('areas'))?'active':'' }}">
                                         <a href="{{ url('/areas') }}">Areas</a>
                                     </li>
-                                </ul>
-                            </li>
-
+                                @endif
+                            </ul>
+                        </li>
+                        @if(\App\User::isAdmin())
                             <li>
                                 <a class="{{ (Request::is('/settings'))?'active':'' }}" href="{{ url('/settings') }}">
                                     <i class="fa fa-shield"></i>
