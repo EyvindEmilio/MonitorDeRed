@@ -77,11 +77,13 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/consumo', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $consumo_per_areas = \App\NetworkUsageModel::getConsumo();
         return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
     });
 
     Route::get('/info_per_area', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $input = \Illuminate\Support\Facades\Input::all();
         if (isset($input['id'])) {
             $consumo = \App\NetworkUsageModel::getConsumoAreaPerDate($input['id'], $input['start_date'], $input['end_date']);
@@ -97,18 +99,22 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/devices', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         return view('devices_and_areas.devices');
     });
 
     Route::get('/device_types', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         return view('devices_and_areas.device_types');
     });
 
     Route::get('/areas', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         return view('devices_and_areas.areas');
     });
 
     Route::get('/settings', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $settings = \App\SettingsModel::find(1);
         try {
             $str_list_interfaces = shell_exec('ip link show');

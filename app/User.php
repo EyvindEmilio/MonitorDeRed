@@ -61,4 +61,31 @@ class User extends Authenticatable
             return false;
         }
     }
+
+    public static function isJefe()
+    {
+        if (Auth::check()) {
+            return (Auth::user()['user_type'] == 3);
+        } else {
+            return false;
+        }
+    }
+
+    public static function isCollaborator()
+    {
+        if (Auth::check()) {
+            return (Auth::user()['user_type'] == 2);
+        } else {
+            return false;
+        }
+    }
+
+    public static function isJefeOrCollaborator()
+    {
+        if (Auth::check()) {
+            return (Auth::user()['user_type'] == 2) || (Auth::user()['user_type'] == 3);
+        } else {
+            return false;
+        }
+    }
 }

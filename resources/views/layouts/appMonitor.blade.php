@@ -93,11 +93,11 @@
                                 <li class="{{ (Request::is('/monitor'))?'active':'' }}">
                                     <a href="{{ url('/monitor') }}">Monitor</a>
                                 </li>
-
-                                <li class="{{ (Request::is('/consumo'))?'active':'' }}">
-                                    <a href="{{ url('/consumo') }}">Consumo</a>
-                                </li>
-
+                                @if(\App\User::isAdmin())
+                                    <li class="{{ (Request::is('/consumo'))?'active':'' }}">
+                                        <a href="{{ url('/consumo') }}">Consumo</a>
+                                    </li>
+                                @endif
                                 <li class="{{ (Request::is('/attacks'))?'active':'' }}">
                                     <a href="{{ url('/attacks') }}">Ataques</a>
                                 </li>
@@ -111,50 +111,52 @@
                             </a>
                         </li>
 
-                        <li class="sub-menu">
-                            <a href="javascript:;"
-                               class="{{ (Request::is('users')||Request::is('users_types'))?'active':'' }}">
-                                <i class="fa fa-users"></i>
-                                <span>Usuarios</span>
-                            </a>
-                            <ul class="sub">
-                                <li class="{{ (Request::is('users'))?'active':'' }}">
-                                    <a href="{{ url('/users') }}">Usuarios registrados</a>
-                                </li>
-                                <li class="{{ (Request::is('users_types'))?'active':'' }}">
-                                    <a href="{{ url('/users_types') }}">Tipos de usuarios</a>
-                                </li>
-                            </ul>
-                        </li>
+                        @if(\App\User::isAdmin() || \App\User::isJefe())
+                            <li class="sub-menu">
+                                <a href="javascript:;"
+                                   class="{{ (Request::is('users')||Request::is('users_types'))?'active':'' }}">
+                                    <i class="fa fa-users"></i>
+                                    <span>Usuarios</span>
+                                </a>
+                                <ul class="sub">
+                                    <li class="{{ (Request::is('users'))?'active':'' }}">
+                                        <a href="{{ url('/users') }}">Usuarios registrados</a>
+                                    </li>
+                                    <li class="{{ (Request::is('users_types'))?'active':'' }}">
+                                        <a href="{{ url('/users_types') }}">Tipos de usuarios</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
+                        @if(\App\User::isAdmin())
+                            <li class="sub-menu">
+                                <a href="javascript:;"
+                                   class="{{ (Request::is('devices')||Request::is('device_types')||Request::is('areas'))?'active':'' }}">
+                                    <i class="fa fa-laptop"></i>
+                                    <span>Dispositivos y Areas</span>
+                                </a>
+                                <ul class="sub">
+                                    <li class="{{ (Request::is('devices'))?'active':'' }}">
+                                        <a href="{{ url('/devices') }}">Dispositivos</a>
+                                    </li>
 
-                        <li class="sub-menu">
-                            <a href="javascript:;"
-                               class="{{ (Request::is('devices')||Request::is('device_types')||Request::is('areas'))?'active':'' }}">
-                                <i class="fa fa-laptop"></i>
-                                <span>Dispositivos y Areas</span>
-                            </a>
-                            <ul class="sub">
-                                <li class="{{ (Request::is('devices'))?'active':'' }}">
-                                    <a href="{{ url('/devices') }}">Dispositivos</a>
-                                </li>
+                                    <li class="{{ (Request::is('device_types'))?'active':'' }}">
+                                        <a href="{{ url('/device_types') }}">Tipos de dispositivos</a>
+                                    </li>
 
-                                <li class="{{ (Request::is('device_types'))?'active':'' }}">
-                                    <a href="{{ url('/device_types') }}">Tipos de dispositivos</a>
-                                </li>
+                                    <li class="{{ (Request::is('areas'))?'active':'' }}">
+                                        <a href="{{ url('/areas') }}">Areas</a>
+                                    </li>
+                                </ul>
+                            </li>
 
-                                <li class="{{ (Request::is('areas'))?'active':'' }}">
-                                    <a href="{{ url('/areas') }}">Areas</a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a class="{{ (Request::is('/settings'))?'active':'' }}" href="{{ url('/settings') }}">
-                                <i class="fa fa-shield"></i>
-                                <span>Configuracion</span>
-                            </a>
-                        </li>
-
+                            <li>
+                                <a class="{{ (Request::is('/settings'))?'active':'' }}" href="{{ url('/settings') }}">
+                                    <i class="fa fa-shield"></i>
+                                    <span>Configuracion</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- sidebar menu end-->

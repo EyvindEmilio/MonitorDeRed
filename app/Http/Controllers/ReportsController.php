@@ -87,7 +87,6 @@ class ReportsController extends Controller
         $dompdf->stream('Reporte de Area ' . AreasModel::find($id)->name, ['Attachment' => 0]);
     }
 
-
     public static function alert($start, $end)
     {
         date_default_timezone_set('America/La_Paz');
