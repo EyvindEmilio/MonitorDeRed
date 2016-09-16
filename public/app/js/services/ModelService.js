@@ -104,8 +104,12 @@ angular.module('Monitor')
                     context.searchEnabled = false;
                     context.view_template = 'view_attacks.html';
                     context.view_config = function (scope) {
+                        scope.query_per_area = '';
                         scope.paginationParams['start_date'] = new Date((new moment()).subtract(7, 'days'));
                         scope.paginationParams['end_date'] = new Date(new moment());
+                        scope.$watch('paginationParams', function () {
+                            scope.query_per_area = '&start_date=' + moment(scope.paginationParams['start_date']).format('Y-M-D') + '&end_date=' + moment(scope.paginationParams['end_date']).format('Y-M-D');
+                        }, true);
                     }
                 }, config
             );

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\AlertsModel;
 use App\AreasModel;
 use App\NetworkUsageModel;
 use Dompdf\Dompdf;
@@ -85,4 +86,36 @@ class ReportsController extends Controller
         $dompdf->render();
         $dompdf->stream('Reporte de Area ' . AreasModel::find($id)->name, ['Attachment' => 0]);
     }
+
+
+    public static function alert($start, $end)
+    {
+        date_default_timezone_set('America/La_Paz');
+        setlocale(LC_TIME, 'es_ES.UTF-8');
+        $start_date = $start;//'2016-09-03';
+        $end_date = $end;//'2016-10-02';
+        $list_values = array();
+        $list = AlertsModel::getNumberAlertsByTypes($start_date, $end_date);
+        for ($i = 0; $i < sizeof($list); $i++) {
+            $list_values[$list[$i]->type] = $list[$i]->suma;
+        }
+
+        $data_list = AlertsModel::getAlerts($start_date, $end_date);
+
+        $settings = array(
+            'back_colour' => 'none', 'back_stroke_colour' => 'none',
+            'axis_text_space_v' => '40', 'graph_title' => 'Incidentes registrados',
+        );
+
+        $graph = new SVGGraph(700, 400, $settings);
+        $graph->values = $list_values;
+        $graph = $graph->Fetch('BarGraph', false);
+        $graph64 = 'data:image/svg;base64,' . base64_encode($graph);
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('reports/alert', ['alerts_list' => $data_list, 'graph64' => $graph64, 'start_date' => $start_date, 'end_date' => $end_date]));
+        $dompdf->setPaper('letter', 'portrait');
+        $dompdf->render();
+        $dompdf->stream('Reporte de incidentes ', ['Attachment' => 0]);
+    }
+
 }

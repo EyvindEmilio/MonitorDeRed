@@ -27,6 +27,15 @@ Route::get('/close', function () {
     return view('close_system');
 });
 
+Route::get('/report_alerts', function () {
+    $input = \Illuminate\Support\Facades\Input::all();
+    if (isset($input['start_date'])) {
+        return \App\Http\Controllers\ReportsController::alert($input['start_date'], $input['end_date']);
+    } else {
+        return \Illuminate\Http\Response::create(['error' => 0], 400);
+    }
+});
+
 Route::get('/report_for_areas', function () {
     return \App\Http\Controllers\ReportsController::perAreas();
 });

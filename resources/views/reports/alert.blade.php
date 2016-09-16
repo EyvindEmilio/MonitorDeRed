@@ -10,7 +10,7 @@
 <table>
     <tr>
         <th class="left">Reporte:</th>
-        <td>Consumo por fechas de Area: "{{ $area->name }}"</td>
+        <td>Incidentes registrados en la red</td>
     </tr>
     <tr>
         <th class="left">Fecha:</th>
@@ -30,14 +30,18 @@
 <table border="1" width="100%" cellspacing="0" cellpadding="0 10">
     <tr>
         <th>#</th>
+        <th>Tipo de incidente</th>
+        <th>Ip Origen</th>
+        <th>Ip Destino</th>
         <th>Fecha</th>
-        <th>Consumo</th>
     </tr>
-    @foreach( $date_list as $index=>$date)
+    @foreach( $alerts_list as $index=>$alert)
         <tr>
             <td style="text-align: center">{{ $index + 1}}</td>
-            <td>{{ $date['date'] }}</td>
-            <td>{{ $date['size']?$date['size']:0 }} Mb</td>
+            <td>{{ $alert->type}}</td>
+            <td>{{ $alert->ip_src}}</td>
+            <td>{{ $alert->ip_dst}}</td>
+            <td>{{ $alert->created_at}}</td>
         </tr>
     @endforeach
 </table>
