@@ -52,6 +52,9 @@
                 </div>
             </section>
         </div>
+        <div class="col-xs-12" uib-collapse="!current_filter_area">
+            <highchart id="chart_area_ip" config="chart_area_ip"></highchart>
+        </div>
 
     </div>
 @endsection
@@ -104,6 +107,21 @@
                         series: []
                     };
 
+                    $rootScope.chart_area_ip = {
+                        options: {
+                            chart: {type: 'spline', height: 400},
+                            tooltip: {pointFormat: 'Transferencia: {point.y} Mb'}
+                        },
+                        title: {text: 'Consumo por IPs'},
+                        xAxis: {
+                            title: {text: 'Maquina'},
+                            lineWidth: 1,
+                            type: 'category'
+                        },
+                        yAxis: {title: {text: 'Transferencia total(Mb)'}},
+                        series: []
+                    };
+
                     $rootScope.interval_filter_area = {
                         start_date: new Date((new moment()).subtract(7, 'days')),
                         end_date: new Date(new moment())
@@ -117,6 +135,7 @@
                     $rootScope.query_per_area = '';
                     $rootScope.info_per_area = function (area) {
                         if (area == null)return;
+                        $rootScope.info_per_area_ip(area);
                         $rootScope.current_filter_area = area;
                         $rootScope.chart_area.title.text = area.name;
                         $rootScope.query_per_area = 'id=' + area.id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D');
@@ -132,6 +151,31 @@
                             }];
                         })
                     };
+
+                    $rootScope.info_per_area_ip = function (area) {
+                        if (area == null)return;
+                        $rootScope.chart_area_ip.title.text = area.name;
+                        $rootScope.query_per_area = 'id=' + area.id_area + '&start_date=' + moment($rootScope.interval_filter_area.start_date).format('Y-M-D') + '&end_date=' + moment($rootScope.interval_filter_area.end_date).format('Y-M-D');
+                        $http.get('/info_per_area_ip?' + $rootScope.query_per_area).then(function (data) {
+                            data = data.data;
+                            var list_series = [];
+
+                            for (var j = 0; j < data.length; j++) {
+                                var dat = [];
+                                for (i = 0; i < data[j]['data'].length; i++) {
+                                    dat[i] = {};
+                                    dat[i].name = data[j]['data'][i].date;
+                                    dat[i].y = convertToMbps(data[j]['data'][i].size);
+                                }
+                                list_series.push({
+                                    name: 'IP: ' + data[j].ip + '(' + $rootScope.getNameFromIp(data[j].name) + ')',
+                                    data: dat
+                                });
+                            }
+                            $rootScope.chart_area_ip.series = list_series;
+                        })
+                    };
+
 
                     for (i = 0; i < $rootScope.areas.length; i++) {
                         $rootScope.areas[i].chart = {

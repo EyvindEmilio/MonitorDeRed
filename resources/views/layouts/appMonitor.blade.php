@@ -214,12 +214,16 @@
                 if (!$rootScope.GLOBALS.active_pcs) {
                     return ip;
                 }
-                var pcs = $rootScope.GLOBALS.active_pcs.data;
-                var ip_name = ip;
-                for (var index = 0; index < pcs.length; index++) {
-                    if (pcs[index].ip == ip) {
-                        ip_name = pcs[index].name;
+                try {
+                    var pcs = $rootScope.GLOBALS.active_pcs.data;
+                    var ip_name = ip;
+                    for (var index = 0; index < pcs.length; index++) {
+                        if (pcs[index].ip == ip) {
+                            ip_name = pcs[index].name;
+                        }
                     }
+                } catch (err) {
+                    console.log('Err');
                 }
 
                 return ip_name;

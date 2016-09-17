@@ -80,7 +80,6 @@ Route::group(['middleware' => 'auth'], function () {
         if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $consumo_per_areas = \App\NetworkUsageModel::getConsumo();
         $consumo_unknown = \App\NetworkUsageModel::getConsumoUnknown();
-
         return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas, 'consumo_unknown' => $consumo_unknown]);
     });
 
@@ -89,6 +88,17 @@ Route::group(['middleware' => 'auth'], function () {
         $input = \Illuminate\Support\Facades\Input::all();
         if (isset($input['id'])) {
             $consumo = \App\NetworkUsageModel::getConsumoAreaPerDate($input['id'], $input['start_date'], $input['end_date']);
+            return \Illuminate\Http\Response::create($consumo);
+        } else {
+            return \Illuminate\Http\Response::create(['id' => 0], 400);
+        }
+    });
+
+    Route::get('/info_per_area_ip', function () {
+        if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
+        $input = \Illuminate\Support\Facades\Input::all();
+        if (isset($input['id'])) {
+            $consumo = \App\NetworkUsageModel::getConsumoAreaIpPerDate($input['id'], $input['start_date'], $input['end_date']);
             return \Illuminate\Http\Response::create($consumo);
         } else {
             return \Illuminate\Http\Response::create(['id' => 0], 400);
