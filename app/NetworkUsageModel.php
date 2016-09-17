@@ -79,7 +79,7 @@ class NetworkUsageModel extends ApiBaseModel
         if ($id_area != 0) {
             $list_devices = DevicesModel::where('area', $id_area)->get()->toArray();
         } else {
-            $list_devices = DB::select('SELECT network_usage.ip as ip, "Desconocido" As name FROM network_usage WHERE NOT EXISTS (SELECT devices.ip FROM devices WHERE network_usage.ip = devices.ip) AND network_usage.date >= "' . $start_date->format('Y-m-d') . '" AND network_usage.date <= "' . $end_date->format('Y-m-d') . '"');
+            $list_devices = DB::select('SELECT network_usage.ip as ip, "Desconocido" As name FROM network_usage WHERE NOT EXISTS (SELECT devices.ip FROM devices WHERE network_usage.ip = devices.ip) AND network_usage.date >= "' . $start_date->format('Y-m-d') . '" AND network_usage.date <= "' . $end_date->format('Y-m-d') . '" GROUP BY network_usage.ip');
             $list_devices = (array)$list_devices;
         }
         $list_date_ip = array();
