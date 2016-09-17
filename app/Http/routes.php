@@ -79,7 +79,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/consumo', function () {
         if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $consumo_per_areas = \App\NetworkUsageModel::getConsumo();
-        return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas]);
+        $consumo_unknown = \App\NetworkUsageModel::getConsumoUnknown();
+
+        return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas, 'consumo_unknown' => $consumo_unknown]);
     });
 
     Route::get('/info_per_area', function () {

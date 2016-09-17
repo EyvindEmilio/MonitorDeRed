@@ -22,6 +22,8 @@ class ReportsController extends Controller
         setlocale(LC_TIME, 'es_ES.UTF-8');
         $list_values = array();
         $list = NetworkUsageModel::getConsumo();
+        $list_unknown = NetworkUsageModel::getConsumoUnknown();
+        array_push($list, $list_unknown[0]);
         $area_list = $list;
 
         for ($i = 0; $i < sizeof($list); $i++) {
@@ -81,10 +83,14 @@ class ReportsController extends Controller
         $graph = $graph->Fetch('LineGraph', false);
         $graph64 = 'data:image/svg;base64,' . base64_encode($graph);
         $dompdf = new Dompdf();
-        $dompdf->loadHtml(view('reports/per_area', ['date_list' => $date_list, 'graph64' => $graph64, 'area' => AreasModel::find($id), 'start_date' => $start_date, 'end_date' => $end_date]));
+        if($id!=0) {
+            $dompdf->loadHtml(view('reports/per_area', ['date_list' => $date_list, 'graph64' => $graph64, 'area' => AreasModel::find($id), 'start_date' => $start_date, 'end_date' => $end_date]));
+        }else{
+            $dompdf->loadHtml(view('reports/per_area', ['date_list' => $date_list, 'graph64' => $graph64, 'area' => 0, 'start_date' => $start_date, 'end_date' => $end_date]));
+        }
         $dompdf->setPaper('letter', 'portrait');
         $dompdf->render();
-        $dompdf->stream('Reporte de Area ' . AreasModel::find($id)->name, ['Attachment' => 0]);
+        $dompdf->stream('Reporte de Area ' . ($id!=0?AreasModel::find($id)->name:' (Dispositivos no registrados)'), ['Attachment' => 0]);
     }
 
     public static function alert($start, $end)

@@ -10,7 +10,7 @@
 <table>
     <tr>
         <th class="left">Reporte:</th>
-        <td>Consumo por fechas de Area: "{{ $area->name }}"</td>
+        <td>Consumo por fechas de Area: "{{  $area!=0?$area->name:'Dispositivos no registrados' }}"</td>
     </tr>
     <tr>
         <th class="left">Fecha:</th>

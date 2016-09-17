@@ -73,6 +73,8 @@
                     };
 
                     var list_consumo = {!! json_encode($consumo_per_areas) !!};
+                    var list_consumo_unknown = {!! json_encode($consumo_unknown) !!};
+                    list_consumo.push(list_consumo_unknown[0]);
 
                     for (i = 0; i < list_consumo.length; i++) {
                         var data_area = [];
