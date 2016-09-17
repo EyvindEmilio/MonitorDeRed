@@ -120,7 +120,7 @@ a:hover {
 .form-control {
     border: 1px solid #e2e2e4;
     box-shadow: none;
-    color: #c2c2c2;
+    color: #140E0E;
 }
 
 
@@ -371,8 +371,8 @@ ul {
 }
 
 .pagination > li > a:hover, .pagination > li > span:hover, .pagination > li > a:focus, .pagination > li > span:focus, .pagination > li.active > a, .pagination > li.active > a:hover {
-    background-color: #2eb4ad;
-    border-color: #2eb4ad;
+    background-color: #283199;
+    border-color: #2826D1;
     color: #fff;
 }
 
