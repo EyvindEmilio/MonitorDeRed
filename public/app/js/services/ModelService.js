@@ -229,13 +229,10 @@ angular.module('Monitor')
                         {label: 'Tipo', name: 'type', type: 'string', required: true},
                         {label: 'Descripcion', name: 'description', type: 'string', required: true}
                     ];
-                    context.extra_fields = [{label: 'Fecha de registro', name: 'created_at'}, {
-                        label: 'Ultima modificacion',
-                        name: 'updated_at'
-                    }];
+                    context.extra_fields = [{label: 'Fecha de registro', name: 'created_at'}];
                     context.showFields = ['user', 'ip', 'type', 'description'];
                     context.nameView = 'name';
-                    context.config = {title: 'Registros del sistema (Logs)'};
+                    context.config = {title: 'Registros de acciones de usuario'};
                     context.add_new = false;
                     context.delete = false;
                     context.editable = false;

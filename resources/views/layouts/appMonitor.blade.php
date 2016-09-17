@@ -99,7 +99,7 @@
                                     </li>
                                 @endif
                                 <li class="{{ (Request::is('/attacks'))?'active':'' }}">
-                                    <a href="{{ url('/attacks') }}">Ataques</a>
+                                    <a href="{{ url('/attacks') }}">Alertas</a>
                                 </li>
                             </ul>
                         </li>
@@ -114,7 +114,7 @@
                         @if(\App\User::isAdmin() || \App\User::isJefe())
                             <li class="sub-menu">
                                 <a href="javascript:;"
-                                   class="{{ (Request::is('users')||Request::is('users_types'))?'active':'' }}">
+                                   class="{{ (Request::is('users')||Request::is('users_types')||Request::is('logs'))?'active':'' }}">
                                     <i class="fa fa-users"></i>
                                     <span>Usuarios</span>
                                 </a>
@@ -125,6 +125,18 @@
                                     <li class="{{ (Request::is('users_types'))?'active':'' }}">
                                         <a href="{{ url('/users_types') }}">Tipos de usuarios</a>
                                     </li>
+
+
+                                    @if(\App\User::isAdmin())
+                                        <li>
+                                            <a class="{{ (Request::is('logs'))?'active':'' }}"
+                                               href="{{ url('/logs') }}">
+                                                <i class="fa fa-legal"></i>
+                                                <span>Acciones de usuarios</span>
+                                            </a>
+                                        </li>
+                                    @endif
+
                                 </ul>
                             </li>
                         @endif
@@ -159,14 +171,6 @@
                             </li>
                         @endif
 
-                        @if(\App\User::isAdmin())
-                            <li>
-                                <a class="{{ (Request::is('logs'))?'active':'' }}" href="{{ url('/logs') }}">
-                                    <i class="fa fa-legal"></i>
-                                    <span>Logs</span>
-                                </a>
-                            </li>
-                        @endif
                     </ul>
                 </div>
                 <!-- sidebar menu end-->

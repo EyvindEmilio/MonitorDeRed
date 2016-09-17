@@ -23,8 +23,8 @@ class BaseController extends Controller
         }
         $response = $this->indexShowCustom($_model, $input);
         if (Input::has('start_date') && Input::has('end_date')) {
-            $start_date = (new DateTime(Input::get('start_date')))->modify('-1 day')->format('Y-m-d');
-            $end_date = (new DateTime(Input::get('end_date')))->modify('-1 day')->format('Y-m-d');
+            $start_date = (new DateTime(Input::get('start_date')))->format('Y-m-d');
+            $end_date = (new DateTime(Input::get('end_date')))->format('Y-m-d');
             $response = $response->where('created_at', '>=', $start_date)->where('created_at', '<=', $end_date);
         }
         $response = $response->paginate($page_size)->toArray();
