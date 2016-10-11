@@ -7,12 +7,17 @@
                     ng-click="refresh_list()">
                 <i class="glyphicon glyphicon-refresh"></i>
             </button>
+
             <button data-ng-if="Model.add_new"
                     ng-click="openModalCreate(Model)" class="btn btn-success btn-sm pull-right"
                     title="Nuevo: {{Model.config.title}}">
                 <span class="glyphicon glyphicon-plus"></span>
                 Agregar nuevo
             </button>
+
+            <a ng-if="Model.url_report" class="pull-right" title="Descargar reporte" type="button" ng-href="{{Model.url_report}}" download="true">
+                <img src="images/pdf.png" width="30">
+            </a>
         </div>
 
         <span class="clearfix"></span>

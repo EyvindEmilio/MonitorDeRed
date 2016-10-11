@@ -303,6 +303,7 @@ angular.module('Monitor')
                     context.searchEnabled = true;
                     context.table_name = 'account';
                     context.name = 'accounts';
+                    context.url_report = '/report_for_users';
                     // context.view_template = 'view_2.html';
                 },
                 config

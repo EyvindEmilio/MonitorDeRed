@@ -40,6 +40,10 @@ Route::get('/report_for_areas', function () {
     return \App\Http\Controllers\ReportsController::perAreas();
 });
 
+Route::get('/report_for_users', function () {
+    return \App\Http\Controllers\ReportsController::users();
+});
+
 Route::get('/report_for_area', function () {
     $input = \Illuminate\Support\Facades\Input::all();
     if (isset($input['id'])) {

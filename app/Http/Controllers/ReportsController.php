@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\AlertsModel;
 use App\AreasModel;
 use App\NetworkUsageModel;
+use App\User;
 use Dompdf\Dompdf;
 use SVGGraph;
 
@@ -83,14 +84,14 @@ class ReportsController extends Controller
         $graph = $graph->Fetch('LineGraph', false);
         $graph64 = 'data:image/svg;base64,' . base64_encode($graph);
         $dompdf = new Dompdf();
-        if($id!=0) {
+        if ($id != 0) {
             $dompdf->loadHtml(view('reports/per_area', ['date_list' => $date_list, 'graph64' => $graph64, 'area' => AreasModel::find($id), 'start_date' => $start_date, 'end_date' => $end_date]));
-        }else{
+        } else {
             $dompdf->loadHtml(view('reports/per_area', ['date_list' => $date_list, 'graph64' => $graph64, 'area' => 0, 'start_date' => $start_date, 'end_date' => $end_date]));
         }
         $dompdf->setPaper('letter', 'portrait');
         $dompdf->render();
-        $dompdf->stream('Reporte de Area ' . ($id!=0?AreasModel::find($id)->name:' (Dispositivos no registrados)'), ['Attachment' => 0]);
+        $dompdf->stream('Reporte de Area ' . ($id != 0 ? AreasModel::find($id)->name : ' (Dispositivos no registrados)'), ['Attachment' => 0]);
     }
 
     public static function alert($start, $end)
@@ -121,6 +122,20 @@ class ReportsController extends Controller
         $dompdf->setPaper('letter', 'portrait');
         $dompdf->render();
         $dompdf->stream('Reporte de incidentes ', ['Attachment' => 0]);
+    }
+
+    public static function users()
+    {
+        date_default_timezone_set('America/La_Paz');
+        setlocale(LC_TIME, 'es_ES.UTF-8');
+
+        $data_list = User::all();
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('reports/users', ['user_list' => $data_list]));
+        $dompdf->setPaper('letter', 'portrait');
+        $dompdf->render();
+        $dompdf->stream('Reporte de usuarios', ['Attachment' => 0]);
     }
 
 }
