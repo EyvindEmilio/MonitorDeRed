@@ -90,15 +90,15 @@
                                     <a href="{{ url('/') }}">Dashboard</a>
                                 </li>
 
-                                <li class="{{ (Request::is('/monitor'))?'active':'' }}">
+                                <li class="{{ (Request::is('monitor'))?'active':'' }}">
                                     <a href="{{ url('/monitor') }}">Monitor</a>
                                 </li>
                                 @if(\App\User::isAdmin())
-                                    <li class="{{ (Request::is('/consumo'))?'active':'' }}">
+                                    <li class="{{ (Request::is('consumo'))?'active':'' }}">
                                         <a href="{{ url('/consumo') }}">Consumo</a>
                                     </li>
                                 @endif
-                                <li class="{{ (Request::is('/attacks'))?'active':'' }}">
+                                <li class="{{ (Request::is('attacks'))?'active':'' }}">
                                     <a href="{{ url('/attacks') }}">Alertas</a>
                                 </li>
                             </ul>
@@ -125,7 +125,6 @@
                                     <li class="{{ (Request::is('users_types'))?'active':'' }}">
                                         <a href="{{ url('/users_types') }}">Tipos de usuarios</a>
                                     </li>
-
 
                                     @if(\App\User::isAdmin())
                                         <li>

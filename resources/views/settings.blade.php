@@ -7,6 +7,7 @@
                 <div class="panel-heading">Configuración del sistema</div>
                 <div class="panel-body">
                     <form class="form-horizontal" data-ng-submit="save_params_settings()">
+                        <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
                         <div class="form-group">
                             <label class="col-md-3">Direccion de Red</label>
                             <div class="col-md-6">
@@ -73,7 +74,7 @@
                             <label class="col-md-3">Intervalo de tiempo para escaneo de puertos</label>
                             <div class="col-md-6">
                                 @if(\App\User::isAdmin())
-                                    <input type="number" class="form-control" min="20" max="180"
+                                    <input type="number" class="form-control" min="10" max="180"
                                            placeholder="En segundos"
                                            required ng-model="settings.time_interval_for_scan_ports">
                                 @else

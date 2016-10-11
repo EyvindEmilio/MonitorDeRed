@@ -173,7 +173,7 @@ angular.module('Monitor')
                     scope.loadData = loadData;
                     $templateRequest('app/views/crud/' + (scope.Model.view_template || 'view.html')).then(function (data) {
                         element.html(data);
-                        if(scope.Model.view_template){
+                        if (scope.Model.view_template) {
                             scope.Model.view_config(scope);
                         }
                         $compile(element.contents())(scope);
@@ -299,7 +299,13 @@ angular.module('Monitor')
                 }
 
                 formattingTypesModel();
-
+                if (scope.ngModel.watchers) {
+                    angular.forEach(scope.ngModel.watchers, function (watch) {
+                        scope.$watch('newFormModel.' + watch.name, function (newV) {
+                            watch.fcn(scope.formModel, scope.newFormModel, newV);
+                        });
+                    }, true)
+                }
                 var templateForm =
                     '<form name="name" class="form-horizontal" ng-submit="saveForm(newFormModel)">' +
                     '<div class="form-group" ng-repeat="itemF in ngModel.fields" ng-class="itemF.type==\'boolean\'?\'col-sm-6\':\'\'" >' +
@@ -428,7 +434,6 @@ angular.module('Monitor')
                 }
 
                 var templateReturn = "";
-
                 if (scope.formItemCrud) {
                     if (scope.formItemInit && !scope.formModel[scope.formItemCrud.name]) {
                         scope.formModel[scope.formItemCrud.name] = scope.formItemInit.value;

@@ -45,7 +45,7 @@ var nmap = function (onData, settings) {
     }
 
     function init() {
-        var args = ' -Pn ' + settings['network_address'] + '/' + settings['mask'];
+        var args = ' ' + settings['network_address'] + '/' + settings['mask'];
         var child = exec('nmap ' + args);
         child.stdout.on('data', function (data) {
             output_text += data.toString('utf8');

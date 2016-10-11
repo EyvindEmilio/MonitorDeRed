@@ -16,6 +16,7 @@ class DevicesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('ip');
+            $table->string('mac')->nullable();
             $table->char('status',1)->default('Y');
             $table->string('description');
             $table->integer('area')->unsigned()->index();

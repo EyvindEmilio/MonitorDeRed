@@ -9,7 +9,7 @@
  */
 
 angular.module('Monitor')
-    .service('ModelService', function ($API, $rootScope) {
+    .service('ModelService', function ($API, $rootScope, $http) {
         /**
          #Model object example:
          {
@@ -61,10 +61,9 @@ angular.module('Monitor')
                 });
                 context.extra_query_params = config.query_params || [];
                 context.default_fields = config.default_fields || [];
-                context.disabled_fields = config.disabled_fields || [];
+                //context.disabled_fields = config.disabled_fields || [];
             }
         };
-
 
         var UsersTypes = function (config) {
             return new BaseModel(function (context) {
@@ -161,7 +160,8 @@ angular.module('Monitor')
                     context.resource = $API.Devices;
                     context.fields = [
                         {label: 'Nombre', name: 'name', type: 'string', required: true},
-                        {label: 'Ip', name: 'ip', type: 'string', required: true},
+                        {label: 'Ip (Asignado)', name: 'ip', type: 'string', required: true},
+                        {label: 'Direccion Fisica (MAC)', name: 'mac', type: 'string', required: true},
                         {label: 'Descripcion', name: 'description', type: 'string', required: true},
                         {
                             label: 'Estado',
@@ -195,14 +195,35 @@ angular.module('Monitor')
                         label: 'Ultima modificacion',
                         name: 'updated_at'
                     }];
-                    context.showFields = ['name', 'description', 'ip', 'status', 'area', 'device_type', 'notes'];
+                    context.disabled_fields = ['ip'];
+                    context.showFields = ['name', 'description', 'ip', 'mac', 'status', 'area', 'device_type', 'notes'];
                     context.nameView = 'name';
                     context.config = {title: 'Dispositivos registrados'};
                     context.add_new = true;
                     context.delete = true;
                     context.editable = true;
                     context.searchEnabled = true;
-                }, config
+                    context.name = 'devices';
+                    context.watchers = [{
+                        name: 'mac',
+                        fcn: function (Model, formModel, value) {
+                            if (value) {
+                                var is_mac = value.match(/[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}/g);
+                                if (is_mac != null) {
+                                    $http.get('/getIpFromMac?mac=' + is_mac).then(function (data) {
+                                        if (data.data.success) {
+                                            formModel.ip = data.data.ip;
+                                        } else {
+
+                                        }
+                                    });
+                                }
+                            }
+                            console.log(formModel, value);
+                        }
+                    }];
+                },
+                config
             );
         };
 

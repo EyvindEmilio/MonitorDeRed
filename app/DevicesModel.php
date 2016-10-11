@@ -8,12 +8,12 @@ class DevicesModel extends ApiBaseModel
     public $timestamps = true;
 
     protected $fillable = [
-        'name', 'ip', 'status', 'description', 'area', 'device_type', 'notes'
+        'name', 'ip', 'mac', 'status', 'description', 'area', 'device_type', 'notes'
     ];
 
     public function getSearchFields()
     {
-        return ['name', 'manufacturer'];
+        return ['name', 'mac', 'manufacturer'];
     }
 
     public function getRelationatedFields()

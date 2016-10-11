@@ -10,6 +10,7 @@ var nmap_ports = require('./nmap_ports');
 var statistics = require('./statistics');
 var tcpdump = require('./tcpdump');
 var net_discover = require('./net_discover');
+var mail = require('./send_mail');
 var snmp = require('./snmp');
 
 var ENV = [];
@@ -95,6 +96,7 @@ function start_scan_network() {
     net_discover.start(function (data) {
         connection.query('DELETE FROM nmap_all_scan');
         connection.query('TRUNCATE nmap_all_scan');
+        console.log("-----> Finish scan network, restarting");
         for (var i = 0; i < data.length; i++) {
             var query = 'INSERT INTO nmap_all_scan (ip, mac, manufacturer) VALUES ("' + data[i].ip + '","' + data[i].mac + '","' + data[i].manufacturer + '");';
             connection.query(query);
@@ -111,7 +113,7 @@ function start_bandwidth() {
 
 function start_nmap_ports() {
     nmap_ports.start(function (data) {
-        console.log('-----> scan all ports finished, starting new scan');
+        console.log('-----> Scan all ports finished, starting new scan');
         for (var index = 0; index < data.length; index++) {
             var number_services_unknown = 0;
             for (var j = 0; j < data[index].ports.length; j++) {
@@ -139,6 +141,13 @@ function start_denial_service() {
         data.date = new Date();
         io.sockets.emit('alert_denial_service', data);
         connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + data.src + '","' + data.dst + '",NOW());');
+
+        connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
+            for (var us = 0; us < rows.length; us++) {
+                mail.sendMail(function () {
+                }, ENV, rows[us]['email'], "Se ha detectado un ataque de Denegacion de servicios , de ip: " + data.src + " a ip: " + data.dst);
+            }
+        });
     }, SETTINGS);
 }
 
