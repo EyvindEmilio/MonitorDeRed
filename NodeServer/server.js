@@ -46,13 +46,14 @@ function start_app() {
         INTERVAL_SEND_DATA_MONITORING = parseInt(SETTINGS['time_interval_for_sending_monitoring_data']);
 
         server.listen(8890);
-        // scan_network();
+
         start_scan_network();
         start_bandwidth();
         start_nmap_ports();
         start_statistics();
         start_denial_service();
         start_snmp();
+        start_saturation();
     });
 
 }
@@ -88,6 +89,24 @@ function send_data_scan(list_device_capture) {
         });
         if (number_clients > 0) {
             io.sockets.emit('active_pcs', {date: new Date(), data: list_device_capture});
+            var pc_inactive = 0;
+            var text = "";
+            for (var index = 0; index < list_device_capture.length; index++) {
+                if (list_device_capture[index].name != '-- Desconocido --' && list_device_capture[index].status_network == 'N') {
+                    pc_inactive++;
+                    text += 'IP:' + list_device_capture[index]['ip'] + ', Tipo:' + list_device_capture[index]['device_type'] + ', Nombre:' + list_device_capture[index]['name'] + ', de Area:' + list_device_capture[index]['area'] + '\n';
+                }
+            }
+            if (pc_inactive > 0) {
+                if (SETTINGS['send_mail_inactive_pc'] == 'Y') {
+                    connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
+                        for (var us = 0; us < rows.length; us++) {
+                            mail.sendMail(function () {
+                            }, ENV, rows[us]['email'], "Se ha detectado " + pc_inactive + " dispositivos inactivos en la red\n" + text);
+                        }
+                    });
+                }
+            }
         }
     });
 }
@@ -111,9 +130,25 @@ function start_bandwidth() {
     }, SETTINGS);
 }
 
+function start_saturation() {
+    setInterval(function () {
+        var saturation = iftop.getSaturation();
+        if (saturation > SETTINGS['max_bandwidth_saturation'] && SETTINGS['send_mail_saturation'] == 'Y') {
+            connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
+                for (var us = 0; us < rows.length; us++) {
+                    mail.sendMail(function () {
+                    }, ENV, rows[us]['email'], "Se ha detectado saturacion en uso de la red a:" + (saturation / 1000) + " Mpbs");
+                }
+            });
+            io.sockets.emit('bandwidth_saturation', saturation);
+        }
+    }, 1000 * SETTINGS['interval_send_saturation']);
+}
+
 function start_nmap_ports() {
     nmap_ports.start(function (data) {
         console.log('-----> Scan all ports finished, starting new scan');
+        var text = "";
         for (var index = 0; index < data.length; index++) {
             var number_services_unknown = 0;
             for (var j = 0; j < data[index].ports.length; j++) {
@@ -123,8 +158,20 @@ function start_nmap_ports() {
             }
             if (number_services_unknown > 0) {
                 connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Puerta trasera (Backdoor)","' + data[index].ip + '","' + (data[index].ip + '; Puertos desconocidos detectados <b>' + number_services_unknown + '</b>') + '",NOW());');
+                text += "IP: " + data[index].ip + ", nuemro depuertos desconocido abiertos: " + number_services_unknown + "\n";
             }
         }
+
+        if (text != "" && SETTINGS['send_mail_backdoor'] == 'Y') {
+            connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
+                for (var us = 0; us < rows.length; us++) {
+                    mail.sendMail(function () {
+
+                    }, ENV, rows[us]['email'], "Se ha detectado un Backdoor en: \n" + text);
+                }
+            });
+        }
+
         io.sockets.emit('scan_all_ports', data);
     }, SETTINGS);
 }
@@ -141,13 +188,14 @@ function start_denial_service() {
         data.date = new Date();
         io.sockets.emit('alert_denial_service', data);
         connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Denegacion de servicios (Denial of service)","' + data.src + '","' + data.dst + '",NOW());');
-
-        connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
-            for (var us = 0; us < rows.length; us++) {
-                mail.sendMail(function () {
-                }, ENV, rows[us]['email'], "Se ha detectado un ataque de Denegacion de servicios , de ip: " + data.src + " a ip: " + data.dst);
-            }
-        });
+        if (SETTINGS['send_mail_dos'] == 'Y') {
+            connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
+                for (var us = 0; us < rows.length; us++) {
+                    mail.sendMail(function () {
+                    }, ENV, rows[us]['email'], "Se ha detectado un ataque de Denegacion de servicios , de ip: " + data.src + " a ip: " + data.dst);
+                }
+            });
+        }
     }, SETTINGS);
 }
 

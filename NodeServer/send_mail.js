@@ -17,6 +17,7 @@ var sendMail = function (onData, ENV, to, message) {
         subject: "Alerta en actividad de red"
     }, function (err, message) {
         console.log('-----> Send mail, successfully');
+        // console.log(err, message);
         onData(err, message);
     });
     return this;

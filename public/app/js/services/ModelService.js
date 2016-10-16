@@ -60,7 +60,7 @@ angular.module('Monitor')
                     context[key] = value;
                 });
                 context.extra_query_params = config.query_params || [];
-                context.default_fields = config.default_fields || [];
+                //context.default_fields = config.default_fields || [];
                 //context.disabled_fields = config.disabled_fields || [];
             }
         };
@@ -195,7 +195,7 @@ angular.module('Monitor')
                         label: 'Ultima modificacion',
                         name: 'updated_at'
                     }];
-                    context.disabled_fields = ['ip'];
+                    context.disabled_fields = ['mac'];
                     context.showFields = ['name', 'description', 'ip', 'mac', 'status', 'area', 'device_type', 'notes'];
                     context.nameView = 'name';
                     context.config = {title: 'Dispositivos registrados'};
@@ -205,14 +205,14 @@ angular.module('Monitor')
                     context.searchEnabled = true;
                     context.name = 'devices';
                     context.watchers = [{
-                        name: 'mac',
+                        name: 'ip',
                         fcn: function (Model, formModel, value) {
                             if (value) {
-                                var is_mac = value.match(/[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}:[0-9a-zA-Z]{2}/g);
-                                if (is_mac != null) {
-                                    $http.get('/getIpFromMac?mac=' + is_mac).then(function (data) {
+                                var is_ip = value.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/g);
+                                if (is_ip != null) {
+                                    $http.get('/getIpFromMac?ip=' + is_ip).then(function (data) {
                                         if (data.data.success) {
-                                            formModel.ip = data.data.ip;
+                                            formModel.mac = data.data.mac;
                                         } else {
 
                                         }

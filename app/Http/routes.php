@@ -100,8 +100,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/getIpFromMac', function () {
         $input = \Illuminate\Support\Facades\Input::all();
-        if (isset($input['mac'])) {
-            $mac = strtolower($input['mac']);
+        if (isset($input['ip'])) {
+            $ip = strtolower($input['ip']);
             $settings = \App\SettingsModel::find(1)->toArray();
             $str_list_interfaces = shell_exec('netdiscover -NPc 10 -r ' . $settings['network_address'] . '/' . $settings['mask']);
             preg_match_all('/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', $str_list_interfaces, $list_ips);
@@ -109,11 +109,11 @@ Route::group(['middleware' => 'auth'], function () {
             $list_ips = $list_ips[0];
             $list_macs = $list_macs[0];
             $success = false;
-            $ip = "";
+            $mac = "";
             try {
                 for ($i = 0; $i < sizeof($list_macs); $i++) {
-                    if (strtolower($list_macs[$i]) == $mac) {
-                        $ip = $list_ips[$i];
+                    if (strtolower($list_ips[$i]) == $ip) {
+                        $mac = $list_macs[$i];
                         $success = true;
                         break;
                     }
@@ -121,7 +121,7 @@ Route::group(['middleware' => 'auth'], function () {
             } catch (Exception $e) {
 
             }
-            return \Illuminate\Http\Response::create(['success' => $success, 'ip' => $ip]);
+            return \Illuminate\Http\Response::create(['success' => $success, 'mac' => $mac]);
         } else {
             return \Illuminate\Http\Response::create(['id' => 0], 400);
         }

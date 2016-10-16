@@ -6,6 +6,8 @@ var spawn = require('child_process').spawn;
 var fs = require("fs");
 var watch = require('node-watch');
 var max_usage = 0;
+var bandwidth_saturation = [];
+var prom_bandwidth_saturation = 0;
 
 var iftop = function (onData, settings) {
     var args = ('-i ' + settings['interface'] + ' -nN -t -o 2s -F ' + settings['network_address'] + '/' + settings['mask']).split(' ');
@@ -63,6 +65,7 @@ var iftop = function (onData, settings) {
         function save_network_usage(i) {
             if (i >= list_objects.length)return;
             settings.connection.query('SELECT * from network_usage WHERE date = date(now()) AND ip = "' + list_objects[i].src.ip + '";', function (err, rows) {
+                if (rows == undefined || rows == null) return;
                 if (rows.length > 0) {//add
                     settings.connection.query('UPDATE network_usage SET size=' + (list_objects[i].size + parseFloat(rows[0].size)) + ' WHERE ip="' + list_objects[i].src.ip + '" AND date = date(now());', function () {
                         save_network_usage(i++);
@@ -79,7 +82,6 @@ var iftop = function (onData, settings) {
         onData(list_objects);
     });
     cmd.on('close', function () {
-
         console.log('Close iftop, restaring..');
     });
     fs.truncate('iftop.out', 0, function () {
@@ -89,6 +91,11 @@ var iftop = function (onData, settings) {
     setInterval(function () {
         max_usage = 0;
     }, 7000);
+
+    setInterval(function () {
+        bandwidth_saturation.push(max_usage);
+    }, 1000);
+
     var change_by_truncate = false;
 
     /*
@@ -110,6 +117,17 @@ module.exports.start = iftop;
 module.exports.getMaxUsage = function () {
     return max_usage;
 };
+
+module.exports.getSaturation = function () {
+    prom_bandwidth_saturation = 0;
+    for (var i = 0; i < bandwidth_saturation.length; i++) {
+        prom_bandwidth_saturation += bandwidth_saturation[i];
+    }
+    prom_bandwidth_saturation /= bandwidth_saturation.length;
+    bandwidth_saturation = [];
+    return prom_bandwidth_saturation;
+};
+
 /*
  iftop(function (data) {
  console.log(data);

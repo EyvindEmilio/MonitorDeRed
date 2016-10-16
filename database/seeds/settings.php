@@ -25,6 +25,12 @@ class settings extends Seeder
             'dos_time_for_check_attacks' => 30,
             'dos_max_packets_received' => 10000,
             'interval_snmp_scan' => 30,
+            'interval_send_saturation' => 600,
+            'max_bandwidth_saturation' => 30000,
+            'send_mail_saturation' => 'N',
+            'send_mail_dos' => 'N',
+            'send_mail_backdoor' => 'N',
+            'send_mail_inactive_pc' => 'N',
             'active_system' => 'Y']);
     }
 }

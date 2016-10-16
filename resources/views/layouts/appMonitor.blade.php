@@ -250,6 +250,24 @@
                 $rootScope.$apply();
             });
 
+            var time_hide_alert_saturation = 10;//seconds
+            var time_curren_alert_saturation = 0;
+            setInterval(function () {
+                time_curren_alert_saturation++;
+                if (time_curren_alert_saturation > time_hide_alert_saturation) {
+                    removeAlert('alert_saturation');
+                    time_curren_alert_saturation = 0;
+                }
+            }, 1000);
+            socket.on('bandwidth_saturation', function (data) {//saturation in kbps
+                console.log(data);
+                removeAlert('alert_saturation');
+                $rootScope.GLOBALS.alerts.push({
+                    name: 'alert_saturation',
+                    message: 'Se ha detectado consumo alto de la red en los ultimos 10 min, aprox: ' + (Math.round(data) / 1000) + " Mb"
+                });
+                time_curren_alert_saturation = 0;
+            });
             socket.on('active_pcs', function (data) {
                 $rootScope.GLOBALS.alert_number_pc_inactive = 0;
                 $rootScope.GLOBALS.active_pcs = data;

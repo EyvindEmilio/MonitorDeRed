@@ -7,7 +7,7 @@
                 <div class="panel-heading">Configuración del sistema</div>
                 <div class="panel-body">
                     <form class="form-horizontal" data-ng-submit="save_params_settings()">
-                        <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
+                        <input type="hidden" name="_token" value="{{{ csrf_token() }}}"/>
                         <div class="form-group">
                             <label class="col-md-3">Direccion de Red</label>
                             <div class="col-md-6">
@@ -121,6 +121,70 @@
                                 @endif
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-md-3">Saturacion de red (Kbps/s)</label>
+                            <div class="col-md-2">
+                                @if(\App\User::isAdmin())
+                                    <input type="number" class="form-control" min="100" max="700000"
+                                           placeholder="En Kbps"
+                                           required ng-model="settings.max_bandwidth_saturation">
+                                @else
+                                    <span ng-bind="settings.max_bandwidth_saturation +' Kbps.'"></span>
+                                @endif
+                            </div>
+                            <div class="col-md-2">
+                                @if(\App\User::isAdmin())
+                                    <input type="number" class="form-control" min="10"
+                                           placeholder="En segundos"
+                                           required ng-model="settings.interval_send_saturation">
+                                @else
+                                    <span ng-bind="settings.interval_send_saturation +' Seg.'"></span>
+                                @endif
+                            </div>
+                        </div>
+                        @if(Auth::user()['user_type']==1)
+                            <div style="background-color: #ecf0f1;padding: 10px 15px;margin: 0 0 10px 0;">
+                                <h4>Envio de Correo</h4>
+                                <hr>
+                                <div class="form-group">
+                                    <label class="col-md-3">Saturacion de red</label>
+                                    <div class="col-md-5">
+                                        <select class="form-control" ng-model="settings.send_mail_saturation" required>
+                                            <option value="Y" label="Enviar correo de alerta"></option>
+                                            <option value="N" label="No enviar correo"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3">Denegacion de Servicios</label>
+                                    <div class="col-md-5">
+                                        <select class="form-control" ng-model="settings.send_mail_dos" required>
+                                            <option value="Y" label="Enviar correo de alerta"></option>
+                                            <option value="N" label="No enviar correo"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3">Puerta Trasera</label>
+                                    <div class="col-md-5">
+                                        <select class="form-control" ng-model="settings.send_mail_backdoor" required>
+                                            <option value="Y" label="Enviar correo de alerta"></option>
+                                            <option value="N" label="No enviar correo"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3">Dispositivos Inactivos</label>
+                                    <div class="col-md-5">
+                                        <select class="form-control" ng-model="settings.send_mail_inactive_pc" required>
+                                            <option value="Y" label="Enviar correo de alerta"></option>
+                                            <option value="N" label="No enviar correo"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         <div class="form-group">
                             <label class="col-md-3">Estado del sistema</label>

@@ -4,7 +4,7 @@
     <div ng-controller="DashboardController">
         <div class="col-md-12">
             <section class="panel">
-                <div class="panel-heading"> Uso de la red</div>
+                <div class="panel-heading"> Consumo de Ancho de Banda</div>
                 <div class="panel-body">
                     <div class="IMAGE_CHART">
                         <highchart id="chart1" config="chart_monitor"></highchart>
@@ -35,19 +35,27 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="pc in GLOBALS.active_pcs.data | filter: filter_list_pcs_scanned"
-                            data-ng-click="scan_pc(pc)"
-                            style="cursor: pointer;@{{ (pc.name=='-- Desconocido --')?'background: rgba(241, 196, 15,0.1) !important;':'' }}">
+                            style="cursor: pointer;@{{ (pc.name=='-- Desconocido --')?'cursor: pointer;background: rgba(241, 196, 15,0.1) !important;':'' }}">
                             <td ng-bind="$index +1 "></td>
-                            <td ng-bind="pc.name"></td>
-                            <td ng-bind="pc.ip"></td>
-                            <td ng-bind="pc.mac || '--'"></td>
-                            <td ng-bind="pc.manufacturer || '--'"></td>
-                            <td ng-bind="pc.device_type?(pc.device_type+' / '+pc.area):'--'"></td>
+                            <td ng-bind="pc.name" data-ng-click="scan_pc(pc)"></td>
+                            <td ng-bind="pc.ip" data-ng-click="scan_pc(pc)"></td>
+                            <td ng-bind="pc.mac || '--'" data-ng-click="scan_pc(pc)"></td>
+                            <td ng-bind="pc.manufacturer || '--'" data-ng-click="scan_pc(pc)"></td>
+                            <td ng-bind="pc.device_type?(pc.device_type+' / '+pc.area):'--'"
+                                data-ng-click="scan_pc(pc)"></td>
                             <td>
                                 <button class="btn btn-xs btn-@{{pc.status_network=='Y'?'success':'danger'}}"
                                         style="width: 100%" ng-bind="pc.status_network=='Y'?'o':'-'"
                                         title="@{{ pc.status_network=='Y'?'Activo':'Inactivo' }}">
                                 </button>
+
+                                <button class="btn btn-xs btn-info"
+                                        data-ng-click="appendRegister(pc)"
+                                        data-ng-if="pc.name == '-- Desconocido --'"
+                                        style="width: 100%;"
+                                        title="Registrar Dispositivo">Reg.
+                                </button>
+
                             </td>
                         </tr>
                         </tbody>
@@ -112,7 +120,7 @@
     <script type="text/javascript">
 
         angular.module('Monitor')
-                .controller('DashboardController', function ($rootScope, $API, $resource, $http, $interval, toastr, SocketService) {
+                .controller('DashboardController', function ($rootScope, $API, $resource, $http, $interval, toastr, SocketService, ModelService, $uibModal) {
                     var socket = SocketService.socket;
 
                     $rootScope.finish_loading_list_status = false;
@@ -273,6 +281,27 @@
                             $rootScope.$apply();
                         }
                     });
+
+                    $rootScope.appendRegister = function (pc) {
+                        var ModelDevices = (new ModelService.Devices({
+                            default_fields: [
+                                {name: 'ip', value: pc.ip},
+                                {name: 'mac', value: pc.mac},
+                                {name: 'description', value: pc.manufacturer}]
+                        }));
+                        ModelDevices.initValues = pc;
+                        console.log(pc, ModelDevices);
+                        var modalInstance = $uibModal.open({
+                            templateUrl: 'app/views/crud/modals/crudModalCreate.html',
+                            controller: 'ModalCreateCrudController',
+                            size: 'md',
+                            resolve: {
+                                Model: function () {
+                                    return ModelDevices;
+                                }
+                            }
+                        });
+                    }
                 });
     </script>
 @endsection
