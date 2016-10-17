@@ -10,7 +10,7 @@
 <table>
     <tr>
         <th class="left">Reporte:</th>
-        <td>Consumo por fechas de Area: "{{  $area!=0?$area->name:'Dispositivos no registrados' }}"</td>
+        <td>Consumo por fechas de Area: "{{  isset($area->name)?$area->name:'Dispositivos no registrados' }}"</td>
     </tr>
     <tr>
         <th class="left">Fecha:</th>
@@ -50,7 +50,6 @@
 
 <style>
     @page {
-        /*margin: 180px 50px;*/
     }
 
     #header {
@@ -70,7 +69,6 @@
         right: 0px;
         height: 150px;
         width: 100%;
-        /*background-color: lightblue;*/
     }
 
     #footer .page:after {

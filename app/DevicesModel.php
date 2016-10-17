@@ -13,7 +13,7 @@ class DevicesModel extends ApiBaseModel
 
     public function getSearchFields()
     {
-        return ['name', 'mac', 'manufacturer'];
+        return ['name', 'mac', 'ip', 'description', 'notes'];
     }
 
     public function getRelationatedFields()

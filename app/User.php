@@ -88,4 +88,9 @@ class User extends Authenticatable
             return false;
         }
     }
+
+    public function getSearchFields()
+    {
+        return ['first_name', 'last_name', 'email'];
+    }
 }

@@ -130,7 +130,6 @@
                                         <li>
                                             <a class="{{ (Request::is('logs'))?'active':'' }}"
                                                href="{{ url('/logs') }}">
-                                                <i class="fa fa-legal"></i>
                                                 <span>Acciones de usuarios</span>
                                             </a>
                                         </li>
