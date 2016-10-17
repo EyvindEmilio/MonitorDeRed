@@ -84,7 +84,9 @@ Route::group(['middleware' => 'auth'], function () {
         if (\App\User::isJefeOrCollaborator()) return redirect()->to('/');
         $consumo_per_areas = \App\NetworkUsageModel::getConsumo();
         $consumo_unknown = \App\NetworkUsageModel::getConsumoUnknown();
-        return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas, 'consumo_unknown' => $consumo_unknown]);
+        $consumo_ip_today = DB::select("SELECT network_usage.id, network_usage.ip, network_usage.size, network_usage.date, devices.name, devices.mac FROM network_usage LEFT JOIN devices on devices.ip = network_usage.ip WHERE date = date(NOW())");
+        $consumo_ip_yesterday = DB::select("SELECT network_usage.id, network_usage.ip, network_usage.size, network_usage.date, devices.name, devices.mac FROM network_usage LEFT JOIN devices on devices.ip = network_usage.ip WHERE date = date(DATE_SUB(NOW(), INTERVAL 1 DAY))");
+        return view('dashboard/consumo', ['settings' => \App\SettingsModel::find(1)->toArray(), 'areas' => \App\AreasModel::all(), 'consumo_per_areas' => $consumo_per_areas, 'consumo_unknown' => $consumo_unknown, 'consumo_yesterday' => $consumo_ip_yesterday, 'consumo_today' => $consumo_ip_today]);
     });
 
     Route::get('/info_per_area', function () {

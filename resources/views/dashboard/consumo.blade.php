@@ -5,6 +5,20 @@
         <div class="col-md-12">
             <section class="panel">
                 <div class="panel-body">
+                    Consumo de Ancho de Banda
+                </div>
+                <div class="panel-heading">
+                    <div class="col-md-6">
+                        <highchart id="consumo_yesterday" config="consumo_yesterday"></highchart>
+                    </div>
+                    <div class="col-md-6">
+                        <highchart id="consumo_today" config="consumo_today"></highchart>
+                    </div>
+                    <i class="clearfix"></i>
+                </div>
+            </section>
+            <section class="panel">
+                <div class="panel-body">
                     Consumo de trafico de red por Areas
                     <a class="pull-right" href="/report_for_areas" target="_blank" download="Reporte por Area">
                         Descargar Reporte
@@ -63,6 +77,57 @@
         angular.module('Monitor')
                 .controller('DashboardController', function ($rootScope, $API, $resource, $http, $interval, toastr, SocketService) {
                     var socket = SocketService.socket, i;
+                    var data_consumo_yesterday = {!! json_encode($consumo_yesterday) !!};
+                    var data_cy = [];
+                    for (i = 0; i < data_consumo_yesterday.length; i++) {
+                        if (data_consumo_yesterday[i].size <= 0)continue;
+                        data_cy.push({
+                            name: (data_consumo_yesterday[i].name || 'desconocido') + '<br>' + data_consumo_yesterday[i].ip,
+                            ip: data_consumo_yesterday[i].ip,
+                            y: convertToMbps(data_consumo_yesterday[i].size)
+                        });
+                    }
+
+                    $rootScope.consumo_yesterday = {
+                        options: {
+                            chart: {type: 'pie', height: 350},
+                            tooltip: {pointFormat: 'Transferencia: {point.y} Mb'}
+                        },
+                        title: {text: 'Consumo de red Ayer'},
+                        xAxis: {
+                            title: {text: 'Fecha'},
+                            lineWidth: 1,
+                            type: 'category'
+                        },
+                        yAxis: {title: {text: 'Transferencia total(Mb)'}},
+                        series: [{name: 'consumo', colorByPoint: true, data: data_cy}]
+                    };
+                    var data_consumo_today = {!! json_encode($consumo_today) !!};
+                    data_cy = [];
+                    for (i = 0; i < data_consumo_today.length; i++) {
+                        if (data_consumo_today[i].size <= 0)continue;
+                        data_cy.push({
+                            name: (data_consumo_today[i].name || 'desconocido') + '<br>' + data_consumo_today[i].ip,
+                            ip: data_consumo_today[i].ip,
+                            y: convertToMbps(data_consumo_today[i].size)
+                        });
+                    }
+
+                    $rootScope.consumo_today = {
+                        options: {
+                            chart: {type: 'pie', height: 350},
+                            tooltip: {pointFormat: 'Transferencia: {point.y} Mb'}
+                        },
+                        title: {text: 'Consumo de red Hoy'},
+                        xAxis: {
+                            title: {text: 'Fecha'},
+                            lineWidth: 1,
+                            type: 'category'
+                        },
+                        yAxis: {title: {text: 'Transferencia total(Mb)'}},
+                        series: [{name: 'consumo', colorByPoint: true, data: data_cy}]
+                    };
+                    console.log($rootScope.consumo_yesterday, $rootScope.consumo_today);
                     $rootScope.areas = {!! $areas !!};
                     $rootScope.consumo_por_areas = {
                         options: {
@@ -126,6 +191,7 @@
                         start_date: new Date((new moment()).subtract(7, 'days')),
                         end_date: new Date(new moment())
                     };
+
                     $rootScope.current_filter_area = null;
 
                     $rootScope.$watch('interval_filter_area', function (new_data) {
@@ -176,7 +242,6 @@
                         })
                     };
 
-
                     for (i = 0; i < $rootScope.areas.length; i++) {
                         $rootScope.areas[i].chart = {
                             options: {
@@ -194,6 +259,7 @@
                         daily_statistics(data.daily_per_areas);
                         max_current_usage(data.current_max_usage);
                     });
+
                     $rootScope.chart_max_current_usage = {
                         options: {
                             chart: {type: 'gauge', height: 210, plotBackgroundColor: null},
@@ -226,6 +292,7 @@
                             dataLabels: {format: '{y} Mbps'}
                         }]
                     };
+
                     var max_current_usage = function (data) {
                         $rootScope.chart_max_current_usage.series[0].data[0] = convertToMbps(data);
                         $rootScope.$apply();
