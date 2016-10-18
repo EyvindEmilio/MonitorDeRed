@@ -134,6 +134,7 @@ function start_saturation() {
     setInterval(function () {
         var saturation = iftop.getSaturation();
         if (saturation > SETTINGS['max_bandwidth_saturation'] && SETTINGS['send_mail_saturation'] == 'Y') {
+            connection.query('INSERT INTO alerts (type, ip_src, ip_dst, created_at) VALUES ("Saturacion de red","-- Toda la red --","-- Toda la red --",NOW());');
             connection.query('SELECT * FROM users WHERE status = "Y" AND (user_type = 1 OR user_type = 2)', function (err, rows) {
                 for (var us = 0; us < rows.length; us++) {
                     mail.sendMail(function () {

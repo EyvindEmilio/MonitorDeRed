@@ -239,7 +239,7 @@ angular.module('Monitor')
                 //noinspection JSUnresolvedVariable
                 if (scope.itemCrud.custom) {
                     bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
-                    compile_text(scope.itemCrud.custom(bindObject, scope.itemCrudModel));
+                    compile_text(scope.itemCrud.custom(bindObject, scope.itemCrudModel, compile_text));
                 } else if (scope.itemCrud.model) {
                     bindObject = $filter('CrudFilter')(scope.itemCrudModel[scope.itemCrud.name], scope.itemCrud.type);
                     if (scope.itemCrud.model.onView) {

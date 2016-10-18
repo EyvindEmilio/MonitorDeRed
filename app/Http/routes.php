@@ -27,6 +27,12 @@ Route::get('/close', function () {
     return view('close_system');
 });
 
+/*Route::get('/last_connected', function () {
+    $input = \Illuminate\Support\Facades\Input::all();
+    if (isset($input['ip'])) {
+        $is_data = \App\NetworkUsageModel::where('ip',ip)
+    }
+});*/
 Route::get('/report_alerts', function () {
     $input = \Illuminate\Support\Facades\Input::all();
     if (isset($input['start_date'])) {
