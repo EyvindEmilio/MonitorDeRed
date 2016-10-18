@@ -26,15 +26,6 @@ var snmp = function (onData, settings) {
             var args = ('-v 2c -c public ' + device['ip'] + ' iso.3.6.1.2.1.1').split(' ');
             var cmd = spawn('snmpwalk', args);
             cmd.stdout.on('data', function (data) {
-                /*
-                 * iso.3.6.1.2.1.1.1.0 = STRING: "Hardware: Intel64 Family 6 Model 58 Stepping 9 AT/AT COMPATIBLE - Software: Windows Version 6.3 (Build 10586 Multiprocessor Free)"
-                 iso.3.6.1.2.1.1.2.0 = OID: iso.3.6.1.4.1.311.1.1.3.1.1
-                 iso.3.6.1.2.1.1.3.0 = Timeticks: (5300403) 14:43:24.03
-                 iso.3.6.1.2.1.1.4.0 = STRING: "eyvind.coaquira@gmail.com"
-                 iso.3.6.1.2.1.1.5.0 = STRING: "TININI-PC"
-                 iso.3.6.1.2.1.1.6.0 = STRING: "Oficina Eyv"
-                 iso.3.6.1.2.1.1.7.0 = INTEGER: 4
-                 * */
                 data = data.toString('utf8');
                 try {
                     var hardware = data.match(/^(iso.3.6.1.2.1.1.1.0 = STRING: )[" a-zA-Z0-9:\-_;()/\\.]+/g)[0].replace(/"/g, '').replace('iso.3.6.1.2.1.1.1.0 = STRING: ', '');
