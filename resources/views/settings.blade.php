@@ -128,7 +128,7 @@
                                 @if(\App\User::isAdmin())
                                     <input type="number" class="form-control" min="100" max="700000"
                                            placeholder="En Kbps"
-                                           required ng-model="settings.max_bandwidth_saturation">
+                                           required ng-model="settings.max_bandwidth_saturation" disabled>
                                 @else
                                     <span ng-bind="settings.max_bandwidth_saturation +' Kbps.'"></span>
                                 @endif
@@ -137,7 +137,7 @@
                                 @if(\App\User::isAdmin())
                                     <input type="number" class="form-control" min="10"
                                            placeholder="En segundos"
-                                           required ng-model="settings.interval_send_saturation">
+                                           required ng-model="settings.interval_send_saturation" disabled>
                                 @else
                                     <span ng-bind="settings.interval_send_saturation +' Seg.'"></span>
                                 @endif
