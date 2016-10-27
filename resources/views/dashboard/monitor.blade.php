@@ -188,7 +188,21 @@
                                 text: 'Tasa (kbps)'
                             },
                             min: 0,
-//                            max: 2000
+                            max: 66560,
+
+                            plotLines: [{
+                                color: '#FF0000',
+                                width: 2,
+                                value: 66560,
+                                label: {
+                                    text: '65 Mb'
+                                }
+                            }],
+                            labels: {
+                                formatter: function () {
+                                    return Math.round(this.value * 100 / 1024) / 100 + ' Mb';
+                                }
+                            }
                         }
                     };
 
